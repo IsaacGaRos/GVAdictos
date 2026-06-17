@@ -10,11 +10,11 @@
 
 | Aspect | Status | Details |
 |--------|--------|---------|
-| **Last stable version** | [TBD] | [Brief description] |
-| **In development** | [TBD] | [What's being worked on] |
-| **Last task completed** | Context structure setup | .claude/ folder initialization |
-| **Next task** | [TBD] | Awaiting Isaac's next work session |
-| **Build status** | [TBD] | [Latest build status] |
+| **Last stable version** | ✅ EUR-Lex integration | 80 laws, 12,838 articles, 3 new EUR-Lex sources |
+| **In development** | Validation findings resolution | 29 open hallazgos (delimitación, temas, otros) |
+| **Last task completed** | GitHub + EUR-Lex integration | GitHub CLI + 3 EUR-Lex docs imported + Code/PRO sync ready |
+| **Next task** | Resolve validation findings | Use `scripts/audit_validation_findings.py` to inspect 29 open |
+| **Build status** | ✅ GREEN | All systems nominal, syntax OK, DB verified |
 
 ---
 
