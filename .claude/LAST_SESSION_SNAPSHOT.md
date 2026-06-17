@@ -1,8 +1,37 @@
 # 📸 Last Session Snapshot
 
-**Last updated**: 2026-06-17T21:00:00 UTC  
+**Last updated**: 2026-06-17T22:00:00 UTC  
 **Updated by**: Claude Code  
-**Session number**: 1 (GitHub + EUR-Lex integration)
+**Session number**: 2 (Validation findings — partial resolution)
+
+---
+
+## 🔄 Session 2 Update (2026-06-17 22:00)
+
+**Resolved 6 `autentica_fuente_oficial_no_importada` findings** (now that EUR-Lex sources are imported):
+- Topic 26 → Carta UE (law 82) — link created
+- Topic 29 → RGPD (law 83) — link created
+- Topic 30 → Reglamento 2024/2509 (law 84) — link created
+- Topics 48, 49, 50 → Carta UE (law 82) — links created
+- All topic_sources links: `mapping_basis='autentica_auxiliar_pendiente_validacion'` (article-level still needs human validation)
+
+**Open findings: 29 → 23**
+
+**Script created**: `scripts/resolve_autentica_eurlex_findings.py`
+
+### ⚠️ Remaining 23 findings REQUIRE LEGAL INTERPRETATION (not Haiku-safe)
+All 23 need a human lawyer or stronger model (Sonnet/Opus) because they involve
+selecting EXACT articles, verifying vigencia/consolidation, or building doctrinal/sector matrices:
+- 8x delimitacion_articulos_pendiente
+- 9x sectorial_sources_pending
+- 2x tema_doctrinal_pendiente
+- 2x fuente_reglamentaria_pendiente (sources imported, but exact articles pending)
+- 1x fuente_no_normativa_pendiente (Libro Blanco UE, Agenda 2030)
+- 1x fuente_complementaria_pendiente (decree vigencia + articles)
+
+**→ NEXT: This is PRO + Sonnet/Opus territory, then human review. See handoff below.**
+
+---
 
 ---
 
