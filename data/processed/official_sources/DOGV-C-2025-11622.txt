@@ -1,0 +1,1933 @@
+Núm. 10092 / 22.04.2025 1 / 35
+CVE: DOGV-C-2025-11622 https://dogv.gva.es/
+I. DISPOSICIONES GENERALES
+ 
+Presidencia de la Generalitat
+Conselleria de Hacienda y Economía
+Conselleria de Educación, Cultura, Universidades y Empleo
+DECRETO 54/2025, de 15 de abril, del Consell, de simplificación administrativa y transformación digital.
+ 
+Índice
+Preámbulo
+Título I. Disposiciones generales
+Capítulo I. Objeto y ámbito de aplicación
+Artículo 1. Objeto
+Artículo 2. Ámbito de aplicación
+Capítulo II. Principios generales, derechos y deberes de las personas
+Artículo 3. Principios generales
+Artículo 4. Derechos y deberes de las personas ante la transformación digital
+Capítulo III. Gobernanza de la simplificación administrativa y de la transformación digital
+Artículo 5. Implantación y desarrollo de la simplificación administrativa y de la transformación digital
+Artículo 6. Atribución de responsabilidades
+Artículo 7. Servicios y aplicaciones comunes de transformación digital
+Título II. Instrumentos de la transformación digital
+Capítulo I. Vías de acceso electrónico
+Artículo 8 Puntos de acceso electrónico de la Generalitat
+Artículo 9. El Portal corporativo de la Generalitat
+Artículo 10. Portales institucionales de los departamentos del Consell y de las entidades del sector público
+instrumental.
+Artículo 11. Portales específicos
+Artículo 12. Canal Empresa
+Artículo 13. Apps móviles específicas.
+Artículo 14. Régimen de las sedes electrónicas
+Artículo 15. Sede PROP de la Generalitat
+Artículo 16. Sedes electrónicas asociadas de la Generalitat
+Artículo 17. Carpeta ciudadana de la Generalitat
+Artículo 18. Tablón Electrónico Único de Anuncios de la Generalitat
+Artículo 19. Portal para el personal empleado público
+Capítulo II. Registro electrónico de la Generalitat
+Artículo 20. Registro electrónico de la Generalitat
+Artículo 21. Presentación de documentos e información en el Registro electrónico
+Artículo 22. Justificante de presentación en el Registro electrónico
+Capítulo III. Formas de comunicación
+Artículo 23. Notificación electrónica
+Artículo 24. Comunicaciones internas
+Artículo 25. Comunicaciones de carácter informal con la ciudadanía
+Capítulo IV. Sistema tramitador corporativo de expedientes administrativos
+Artículo 26. Sistema tramitador corporativo de expedientes administrativos
+Capítulo V. Reglas comunes a todos los instrumentos
+Artículo 27. Incidencias técnicas
+Artículo 28. Accesibilidad
+Título III. Simplificación en la elaboración de normas y en el procedimiento administrativo electrónico
+Capítulo I. Simplificación normativa
+Artículo 29. Planificación normativa plurianual y evaluación
+
+
+Núm. 10092 / 22.04.2025 2 / 35
+CVE: DOGV-C-2025-11622 https://dogv.gva.es/
+Artículo 30. Memoria del Análisis de Impacto Normativo
+Artículo 31. Análisis e informe de simplificación administrativa
+Artículo 32. Análisis e informe de coordinación informática
+Artículo 33. Análisis e informe de protección de datos
+Artículo 34. Revisión del ordenamiento jurídico
+Capítulo II. Simplificación del procedimiento electrónico
+Artículo 35. Catálogo de procedimientos y servicios administrativos de la Generalitat
+Artículo 36. Formularios, plantillas y modelos normalizados
+Artículo 37. Prestación proactiva de servicios personalizados
+Artículo 38. Análisis y rediseño de procedimientos
+Capítulo III. Identidad y firma electrónica en la Generalitat
+Artículo 39. Política de identidad y firma electrónica de la Generalitat
+Capítulo IV. Actuación administrativa automatizada, robotización e inteligencia artificial
+Artículo 40. Actuación administrativa automatizada
+Artículo 41. Implantación de la robotización y la inteligencia artificial (IA) en los procedimientos administrativos
+Capítulo V. Registro electrónico de representantes
+Artículo 42. Registro electrónico de representantes
+Título IV. Documento administrativo y expediente electrónico
+Capítulo I. Documentos Y Expedientes Administrativos Electrónicos
+Artículo 43. Documento administrativo electrónico
+Artículo 44. Expediente administrativo electrónico
+Artículo 45. Traslado de documentos electrónicos
+Capítulo II. Digitalización y procesos de copia de documentos
+Artículo 46. Órganos competentes para la emisión de copias auténticas en el ámbito autonómico
+Artículo 47. Destrucción de los documentos en soporte papel u otros digitalizados
+Artículo 48. Externalización de determinadas tareas del proceso de digitalización para la generación de copias
+electrónicas auténticas
+Capítulo III. Sistema de gestión documental
+Artículo 49. Sistema de Gestión de Documentos Electrónicos de la Generalitat
+Capítulo IV. Archivo electrónico de documentos
+Artículo 50. El Archivo electrónico de la Generalitat
+Artículo 51. Conservación de documentos electrónicos
+Artículo 52. Gestión archivística de los datos
+Título V. Gobierno del Dato e interoperabilidad
+Capítulo I. Organización del gobierno del dato de la Generalitat
+Artículo 53. Modelo de Gobierno del Dato
+Artículo 54. Programa de Gobierno del Dato
+Artículo 55. Registro electrónico de información de personas usuarias
+Capítulo II. Plataforma autonómica de interoperabilidad
+Artículo 56. Plataforma Autonómica de Interoperabilidad (PAI)
+Artículo 57. Acceso como consumidor a datos interoperables
+Artículo 58. Publicación como proveedor y catálogo de servicios de verificación disponibles a través de la PAI
+Artículo 59. Trazabilidad y auditoría de los intercambios de datos
+Título VI. Gestión electrónica de los órganos colegiados y catálogos de sistemas de información y aplicaciones
+Capítulo I. Participación electrónica en las sesiones de los órganos colegiados
+Artículo 60. Gestión electrónica de los órganos colegiados
+Artículo 61. Grabación de las sesiones y soporte audiovisual
+Capítulo II. Catálogos de sistemas de información y aplicaciones
+Artículo 62. Catálogos de sistemas de información y aplicaciones de la Generalitat
+Disposiciones adicionales
+Primera. Aplicación a la prestación de los servicios públicos sanitarios y educativos.
+Segunda. Aprobación de la Guía metodológica para la tramitación de disposiciones normativas.
+
+
+Núm. 10092 / 22.04.2025 3 / 35
+CVE: DOGV-C-2025-11622 https://dogv.gva.es/
+Tercera. Aprobación del Acuerdo del Consell con los modelos para la realización de los análisis en materia de
+simplificación administrativa, coordinación informática y protección de datos.
+Cuarta. Aprobación de la Guía para la tramitación y la aprobación de los procedimientos administrativos.
+Quinta. Política de identificación y firma
+Sexta. Modelo, Plan estratégico y Programa de Gobierno del Dato
+Séptima. Protección de datos
+Octava. Actualización de información en los puntos de acceso de la Generalitat
+Novena. Comunicaciones de infracciones a la legalidad vigente
+Décima Incidencia presupuestaria
+Disposición transitoria
+Única. Disponibilidad de medios
+Disposición derogatoria
+Única. Derogación normativa
+Disposiciones finales
+Primera. Disposición de carácter general de configuración y normalización de formularios
+Segunda. Desarrollo
+Tercera. Entrada en vigor
+Anexo I.  Relación de órganos responsables de los servicios y aplicaciones comunes de transformación digital
+Anexo II Contenido común de las Declaraciones Responsables
+Anexo III Contenido común de las Comunicaciones
+PREÁMBULO
+En el contexto actual de transformación digital y modernización de las administraciones públicas, la Generalitat se
+enfrenta al desafío de adaptar sus estructuras y procesos a las nuevas tecnologías bajo criterios de simplificación. El
+presente decreto tiene como objetivo principal establecer el marco normativo para la implantación de la estrategia
+coordinada de simplificación administrativa y transformación digital, con la finalidad de promover una gestión más
+eficiente, ágil y accesible para la ciudadanía, las empresas y la propia Administración.
+La transformación digital no solo implica la digitalización de los procedimientos administrativos, sino también un
+cambio profundo en la cultura organizativa y en la relación entre la Administración y la ciudadanía. La administración
+electrónica supuso la consolidación del procedimiento administrativo electrónico; sin embargo, la administración digital
+supone el cambio a una forma automatizada y personalizada de la actuación administrativa. Este decreto se enmarca en la
+estrategia global de la Generalitat para mejorar la calidad de los servicios públicos, reducir las cargas administrativas y
+agilizar la actividad de la Administración.
+El Decreto 220/2014, de 12 de diciembre, del Consell, por el que se aprueba el Reglamento de administración
+electrónica de la Comunitat Valenciana, contribuyó al desarrollo de la sociedad de la información y, en particular, a
+modernizar la Administración de la Generalitat e impulsar la incorporación de las tecnologías de la información y las
+comunicaciones, las llamadas TIC, a la actividad administrativa.
+Sin embargo, con la entrada en vigor del Real Decreto 203/2021, de 30 de marzo, por el que se aprueba el
+Reglamento de actuación y funcionamiento del sector público por medios electrónicos, que tiene por objeto el desarrollo de
+la Ley 39/2015, de 1 de octubre, del procedimiento administrativo común de las administraciones públicas y de la Ley
+40/2015, de 1 de octubre, de régimen jurídico del sector público, en lo referido a la actuación y el funcionamiento
+electrónico del sector público, se ha creado un nuevo régimen jurídico para la administración electrónica. Como
+consecuencia de su dictado al amparo de lo dispuesto en el artículo 149.1. 18.ª de la Constitución Española, que atribuye al
+Estado la competencia exclusiva en materia de procedimiento administrativo común y para dictar las bases del régimen
+jurídico de las administraciones públicas, gran parte del contenido del citado Decreto 220/2014, de 12 de diciembre se ha
+visto desplazado por esta regulación estatal.
+Por otro lado, se aprobó la Ley 6/2024, de 5 de diciembre, de la Generalitat, de simplificación administrativa, que
+regula en su Título I el marco general de la simplificación administrativa de la Generalitat. Dicho título contiene el régimen
+de derechos y deberes, principios y criterios de simplificación administrativa; la planificación y organización de la
+simplificación; medidas de simplificación normativa, incluyendo la obligación de realizar un análisis ex ante de los
+impactos de las propuestas normativas bajo criterios de simplificación, a través de la Memoria de Análisis de Impacto
+
+
+Núm. 10092 / 22.04.2025 4 / 35
+CVE: DOGV-C-2025-11622 https://dogv.gva.es/
+Normativo; medidas de impulso de la actividad económica, entre las que se crea el Canal Empresa; medidas de
+simplificación dirigidas a la ciudadanía, en concreto una regulación sobre los procedimientos y servicios, la carpeta
+ciudadana y actuaciones contra la brecha digital; el Gobierno del Dato y el dato único, y medidas internas de
+simplificación, como el gestor de expedientes común y la formación del personal empleado público. Por último, incorpora
+la obligación de uso de nuevas tecnologías para la administración electrónica, como la automatización, la robotización y la
+inteligencia artificial, así como nuevos sistemas de identificación y firma esenciales para modernizar la Administración
+Pública, con la finalidad de reducir los tiempos de respuesta y los errores y mejorar la prestación de servicios.
+La entrada en vigor del Real Decreto 203/2021, de 30 de marzo, y de la Ley 6/2024, de 5 de diciembre, requiere
+actualizar el régimen reglamentario autonómico, integrando la simplificación administrativa y la transformación digital
+como dos bases de una misma política de gestión de los servicios públicos.
+Por último, dentro del marco normativo en cuyo seno se aprueba el presente decreto, cabe señalar el Real Decreto
+4/2010, de 8 de enero, por el que se regula el Esquema Nacional de Interoperabilidad en el ámbito de la Administración
+Electrónica, y el Real Decreto 311/2022, de 3 de mayo, por el que se regula el Esquema Nacional de Seguridad.
+El presente decreto se estructura en seis títulos y 62 artículos, una disposición transitoria, diez disposiciones
+adicionales, una disposición derogatoria, tres disposiciones finales y tres anexos.
+El Título I, de disposiciones generales, establece el objeto y el ámbito de aplicación del decreto. Se definen los
+principios generales, los derechos y deberes de las personas ante la transformación digital, y se atribuyen responsabilidades
+específicas en materia de simplificación administrativa e implantación y desarrollo de la transformación digital en la
+Generalitat.
+Con el objetivo de mejorar la eficiencia administrativa, se establece la obligación de comunicación electrónica con
+la administración de aquellas personas que por sus características tienen acceso y disponibilidad a medios electrónicos.
+Se trata de colectivos que, por la exigencia de contar con una determinada formación académica para concurrir al
+proceso, por el tipo de pruebas a superar y por las obligaciones que, en caso de que finalmente adquirieran la condición de
+persona empleada pública, habrían de asumir en sus relaciones con la Administración, ha de contar con la suficiente
+capacidad técnica para acceder a los medios electrónicos necesarios, si bien también en este supuesto se contemplan
+posibles excepciones en razón de las peculiares condiciones que puedan concurrir en supuestos concretos.
+Asimismo, el decreto establece la obligación para colectivos en los que su dedicación profesional y capacidad
+técnica está ligada al uso de la tecnología, tratándose de una herramienta que utilizan con asiduidad o es parte indispensable
+de su trabajo; en los que el uso de estos medios es conocido y natural; disponen de la capacidad económica necesaria o,
+incluso, en los que ya existe la obligación de realizar trámites administrativos por medios electrónicos en el ámbito de la
+hacienda pública. Sin embargo, para proteger los derechos de las personas empresarias individuales o autónomas se recoge
+la posibilidad de que las normas reguladoras de los procedimientos excepcionen esta obligación cuando, debido a
+circunstancias específicas de un determinado colectivo, se justifique su imposibilidad de usar medios electrónicos.
+El Título II regula los instrumentos de la transformación digital. En el Capítulo I se regulan las vías de acceso a los
+servicios electrónicos, incluyendo el portal corporativo de la Generalitat, que se establece como el punto de acceso general
+electrónico, los portales institucionales, los específicos, y el Canal Empresa. Se regulan también la creación y los requisitos
+de las sedes electrónicas; en particular, la sede electrónica de la Generalitat (la Sede PROP); la carpeta ciudadana, como un
+espacio digital personalizado que permita a la ciudadanía y a las empresas, según su perfil, acceder de manera centralizada
+y segura a sus datos, documentos y trámites con la Administración; el tablón electrónico único de anuncios de la
+Generalitat y el portal para el personal empleado público, en el que este podrá acceder a información de interés para el
+desempeño de sus funciones.
+Los Capítulos II y III establecen el régimen del Registro electrónico de la Generalitat y las formas de comunicación
+electrónica, como la notificación, las comunicaciones internas y las de carácter informal con la ciudadanía.
+En el Capítulo IV, por primera vez se regula el sistema tramitador corporativo de expedientes administrativos,
+como elemento esencial en la gestión interna administrativa y en la prestación de servicios a través de la carpeta ciudadana.
+Por último, en el Capítulo V se regula el régimen de incidencias y de accesibilidad de todos los instrumentos
+previstos en el Título II.
+El Título III está dedicado a la simplificación en la elaboración de normas y en el procedimiento administrativo
+electrónico.
+El Capítulo I aborda la planificación normativa plurianual y la elaboración de la Memoria del Análisis de Impacto
+Normativo. Asimismo, se regula el contenido del análisis de simplificación administrativa, de coordinación informática y
+de protección de datos, y los informes posteriores que deberán emitir los órganos y las unidades competentes en estas
+materias, tanto en la tramitación de normas, como de bases reguladoras. Finalmente, se establece la obligación de revisar el
+
+
+Núm. 10092 / 22.04.2025 5 / 35
+CVE: DOGV-C-2025-11622 https://dogv.gva.es/
+ordenamiento jurídico a través de la programación e impulso de la Oficina de Simplificación Administrativa y Gobierno del
+Dato, creada a través de la Ley 6/2024, de 5 de diciembre.
+El Capítulo II regula la simplificación procedimental a través de la incorporación en el catálogo de procedimientos
+y servicios administrativos de la Generalitat, como novedad, de la información interna de gestión; el contenido, la forma y
+la obligatoriedad de los formularios y las plantillas normalizadas, y la promoción de la prestación proactiva y personalizada
+de servicios. Por último, establece la obligación de realizar análisis y revisiones continuas de los procedimientos a través de
+la Oficina de Simplificación Administrativa y Gobierno del Dato.
+El Capítulo III establece un marco normativo para la regulación de la identidad y la firma electrónica dentro de la
+Administración de la Generalitat, definiéndose el uso de certificados de firma con pseudónimo, lo que permitirá preservar
+la identidad de las personas empleadas públicas que, por razones de confidencialidad, así lo requieran. 
+El Capítulo IV está dedicado a la implantación de actuaciones administrativas automatizadas, de robotización e
+inteligencia artificial, la responsabilidad de los órganos competentes y los requisitos para la auditoría de dichos sistemas,
+garantizando la transparencia y la seguridad en el uso de tecnologías basadas en inteligencia artificial.
+El Capítulo V regula el régimen del Registro electrónico de representantes, que permitirá la inscripción de los
+apoderamientos otorgados por personas físicas y jurídicas a sus representantes ante la Administración.
+El Título IV regula la gestión integral de documentos y de expedientes electrónicos.
+El Capítulo I define los requisitos para los documentos y expedientes administrativos electrónicos, que deberán
+contar con metadatos para asegurar su identificación y compatibilidad. Los expedientes se organizarán de manera que
+garanticen su integridad y acceso mediante índices autenticados y un código único. Además, se regulan los mecanismos de
+traslado de documentos entre órganos administrativos y hacia las personas interesadas a través de la Sede PROP y medios
+digitales habilitados.
+El Capítulo II establece las normas para la digitalización y emisión de copias auténticas de documentos,
+especificando los sujetos regulados por este decreto que deberán expedir copias electrónicas auténticas. Asimismo, se
+regula la eventual externalización de tareas mecánicas del proceso de digitalización.
+El Capítulo III detalla el sistema de gestión documental, promoviendo la transparencia y adecuada gestión de la
+documentación en todas sus fases.
+Finalmente, en el Capítulo IV, relativo al archivo electrónico de documentos, se dispone la creación de un Archivo
+electrónico único para toda la Administración de la Generalitat. Este archivo centralizado gestionará la custodia de los
+documentos y los expedientes finalizados, asegurando su integridad, autenticidad y accesibilidad, y cumpliendo con
+estándares de seguridad y protección de datos. Este capítulo se ocupa también de la gestión archivística de datos, asegura la
+gestión de datos públicos auténticos y define la creación de instrumentos técnicos para su conservación efectiva.
+El Título V se centra en el Gobierno del Dato e interoperabilidad.
+El Capítulo I establece la organización del Gobierno del Dato a través de la Oficina de Simplificación
+Administrativa y Gobierno del Dato, que tiene la responsabilidad de elaborar planes estratégicos y promover el uso ético de
+los datos en la toma de decisiones. Asimismo, se encarga de impulsar la cultura del dato y de coordinar acciones para
+garantizar la calidad y la seguridad de los datos. Por otro lado, se regula un Modelo de Gobierno del Dato basado en
+criterios de atribución de responsabilidades y respeto a la normativa de protección de datos.
+Por último, se desarrolla el Registro electrónico de información de personas usuarias, que contendrá información
+de identificación de estas y que será común para todos los procedimientos administrativos de la Generalitat.
+El Capítulo II se dedica a la Plataforma Autonómica de Interoperabilidad, que facilita el intercambio de
+información entre administraciones para garantizar el derecho de la ciudadanía a no aportar datos y documentos que obran
+en poder de las administraciones públicas. En este capítulo se establecen los procedimientos de acceso a servicios de
+verificación de datos y se configura un marco para la publicación de nuevos servicios, así como la trazabilidad de los
+intercambios.
+El Título VI, en su Capítulo I, define las normas para la participación electrónica en las sesiones de los órganos
+colegiados, incluyendo la gestión telemática de las sesiones y la grabación de estas.
+El Capítulo II se dedica al establecimiento de un catálogo de sistemas de información y aplicaciones aprobadas.
+Asimismo, se incluyen diez disposiciones adicionales, sobre la aplicación de la norma a la prestación de los
+servicios públicos sanitarios y educativos; sobre la aprobación de guías metodológicas, protocolos, políticas y modelos para
+el cumplimiento de lo dispuesto en el presente decreto; sobre protección de datos, actualización de la información de
+puntos de acceso a la Generalitat, y canales de denuncias, y sobre la incidencia presupuestaria del presente decreto.
+Asimismo, se incluye una disposición transitoria para la implantación progresiva de las medidas tecnológicas y
+
+
+Núm. 10092 / 22.04.2025 6 / 35
+CVE: DOGV-C-2025-11622 https://dogv.gva.es/
+administrativas; una disposición derogatoria y tres disposiciones finales que aseguran la coherencia normativa y la entrada
+en vigor del decreto.
+Finalmente, se incorporan tres anexos con la relación de órganos responsables de los servicios y aplicaciones
+comunes de transformación digital y el contenido común de las declaraciones responsables y comunicaciones.
+Con la aprobación de este decreto, la Generalitat reafirma su compromiso con la innovación y la mejora continua
+de los servicios públicos, adaptándose a las demandas de una sociedad cada vez más digital y conectada. Este decreto nace
+con la vocación de ser una herramienta eficaz para alcanzar una administración más ágil, cercana y eficiente, que responda
+de manera proactiva a las necesidades de la ciudadanía y contribuya al desarrollo sostenible de la Comunitat Valenciana.
+El decreto se adecua a los principios de buena regulación previstos en el artículo 129 de la Ley 39/2015, de 1 de
+octubre. Se cumple el principio de necesidad, puesto que su aprobación es necesaria para dar cobertura jurídica a la
+estrategia de simplificación y transformación digital administrativa de la Generalitat. Por otra parte, cumple el principio de
+proporcionalidad, pues la norma contiene la regulación imprescindible para atender los objetivos que se persiguen, no
+existiendo otras medidas menos restrictivas o que supongan un menor coste y uso de recursos públicos. Se cumple también
+el principio de seguridad jurídica, ya que el contenido del decreto es conforme con el ordenamiento estatal y autonómico en
+la materia. Finalmente, se atiende el principio de eficiencia, toda vez que el objetivo de este decreto es contribuir a la
+simplificación administrativa.
+En virtud de lo expuesto, y de las competencias atribuidas en el Decreto 32/2024, de 21 de noviembre, de la
+Presidencia de la Generalitat, por el que se determinan el número y la denominación de las consellerias y sus atribuciones;
+de acuerdo con lo que establecen los artículos 18.f, 28.c), 33.1 y 43 de la Ley 5/1983, de 30 de diciembre, del Consell; a
+propuesta conjunta del president de la Generalitat, de la consellera de Hacienda y Economía y del conseller de Educación,
+Cultura, Universidades y Empleo, con todos los informes preceptivos solicitados, conforme con el Consell Jurídic
+Consultiu, y con la deliberación previa del Consell, en la reunión del día 15 de abril de 2025,
+DECRETO
+TÍTULO I
+Disposiciones generales
+CAPÍTULO I
+Objeto y ámbito de aplicación
+Artículo 1. Objeto
+El presente decreto tiene por objeto:
+1. Desarrollar la normativa en materia de simplificación administrativa de la Administración y del sector público
+instrumental de la Generalitat, con el fin de mejorar los procesos regulatorios, de gestión y organizativos.
+2. Establecer el régimen jurídico relativo a la transformación digital de la Administración y del sector público
+instrumental de la Generalitat, bajo criterios de simplificación administrativa.
+3. Determinar los responsables funcionales y técnicos de los servicios y las aplicaciones comunes de la
+Administración y del sector público instrumental de la Generalitat establecidos en el Anexo I.
+4. En sus actuaciones en materia de simplificación administrativa y transformación digital, la Administración y el
+sector público instrumental de la Generalitat se regirá por lo dispuesto en el presente decreto y por las disposiciones básicas
+del Real Decreto 203/2021, de 30 de marzo, por el que se aprueba el Reglamento de actuación y funcionamiento del sector
+público por medios electrónicos, así como por la Ley 39/2015, de 1 de octubre, del Procedimiento Administrativo común
+de las Administraciones Públicas, por la Ley 40/2015, de 1 de octubre, de Régimen Jurídico del Sector Público, y el resto
+de la normativa que les resulte de aplicación.
+Artículo 2. Ámbito de aplicación
+1. Este decreto se aplica a la Administración y al sector público instrumental de la Generalitat en los términos
+establecidos en este.
+2. Asimismo, los artículos 8 y 9 se aplican a las instituciones de autogobierno de la Generalitat.
+3. Por último, la presente norma se dirige a las personas físicas y jurídicas en sus relaciones por medios
+electrónicos con la Administración y el sector público instrumental de la Generalitat.
+
+
+Núm. 10092 / 22.04.2025 7 / 35
+CVE: DOGV-C-2025-11622 https://dogv.gva.es/
+CAPÍTULO II
+Principios generales, derechos y deberes de las personas
+Artículo 3. Principios generales
+Las actuaciones administrativas deberán respetar los principios generales previstos en el artículo 3 de la Ley
+6/2024, de 5 de diciembre, de la Generalitat, de simplificación administrativa, en el artículo 3 de la Ley 40/2015, de 1 de
+octubre, particularmente, en el ámbito de las relaciones electrónicas, y en el artículo 2 del Real Decreto 203/2021, de 30 de
+marzo.
+Artículo 4. Derechos y deberes de las personas ante la transformación digital
+1. Los derechos y obligaciones de las personas serán los regulados en la Ley 39/2015, de 1 de octubre, en el Real
+Decreto 203/2021, de 30 de marzo, y en el presente decreto.
+2. La Administración de la Generalitat y el sector público instrumental en el ejercicio de potestades administrativas
+no podrán solicitar a las personas la aportación de datos o documentos que se puedan interoperar o que se encuentren
+disponibles en el Registro electrónico de información de personas usuarias. A estos efectos, la información administrativa
+vinculada a cada procedimiento o servicio incluirá la información respecto del derecho de las personas interesadas a
+oponerse a la consulta de esa información, en virtud del artículo 28 de la Ley 39/2015, de 1 de octubre, o bien, la petición
+de autorización, si así lo prevé una ley especial.
+3. De acuerdo con el artículo 14.3 de la Ley 39/2015, de 1 de octubre, están obligados a relacionarse a través de
+medios electrónicos, los siguientes colectivos:
+a) Las personas que concurran a procesos de selección para el acceso al empleo público como personal funcionario,
+laboral o estatutario; así como las personas que participen en las bolsas de trabajo temporal.
+b) Las personas empleadas públicas, para los trámites y actuaciones que realicen por razón de su condición
+profesional.
+c) Las personas empresarias individuales o autónomas para los trámites y actuaciones que lleven a cabo en el
+ejercicio de su actividad profesional salvo que, excepcionalmente, su normativa reguladora establezca lo contrario.
+d) las personas solicitantes de becas, ayudas o subvenciones, cuando así se establezca en las bases reguladoras, si
+quedase motivado y acreditado que tienen acceso y disponibilidad de los medios electrónicos necesarios.
+CAPÍTULO III
+Gobernanza de la simplificación administrativa y de la transformación digital
+Artículo 5. Implantación y desarrollo de la simplificación administrativa y de la transformación digital
+1. De acuerdo con la normativa en materia de simplificación administrativa, se planificará una estrategia de diseño,
+evaluación y seguimiento de la política de simplificación administrativa y transformación digital de la Generalitat, a través
+de los planes de simplificación administrativa.
+2. Las actuaciones y las iniciativas en materia de simplificación administrativa y de transformación digital previstas
+en este decreto se realizarán en el marco de dicha planificación.
+Artículo 6. Atribución de responsabilidades
+1. Los responsables de las actuaciones que se lleven a cabo en el desarrollo de la estrategia de simplificación
+administrativa y transformación digital serán de dos tipos: funcionales y técnicos.
+Los responsables funcionales serán los encargados de la definición, impulso, gestión y evaluación de las
+actuaciones de la estrategia, mientras que los responsables técnicos garantizarán, dentro de su ámbito de actuación, que los
+desarrollos tecnológicos cumplan con las condiciones y requisitos técnicos y funcionales establecidos.
+2. En el seno de las estructuras organizativas creadas dentro de la Comisión Interdepartamental para la
+Transformación Digital y Simplificación Administrativa de la Comunitat Valenciana (CITSA), se coordinará la ejecución y
+seguimiento de las actuaciones de la estrategia.
+3. El personal empleado público deberá contar con las competencias necesarias en simplificación administrativa y
+transformación digital. Para ello, se llevarán a cabo las siguientes actuaciones:
+a) Definir competencias específicas en esta materia, atendiendo a los diferentes cuerpos y escalas funcionariales o
+grupos profesionales, e introducirlas en los procesos de selección y provisión de personal, previa modificación de las
+normas correspondientes y su negociación con las organizaciones sindicales.
+
+
+Núm. 10092 / 22.04.2025 8 / 35
+CVE: DOGV-C-2025-11622 https://dogv.gva.es/
+b) Incorporar, en los planes y programas de los órganos competentes en materia de formación del personal
+empleado público, objetivos o ámbitos de formación en materia de simplificación administrativa, transformación digital,
+diseño y rediseño de procesos, y lenguaje administrativo claro y sencillo.
+c) Detectar, a través de la Oficina de Simplificación Administrativa y Gobierno del Dato, nuevas necesidades de
+formación de la organización, creada a través de la Ley 6/2024, de 5 de diciembre.
+Artículo 7. Servicios y aplicaciones comunes de transformación digital
+1. Los servicios y las aplicaciones comunes de transformación digital son soluciones informáticas que estandarizan
+y facilitan parte o la totalidad de la gestión electrónica de un procedimiento administrativo o servicio.
+2. En el anexo I de este decreto se establecen los servicios y aplicaciones comunes de transformación digital y sus
+responsables funcionales y técnicos.
+3. Los servicios y aplicaciones comunes de transformación digital serán de uso obligatorio para la Administración
+y los organismos autónomos de la Generalitat. Corresponderá a los responsables funcionales la autorización de su uso por
+parte del sector público instrumental de la Generalitat en el ejercicio de potestades administrativas.
+4. Para el resto de las entidades del sector público instrumental de la Generalitat, excluyendo los consorcios
+sanitarios, con el objetivo de unificar el seguimiento de las actuaciones de dichas entidades en las áreas de personal,
+contratación, tesorería y subvenciones, la contratación del software necesario corresponderá al órgano TIC con
+competencias horizontales.
+Quedarán exentas de esta obligación aquellas entidades que ya dispongan de un sistema que cubra dichas
+actuaciones y garantice el cumplimiento de la legislación aplicable en cada una de esas áreas, siempre que, de los informes
+del órgano competente en materia de control financiero y auditoría, así como de la Sindicatura de Cuentas, no se derive lo
+contrario.
+5. La relación de servicios y aplicaciones comunes recogidos en el anexo I se podrá actualizar mediante una
+resolución de la persona titular del órgano con competencias transversales en transformación digital, que se publicará en el
+Diari Oficial de la Generalitat Valenciana.
+6. Las soluciones informáticas específicas para determinados ámbitos que no formen parte de los servicios y las
+aplicaciones comunes de transformación digital son responsabilidad técnica de los órganos con competencias en
+tecnologías de la información y las comunicaciones (TIC) en dicho ámbito.
+TÍTULO II
+Instrumentos de la transformación digital
+CAPÍTULO I
+Vías de acceso electrónico
+Artículo 8 Puntos de acceso electrónico de la Generalitat
+1. A los efectos del presente decreto, se definen como puntos de acceso electrónico de la Generalitat el conjunto de
+páginas web agrupadas bajo el dominio de internet gva.es, cuyo objetivo es ofrecer a la ciudadanía un acceso fácil e
+integrado a la información, los recursos y los servicios disponibles.
+2. Los puntos de acceso electrónico de la Generalitat son los siguientes:
+a) El portal corporativo de la Generalitat
+b) Los portales institucionales de los departamentos del Consell y de las entidades del sector público instrumental
+de la Generalitat.
+c) Los portales específicos.
+d) Los portales de las instituciones de autogobierno de la Generalitat.
+e) Las apps móviles específicas de la Generalitat.
+f) La sede electrónica de la Generalitat, denominada Sede PROP de la Generalitat.
+g) Otras sedes electrónicas, como las sedes electrónicas asociadas.
+3. Los puntos de acceso electrónico responderán a los principios de veracidad, transparencia, publicidad, calidad,
+seguridad, disponibilidad, accesibilidad, neutralidad, interoperabilidad y actualización de la información y de los servicios a
+los que den acceso. Además, dispondrán de las medidas de seguridad y accesibilidad necesarias en cumplimiento de la
+normativa y de las directrices establecidas por sus responsables funcionales.
+
+
+Núm. 10092 / 22.04.2025 9 / 35
+CVE: DOGV-C-2025-11622 https://dogv.gva.es/
+Asimismo, deberán respetar las normas que regulen la presencia en internet de la Generalitat, y lo establecido en
+materia de identidad corporativa.
+4. El órgano directivo con competencias en materia de simplificación administrativa es el responsable del gobierno
+de los puntos de acceso y le corresponde el impulso y la coordinación de aquellas actuaciones que sean comunes a estos,
+sin perjuicio de las responsabilidades individuales sobre cada tipo de punto de acceso establecidas en el anexo I.
+5. Los departamentos del Consell, las entidades del sector público instrumental y las instituciones de autogobierno
+de la Generalitat son los responsables de la integridad, veracidad y actualización de los contenidos de su competencia que
+se publiquen en los puntos de acceso electrónico de la Generalitat, y atenderán los criterios de diseño, accesibilidad,
+lenguaje claro, directrices y contenido determinados por los responsables funcionales establecidos en el anexo I.
+6. Las condiciones de uso relativas a la seguridad, privacidad, protección de datos, propiedad intelectual y
+reutilización serán claramente visibles en los puntos de acceso electrónico.
+7. La Generalitat no será responsable de:
+a) La información ofrecida en sus portales que se haya obtenido o enlazado de fuentes externas que no dependan de
+ella.
+b) Las opiniones publicadas en sus redes sociales, foros, chats y otros espacios virtuales puestos a disposición de la
+ciudadanía.
+8. A falta de otra especificación, la información, los recursos y los servicios disponibles a través de los puntos de
+acceso electrónico de la Generalitat no originarán derechos ni expectativas de derecho y, en ningún caso, podrán lesionar
+derechos ni intereses legítimos.
+Artículo 9. El Portal corporativo de la Generalitat
+1. El Portal corporativo de la Generalitat será su Punto de Acceso General Electrónico, cuya titularidad
+corresponde a la Generalitat y su dirección electrónica es www.gva.es.
+2. El Portal corporativo permitirá el acceso, al menos, a la siguiente información, recursos y servicios de forma
+sistemática, clara e intuitiva:
+a) Portales institucionales de los departamentos del Consell y de las entidades del sector público instrumental.
+b) Portales de las instituciones de autogobierno de la Generalitat.
+c) Portales específicos.
+d) Apps móviles específicas.
+e) Sede PROP de la Generalitat.
+f) Información institucional de la Generalitat.
+g) Actualidad, servicios y procedimientos administrativos, clasificados por temas.
+h) Información sujeta a publicidad activa, datos abiertos y participación ciudadana a través de los enlaces a
+gvaoberta y gvaparticipa.
+i) Diari Oficial de la Generalitat Valenciana.
+j) Tablón Electrónico Único de anuncios electrónicos de la Generalitat.
+k) Carpeta ciudadana de la Generalitat.
+3. El Portal corporativo también podrá proporcionar acceso a servicios e informaciones de otras administraciones.
+Artículo 10. Portales institucionales de los departamentos del Consell y de las entidades del sector público
+instrumental.
+1. Los departamentos del Consell y los entes del sector público instrumental de la Generalitat podrán disponer de
+un portal de internet propio. Estos portales darán acceso a información institucional de su competencia, que no deba estar
+integrada en el portal corporativo de la Generalitat, debido a su especificidad o especiales características.
+Las subsecretarías de los departamentos del Consell, salvo que sus reglamentos orgánicos y funcionales
+establezcan otros órganos distintos, y los órganos equivalentes de las entidades del sector público instrumental serán los
+responsables funcionales de los portales institucionales, sin perjuicio de la responsabilidad de los órganos superiores y
+directivos respecto del contenido de la información que publiquen en el ámbito de sus competencias.
+2. La creación o supresión de los portales institucionales deberá llevarse a cabo previa validación de los órganos
+con competencias en simplificación administrativa y en comunicación e imagen institucional, emitida a petición del
+responsable funcional.
+
+
+Núm. 10092 / 22.04.2025 10 / 35
+CVE: DOGV-C-2025-11622 https://dogv.gva.es/
+Artículo 11. Portales específicos
+1. Con carácter excepcional, los departamentos del Consell y los entes del sector público instrumental de la
+Generalitat podrán crear portales específicos para difundir información relativa a competencias o materias propias que lo
+requieran. Su creación y supresión responderá a criterios de racionalidad, eficiencia y proximidad a las personas.
+2. Estos portales serán accesibles a través del Portal corporativo de la Generalitat.
+3. La creación o la supresión de estos portales deberá llevarse a cabo previa validación por parte de los órganos con
+competencias en simplificación administrativa y en comunicación e imagen institucional, emitida a petición del responsable
+funcional.
+Artículo 12. Canal Empresa
+1. El Canal Empresa es el portal de internet específico de la Generalitat que, de acuerdo con lo establecido en la
+normativa reguladora en materia de simplificación administrativa de la Generalitat, unifica la información sobre la
+actualidad, servicios y procedimientos destinados a las personas titulares de actividades económicas y a las personas
+emprendedoras, con la finalidad de optimizar su comunicación e interacción con la Generalitat.
+2. De acuerdo con los planes de simplificación administrativa y transformación digital, el Canal Empresa ofrecerá,
+al menos:
+a) Servicios de tramitación guiada de trámites y procedimientos.
+b) Servicios de tramitación unificada de los trámites y los procedimientos necesarios para la puesta en marcha y el
+ejercicio de actividades económicas, de manera que las personas interesadas aporten los datos y los documentos una única
+vez.
+3. Asimismo, de conformidad con lo establecido en los citados planes, el Canal Empresa integrará la información
+sobre los servicios y los procedimientos competencia de las entidades locales de la Comunitat Valenciana.
+4. Los órganos competentes de los distintos procedimientos y áreas de actividad del Canal Empresa serán los
+responsables de la integridad, la veracidad y la actualización de los contenidos correspondientes a sus ámbitos de
+competencia.
+Artículo 13. Apps móviles específicas
+1. Con carácter excepcional, los departamentos del Consell y los entes del sector público instrumental de la
+Generalitat podrán crear apps móviles específicas para difundir información relativa a competencias o materias propias que
+lo requieran. Su creación y supresión responderá a criterios de racionalidad, eficiencia y proximidad a las personas.
+2. En el ámbito de la Administración y organismos autónomos de la Generalitat estas apps móviles serán
+desarrolladas por los órganos con competencias TIC y estarán disponibles en las tiendas de aplicaciones de las distintas
+plataformas móviles existentes de manera gratuita.
+3. La creación o supresión de apps deberá llevarse a cabo previa validación por parte de los órganos con
+competencias en simplificación administrativa y en comunicación e imagen institucional, emitida a petición del responsable
+funcional.
+Artículo 14. Régimen de las sedes electrónicas
+1. Todas las actuaciones por medios electrónicos que requieran la identificación o la firma de las personas
+interesadas en un procedimiento administrativo tendrán lugar, con carácter general, en una sede electrónica.
+2. Los contenidos y servicios mínimos de las sedes electrónicas serán los determinados en el artículo 11 del Real
+Decreto 203/2021, de 30 de marzo.
+3. El acceso a las sedes electrónicas será gratuito y estará disponible de forma permanente. Asimismo, será
+compatible con los estándares abiertos y de uso generalizado.
+4. Las sedes electrónicas garantizarán la disponibilidad, la autenticidad, la integridad y la confidencialidad de la
+información, conforme a lo establecido en el Esquema Nacional de Seguridad y el Esquema Nacional de Interoperabilidad.
+5. Los puntos de acceso electrónico que tengan la condición de sede electrónica deberán hacerlo constar de forma
+visible e inequívoca.
+6. Las sedes dispondrán de los medios necesarios para que las personas conozcan si la información o el servicio al
+que accede corresponde a la propia sede, a una sede de otra administración o a un punto de acceso que no tiene el carácter
+de sede electrónica.
+7. La Administración y las entidades del sector público instrumental de la Generalitat podrán crear sedes asociadas
+a la sede electrónica de la Generalitat, Sede PROP.
+
+
+Núm. 10092 / 22.04.2025 11 / 35
+CVE: DOGV-C-2025-11622 https://dogv.gva.es/
+Artículo 15. Sede PROP de la Generalitat
+1. La Sede PROP es el espacio en el que se realizan las actuaciones y los trámites referidos a los servicios y a los
+procedimientos administrativos de la Generalitat que requieran la identificación de la Generalitat y, en su caso, la
+identificación o la firma electrónica de las personas interesadas. Asimismo, podrán ofrecer otros servicios por razones de
+eficacia, eficiencia y calidad en la prestación de los servicios públicos.
+2. La titularidad de la Sede PROP corresponde a la Generalitat y es accesible a través de la siguiente dirección
+electrónica: https://sede.gva.es
+3. La Sede PROP de la Generalitat dispondrá de todos los contenidos y los servicios mínimos requeridos por la
+normativa básica para las sedes electrónicas, así como el acceso a:
+a) La relación de sedes electrónicas creadas por la Generalitat.
+b) El Registro electrónico de representantes de la Generalitat.
+c) La carpeta ciudadana de la Generalitat.
+d) El módulo de notificaciones de la Generalitat.
+e) Los servicios de verificación de datos ofrecidos a través de la Plataforma Autonómica de Interoperabilidad.
+f) La pasarela de pagos electrónicos de la Generalitat.
+g) El Diari Oficial de la Generalitat Valenciana.
+h) El Tablón Electrónico Único de Anuncios de la Generalitat.
+i) La información que la normativa establezca.
+Artículo 16. Sedes electrónicas asociadas de la Generalitat
+1. Con arreglo a los principios de eficacia y eficiencia en la prestación de servicios, y conforme a criterios de
+especialización, se podrán crear o suprimir sedes asociadas para el ámbito de un departamento del Consell o entidad del
+sector público instrumental. La creación o la supresión se realizará mediante orden de la persona titular del departamento al
+que corresponda la sede, o resolución de la persona equivalente de la entidad del sector público instrumental, previo
+informe favorable del responsable funcional de la Sede PROP junto con el órgano competente en materia de simplificación
+administrativa, de acuerdo con lo dispuesto en el anexo I de este decreto.
+2. En caso de que la Sede PROP contenga un enlace o vínculo a otra sede, será el titular de esta última el
+responsable de la integridad, la veracidad y la actualización de la información o procedimientos que figuren en la misma.
+Artículo 17. Carpeta ciudadana de la Generalitat
+1. La carpeta ciudadana de la Generalitat es una zona privada de relación electrónica cuya finalidad es facilitar el
+ejercicio de los derechos de la ciudadanía con la Administración y los organismos autónomos de la Generalitat. Desde la
+carpeta ciudadana de la Generalitat será visible la información de las carpetas ciudadanas del resto de los entes del sector
+público instrumental de la Generalitat en el ejercicio de potestades administrativas.
+2. El acceso a la carpeta ciudadana diferenciará, al menos, entre los perfiles de persona física, persona jurídica o
+representante.
+3. Los puntos de acceso electrónico de la Generalitat tendrán acceso a la carpeta ciudadana.
+4. El acceso a la carpeta ciudadana se llevará a cabo mediante la identificación de la persona interesada y
+dispondrá, al menos, de:
+a) La consulta del estado de tramitación y, en su caso, el acceso al contenido de los expedientes de los
+procedimientos administrativos.
+b) La consulta de solicitudes o escritos presentados ante el Registro electrónico de la Generalitat.
+c) El acceso a las notificaciones electrónicas y a las comunicaciones que se determinen.
+d) El acceso a su información disponible en el Registro electrónico de información de personas usuarias.
+e) El repositorio personal de documentación que es solicitada reiteradamente por la Administración, para que
+pueda ser incorporada y acompañada de forma ágil a los procedimientos administrativos.
+f) El acceso a certificados, tarjetas y carnés expedidos por la Administración y los organismos autónomos de la
+Generalitat y que tendrán la consideración de copia electrónica auténtica.
+g) Cualquier otra información que se estime de utilidad para mejorar la prestación de los servicios públicos
+competencia de la Generalitat.
+
+
+Núm. 10092 / 22.04.2025 12 / 35
+CVE: DOGV-C-2025-11622 https://dogv.gva.es/
+Artículo 18. Tablón Electrónico Único de Anuncios de la Generalitat
+1. El Tablón Electrónico Único de Anuncios de la Generalitat (TEUA) tiene como fin unificar la publicación de
+actos administrativos y comunicaciones que deban difundirse electrónicamente. El TEUA será accesible desde la Sede
+PROP.
+2. El uso del TEUA será obligatorio, excepto en los siguientes casos:
+a) Cuando las normas específicas exijan la publicación de actos administrativos y comunicaciones en los diarios
+oficiales.
+b) Cuando concurran circunstancias excepcionales que justifiquen su difusión mediante otros medios.
+3. El TEUA dispondrá de secciones con distintos niveles de difusión, en atención a la finalidad de la publicación.
+4. Los actos administrativos y las comunicaciones se mantendrán publicados durante el plazo que determine el
+órgano competente que lo haya emitido, de conformidad con el régimen jurídico aplicable. El TEUA generará evidencias
+electrónicas que permitan constatar la fecha y la hora de publicación y de retirada de los actos y las comunicaciones, a
+efectos de garantizar los derechos de la ciudadanía.
+5. La responsabilidad del contenido de cada acto administrativo o comunicación que se publique en el TEUA
+corresponderá al órgano que lo haya emitido, sin perjuicio de la responsabilidad funcional y técnica del Tablón prevista en
+el anexo I.
+6. Los actos administrativos y comunicaciones que se publiquen en el TEUA deberán respetar las exigencias de
+integridad, autenticidad, disponibilidad, accesibilidad y los principios de protección de datos, especialmente los de
+minimización y conservación.
+Artículo 19. Portal para el personal empleado público
+1. El personal empleado público dispondrá de un portal de intranet (Funcion@GVA) que le deberá proveer de
+información y servicios de interés.
+2. Este portal se compondrá de espacios con información profesional especializada, como la siguiente:
+a) Información laboral.
+b) Instrucciones, guías, manuales y otro tipo de material para la formación.
+c) Información sobre aplicaciones y herramientas.
+d) Información sobre protección de datos, ciberseguridad e indicadores.
+e) El Sistema Interno de Información de la Administración de la Generalitat (SII-GVA), previsto en la normativa
+reguladora de la protección de las personas que informen sobre infracciones normativas y de lucha contra la corrupción.
+f) Información en materia de igualdad entre mujeres y hombres.
+g) Novedades de interés.
+3. Con carácter excepcional, se podrán crear portales de intranet específicos para difundir información relativa a
+colectivos de personal empleado público que lo requieran.
+4. El acceso a estos portales de intranet específicos se realizará a través del portal Funcion@GVA.
+5. La creación o supresión de estos portales deberá llevarse a cabo previa validación por parte de los órganos con
+competencias en simplificación administrativa y en comunicación e imagen institucional.
+CAPÍTULO II
+Registro electrónico de la Generalitat
+Artículo 20. Registro electrónico de la Generalitat
+1. El Registro electrónico de la Generalitat es único para la Administración y los organismos autónomos de la
+Generalitat y accesible a través de los procedimientos y servicios disponibles en la Sede PROP.
+2. El Registro electrónico recogerá el apunte de entrada de las solicitudes, comunicaciones y escritos presentados o
+recibidos que se anotarán respetando el orden temporal de su recepción, indicando la fecha y hora; asimismo, se anotarán
+los documentos que deban ser notificados.
+3. El Registro electrónico estará disponible todos los días del año, durante las veinticuatro horas del día, sin
+perjuicio de las interrupciones necesarias por razones técnicas, de las que se informará en la Sede PROP.
+4. El Registro electrónico será plenamente interoperable, de modo que se garantice su compatibilidad informática e
+interconexión con los registros de las restantes administraciones públicas, así como la transmisión telemática y segura de
+los apuntes registrales y de los documentos que se presenten junto a ellos.
+
+
+Núm. 10092 / 22.04.2025 13 / 35
+CVE: DOGV-C-2025-11622 https://dogv.gva.es/
+5. Las personas interesadas serán responsables de los elementos necesarios para su autenticación en el acceso al
+Registro electrónico de la Generalitat, de la conexión precisa y de la utilización de la firma electrónica, así como de las
+consecuencias que pudieran derivarse de su uso indebido, incorrecto y negligente.
+Artículo 21. Presentación de documentos e información en el Registro electrónico
+1. Todas las personas físicas y jurídicas podrán presentar sus solicitudes, comunicaciones y escritos ante el
+Registro electrónico de la Generalitat.
+2. Sin perjuicio de lo dispuesto en el artículo 16.4 de la Ley 39/2015, de 1 de octubre, las personas no obligadas a
+relacionarse por medios electrónicos también podrán presentar solicitudes, escritos y comunicaciones de la siguiente
+manera:
+a) Presencialmente, en las oficinas de asistencia en materia de registros, donde el personal funcionario habilitado
+procederá a digitalizar los documentos presentados y a devolverlos a la persona interesada, junto con el justificante de la
+presentación, sin perjuicio de aquellos supuestos en que la norma determine la custodia por la Administración de los
+documentos presentados o resulte obligatoria la presentación de objetos o de documentos en un soporte específico no
+susceptibles de digitalización.
+b) Mediante sistemas de atención en remoto, donde serán asistidas a distancia por el personal funcionario
+habilitado.
+3. En la presentación por medios electrónicos, la firma por parte de la persona interesada o su representante una
+vez finalizado el trámite de presentación de solicitudes y escritos será suficiente para garantizar la integridad y no repudio
+de toda la documentación adjunta.
+4. El Registro electrónico no permitirá la presentación cuando se dé alguna de las siguientes circunstancias:
+a) No conste el nombre y apellidos o la denominación o razón social de la persona interesada o de quien la
+represente.
+b) No conste el número del Documento Nacional de Identidad o documento identificativo equivalente de la persona
+interesada o de quien la represente, salvo que lo permita el trámite o procedimiento en base a circunstancias especiales. 
+c) No conste la firma, cuando sea obligatoria, de acuerdo con lo dispuesto en la legislación básica.
+d) No se dirija a órganos de cualquier Administración Pública o de las entidades de derecho público vinculadas o
+dependientes de ellas.
+e) Los documentos electrónicos que se presenten contengan código malicioso o un dispositivo que pueda afectar la
+integridad o seguridad de los sistemas, en cuyo caso, se informará de tal circunstancia a la persona interesada.
+f) No se hayan cumplimentado los campos requeridos según la norma, o la información contenida presente
+incongruencias u omisiones que impidan su tratamiento.
+g) Cuando se presente alguno de los siguientes documentos, cuyo registro no resulta posible:
+1.º Los paquetes u objetos que se adjunten al escrito, salvo lo establecido en el apartado 2.a).
+2.º Los documentos de carácter exclusivamente personal dirigidos a las personas empleadas públicas por razón
+distinta a su condición laboral.
+3.º Los documentos que tengan carácter publicitario o análogo.
+4.º Las comunicaciones por fax o correo electrónico, salvo las que tengan la consideración de trámite en un
+procedimiento administrativo porque el procedimiento así lo establezca y no exija que el documento sea original.
+h) Los documentos que superen las limitaciones de tamaño o de otra índole establecidas para los instrumentos
+informáticos y vías de comunicación existentes, salvo que el procedimiento o el órgano responsable del procedimiento
+permita la presentación presencial en soporte digital.
+Artículo 22. Justificante de presentación en el Registro electrónico
+En el momento de presentación de la solicitud, la comunicación o el escrito que corresponda, se expedirá un
+justificante acreditativo de presentación firmado por el órgano responsable funcional del Registro, que contendrá:
+1. Fecha y hora de presentación.
+2. Número de registro de entrada.
+3. Enumeración y denominación de los documentos que, en su caso, acompañen y se adjunten al documento
+presentado, seguida de la huella electrónica de cada uno de ellos.
+4. Código de identificación del órgano al que se dirige el escrito, la comunicación o la solicitud presentada.
+5. Copia del escrito, la solicitud o la comunicación de que se trate, en el caso de presentación por medios
+electrónicos.
+
+
+Núm. 10092 / 22.04.2025 14 / 35
+CVE: DOGV-C-2025-11622 https://dogv.gva.es/
+CAPÍTULO III
+Formas de comunicación
+Artículo 23. Notificación electrónica
+1. Las notificaciones y comunicaciones electrónicas de carácter administrativo serán accesibles desde la Sede
+PROP de la Generalitat, así como mediante el acceso a la Dirección Electrónica Habilitada Única (DEHú) de la
+Administración General del Estado.
+2. Toda notificación electrónica tendrá un apunte registral de salida en el Registro electrónico de la Generalitat.
+3. El sistema deberá permitir dejar constancia del momento en que la notificación electrónica es puesta a
+disposición y del momento en que se ha accedido a su contenido.
+4. Toda notificación electrónica llevará adjunto el documento a notificar.
+5. Las personas interesadas podrán indicar en los formularios asociados a los procedimientos administrativos o en
+la carpeta ciudadana, una dirección de correo electrónico o un dispositivo electrónico en el que recibir los avisos de las
+notificaciones electrónicas.
+6. Las notificaciones entre cualquiera de los sujetos de la Administración y del sector público instrumental de la
+Generalitat solo serán posibles cuando los destinatarios tengan la condición de entidad interesada en el procedimiento. En
+el resto de los casos la relación tendrá la naturaleza de comunicación entre administraciones públicas.
+7. En la sede electrónica de la Generalitat se publicarán las direcciones de correo electrónico corporativas de los
+sujetos de la Administración y del sector público instrumental de la Generalitat a los únicos efectos de recepción del aviso
+de sus notificaciones electrónicas.
+Artículo 24. Comunicaciones internas
+1. Los escritos y las comunicaciones entre órganos y unidades administrativas no se anotarán en el Registro
+electrónico de la Generalitat, salvo que vayan a surtir efectos en un procedimiento administrativo.
+2. La valija electrónica, como herramienta de intercambio de documentos electrónicos para las comunicaciones
+internas, incluirá la relación de las comunicaciones internas en aquellos casos en los que el intercambio no esté implantado
+en un sistema gestor de expedientes.
+Artículo 25. Comunicaciones de carácter informal con la ciudadanía
+1. Se consideran comunicaciones de carácter informal aquellas que tengan por objeto el intercambio de
+información, sin que generen efecto jurídico alguno ni requieran necesariamente acreditación especial de la identidad ni de
+autenticación.
+2. Las comunicaciones informales podrán adoptar la siguiente forma:
+a) Correo electrónico o teléfono.
+b) Formularios web de contacto y buzones a la ciudadanía.
+c) Información accesible a través de sistemas de almacenamiento de datos en la nube.
+d) Redes sociales, perfiles, sistemas de mensajería electrónica de tipo individual o social o colectivo.
+e) Otras comunicaciones informales, como videollamadas, chats de texto o voz, que no constituyan un servicio de
+tramitación regulado.
+CAPÍTULO IV
+Sistema tramitador corporativo de expedientes administrativos
+Artículo 26. Sistema tramitador corporativo de expedientes administrativos
+1. Los procedimientos de la Administración de la Generalitat y de los organismos autónomos se gestionarán con el
+sistema tramitador corporativo de expedientes administrativos, sin perjuicio de la utilización de otros sistemas gestores de
+expedientes para aquellos procedimientos que, por presentar peculiaridades en su gestión, así se aconseje.
+2. El órgano con competencias en simplificación administrativa definirá flujos genéricos de tramitación de
+procedimientos para garantizar la homogeneización de las distintas fases del procedimiento y su consolidación en la carpeta
+ciudadana.
+3. El sistema tramitador corporativo de expedientes administrativos implantará dichos flujos genéricos y
+posibilitará que sean las personas responsables de la tramitación las que definan sus procedimientos.
+
+
+Núm. 10092 / 22.04.2025 15 / 35
+CVE: DOGV-C-2025-11622 https://dogv.gva.es/
+4. Aquellos expedientes que, debido a sus características especiales, dificultad o volumen lo requieran, podrán ser
+objeto de parametrización y desarrollo informático por parte del órgano con competencias TIC de su ámbito.
+5. Los órganos tramitadores de los procedimientos estarán obligados a llevar a cabo la tramitación en todas sus
+fases, en el seno de un sistema gestor de expedientes, y a consolidar en la carpeta ciudadana, a través de los citados
+sistemas gestores, las fases que correspondan.
+6. En el entorno de la tramitación de un expediente, todas las peticiones que se hagan entre los órganos
+competentes se guardarán en el sistema gestor de expedientes, pudiéndose consultar la evidencia de la fecha de la petición y
+de la respuesta.
+CAPÍTULO V
+Reglas comunes a todos los instrumentos
+Artículo 27. Incidencias técnicas
+1. Cuando por motivos técnicos se prevea que alguno de los instrumentos y sistemas regulados en este título no
+vaya a estar operativo para las personas interesadas, se informará de ello en la Sede PROP la Generalitat.
+2. Cuando una incidencia imposibilite el funcionamiento de las sedes electrónicas o del Registro electrónico
+general de la Generalitat, se podrán ampliar los plazos no vencidos mediante resolución expresa de la persona titular del
+órgano competente para dictar el acto objeto del procedimiento, previo informe del responsable técnico correspondiente. En
+la Sede PROP se publicará la incidencia técnica y la ampliación del plazo, en los términos establecidos en la normativa
+básica.
+3. En el caso del Registro electrónico de la Generalitat, la no emisión del correspondiente justificante de
+presentación en el Registro o la recepción de un mensaje que indique error o deficiencia en la transmisión electrónica
+implica que no se ha producido la recepción y que, por tanto, no se ha producido el registro.
+Artículo 28. Accesibilidad
+1. Con la finalidad de garantizar la igualdad y la no discriminación en el acceso de las personas usuarias, los sitios
+web y las aplicaciones para dispositivos móviles de la Generalitat aplicarán los principios y técnicas de accesibilidad
+previstos en la normativa básica estatal.
+2. En el ámbito competencial de la Generalitat, la responsabilidad de la accesibilidad corresponderá al órgano que,
+a tal efecto, consta en el anexo I del presente decreto.
+3. Dicho órgano tendrá la consideración de Unidad Responsable de Accesibilidad (URA) y asumirá las funciones
+propias que este decreto asigna a los responsables funcionales, así como las que establezca la normativa básica estatal y
+autonómica en materia de accesibilidad universal.
+TÍTULO III
+Simplificación en la elaboración de normas y en el procedimiento administrativo electrónico
+CAPÍTULO I
+Simplificación normativa
+Artículo 29. Planificación normativa plurianual y evaluación
+1. Durante el primer trimestre de cada año, se publicará en el Portal de Transparencia de la Generalitat el Plan
+normativo anual aprobado por el Consell para dicho periodo. El Plan contendrá las iniciativas legislativas o reglamentarias
+que se prevea aprobar o tramitar a lo largo del año.
+2. De forma previa, el Plan será puesto en conocimiento de la CITSA, a través del grupo de trabajo que se
+constituya en el seno de su comisión técnica en materia de simplificación normativa.
+3. La elaboración del Plan se llevará a cabo por la Presidencia de la Generalitat a partir de las propuestas remitidas
+por cada uno de los departamentos del Consell, con objeto de asegurar la congruencia de las iniciativas que se tramiten y
+evitar sucesivas modificaciones del régimen legal aplicable a un determinado sector o área de actividad en un corto espacio
+de tiempo.
+4. En el caso de tramitación de propuestas normativas no incluidas en el Plan normativo anual, su necesidad deberá
+justificarse adecuadamente en la Memoria del Análisis de Impacto Normativo (MAIN).
+
+
+Núm. 10092 / 22.04.2025 16 / 35
+CVE: DOGV-C-2025-11622 https://dogv.gva.es/
+5. Los departamentos del Consell deberán evaluar previamente al inicio de su tramitación, los resultados esperados
+de la aplicación de las iniciativas que les correspondan, a través de sus gabinetes técnicos, de acuerdo con la metodología
+de seguimiento descrita en la MAIN.
+6. La valoración del cumplimiento de las normas, según los plazos establecidos en sus MAIN, se publicará en los
+sucesivos planes normativos anuales. La evaluación de los resultados de las normas habrá de indicar si se han alcanzado los
+objetivos propuestos y si estaba justificado el coste y las cargas impuestas.
+Artículo 30. Memoria del Análisis de Impacto Normativo
+1. La Memoria del Análisis de Impacto Normativo (MAIN) recogerá y unificará toda la información que deberá
+acompañar a las propuestas normativas para justificar su oportunidad y necesidad, realizar la estimación de los impactos
+que tendrá su aprobación en diferentes ámbitos, y describir la metodología para su evaluación posterior.
+2. La MAIN se elaborará en formato electrónico y se integrará en una aplicación para la tramitación de la
+normativa, de manera que sea accesible por todos los órganos e instituciones que deban emitir informe en el procedimiento
+de tramitación de la norma. 
+3. De acuerdo con lo dispuesto en la Ley 6/2024, de 5 de diciembre, la Guía metodológica para la redacción de la
+MAIN determinará su contenido, así como el de su versión abreviada.
+4. La MAIN abreviada se aplicará cuando la norma no tenga un impacto apreciable. Se considerará que no existe
+un impacto apreciable cuando se trate de normas organizativas o de modificaciones parciales de normas reglamentarias
+cuyos impactos económicos, sociales y sobre las cargas administrativas no sean significativos, lo que se deberá justificar en
+la propia memoria.
+5. La Guía metodológica para la redacción de la MAIN deberá ser objeto de revisión periódica para optimizar la
+calidad de la información y documentación que debe acompañar a los proyectos normativos.
+Artículo 31. Análisis e informe de simplificación administrativa
+1. La MAIN recogerá un análisis de simplificación administrativa en la tramitación de aquellos anteproyectos de
+Ley, proyectos normativos con fuerza de ley o proyectos de reglamento que prevean la regulación de un procedimiento
+administrativo o la creación de órganos colegiados.
+2. Asimismo, en la tramitación de las bases reguladoras de ayudas que no tengan contenido normativo, el órgano
+competente para su elaboración realizará un análisis de simplificación administrativa.
+3. El análisis de simplificación administrativa deberá recoger, como mínimo, la siguiente información:
+a) Características generales del procedimiento.
+b) Justificación del régimen de intervención.
+c) Criterios para establecer el plazo de resolución y las renovaciones, en su caso.
+d) Justificación del sentido del silencio administrativo en el caso de que sea desestimatorio.
+e) Relación de documentos o datos solicitados a las personas físicas y jurídicas para tramitar el procedimiento y la
+justificación de su necesidad.
+f) Relación de trámites y medidas de simplificación aplicadas en estos.
+g) Medidas de coordinación de los distintos órganos implicados en la tramitación, en su caso.
+h) Si se crean órganos, justificación de no duplicidad de funciones con órganos ya existentes.
+i) Uso de un lenguaje administrativo claro y sencillo.
+j) En el caso de que las bases reguladoras impongan la obligación de relación por medios electrónicos de las
+personas solicitantes de becas, ayudas o subvenciones, la motivación y acreditación de que tienen acceso y disponibilidad
+de los medios electrónicos necesarios.
+4. El órgano competente en materia de simplificación administrativa emitirá informe preceptivo en relación con el
+análisis de simplificación administrativa, en el que valorará el diseño funcional de los procedimientos administrativos, la
+inexistencia de duplicidades en la creación de órganos y la reducción de cargas administrativas.
+Artículo 32. Análisis e informe de coordinación informática
+1. La MAIN recogerá un análisis de coordinación informática en la tramitación de los anteproyectos de Ley,
+proyectos normativos con fuerza de ley y proyectos de reglamento.
+2. Asimismo, en la tramitación de las bases reguladoras de ayudas que no tengan contenido normativo, el órgano
+de la conselleria o del organismo autónomo competente para su elaboración realizará un análisis de coordinación
+informática.
+3. El análisis de coordinación informática deberá recoger, como mínimo, la siguiente información:
+a) Volumen de expedientes.
+b) Volumen medio de documentos por expediente.
+
+
+Núm. 10092 / 22.04.2025 17 / 35
+CVE: DOGV-C-2025-11622 https://dogv.gva.es/
+c) Identificación de medios electrónicos necesarios.
+d) Plazo en que deben estar disponibles los medios electrónicos.
+4. A partir del análisis de coordinación informática, se emitirá informe preceptivo sobre las consecuencias
+informáticas que supondrá la aprobación de la disposición o el acto administrativo.  El informe será emitido por:
+a) Los órganos directivos responsables funcional y técnico cuando el proyecto de norma o acto administrativo
+comporte impacto tecnológico que afecte o pueda afectar a alguna de las aplicaciones de uso común recogidas en el anexo
+I.
+b) Los órganos directivos con competencias TIC cuando el proyecto de norma o acto administrativo comporte un
+impacto tecnológico que afecte o pueda afectar a aplicaciones propias de su ámbito.
+Artículo 33. Análisis e informe de protección de datos
+1. La MAIN recogerá un análisis de protección de datos en la tramitación de aquellos anteproyectos de Ley,
+proyectos normativos con fuerza de ley o proyectos de reglamento que prevean la regulación de tratamientos de datos de
+carácter personal.
+2. Asimismo, en la tramitación de las bases reguladoras de ayudas que no tengan contenido normativo, el órgano
+competente para su elaboración realizará un análisis de protección de datos.
+3. El análisis de protección de datos deberá recoger, como mínimo, la siguiente información:
+a) Identificación del tratamiento de datos efectuado y su finalidad.
+b) Descripción del tratamiento.
+c) Órgano competente por razón de la materia que actuará como responsable del tratamiento.
+d) Base de licitud del tratamiento, de conformidad con lo establecido en el artículo 6 del Reglamento (UE)
+2016/679 del Parlamento Europeo y del Consejo, de 27 de abril de 2016, relativo a la protección de las personas físicas en
+lo que respecta al tratamiento de datos personales y a la libre circulación de estos datos y por el que se deroga la Directiva
+95/46/CE. En el caso de que se produzcan tratamientos de categoría especiales de datos, circunstancias habilitantes
+conforme al artículo 9 del Reglamento (UE) 2016/679.
+e) Normas y preceptos específicos que legitiman el tratamiento de datos personales.
+f) Categorías o colectivos de personas interesadas o afectadas, especificando si alguna categoría o colectivo
+presenta una condición de especial vulnerabilidad, en particular menores, o que afecten a un gran número de personas
+g) Categorías de datos personales que se prevé tratar.
+h) Alcance del tratamiento, en especial en cuanto a sus plazos de conservación.
+i) Comunicaciones o cesiones de datos previstas.
+j) Posibilidad de que se realicen transferencias internacionales de datos.
+k) Medidas adecuadas y específicas previstas para proteger los intereses y derechos fundamentales de las personas
+interesadas.
+l) En el supuesto de normas con rango de ley, previsión de limitaciones para el ejercicio de alguno de los derechos
+regulados en el Capítulo III del Reglamento (UE) 2016/679 y análisis de cumplimiento de los requisitos establecidos en el
+artículo 23 del citado Reglamento.
+4. En base al análisis de protección de datos, la Delegación de Protección de Datos de la Generalitat emitirá
+informe en el ámbito de sus funciones.
+Artículo 34. Revisión del ordenamiento jurídico
+El órgano competente en materia de simplificación administrativa programará, impulsará y realizará, junto con los
+órganos competentes según la materia, revisiones continuas del ordenamiento jurídico para adaptar las normas a los
+criterios de simplificación.
+CAPÍTULO II
+Simplificación del procedimiento electrónico
+Artículo 35. Catálogo de procedimientos y servicios administrativos de la Generalitat
+1. El Catálogo de procedimientos y servicios administrativos de la Generalitat contiene información general
+permanente, clasificada, estructurada y actualizada de los procedimientos y servicios administrativos que se ofrecen, así
+como los de carácter interno. La información del Catálogo estará disponible a través de la Sede PROP, a excepción de los
+procedimientos de carácter interno y la información de gestión asociada a todos los procedimientos.
+2. El Catálogo recoge toda la información requerida por la normativa autonómica reguladora de la atención a la
+ciudadanía, e interoperará con el Sistema de Información Administrativa de la Administración General del Estado (SIA).
+
+
+Núm. 10092 / 22.04.2025 18 / 35
+CVE: DOGV-C-2025-11622 https://dogv.gva.es/
+3. Los procedimientos y servicios del Catálogo de la Generalitat previstos en los anexos I y II del Reglamento (UE)
+2018/1724 del Parlamento europeo y del Consejo, de 2 de octubre de 2018, relativo a la creación de una pasarela digital
+única de acceso a información, procedimientos y servicios de asistencia y resolución de problemas y por el que se modifica
+el Reglamento (UE) 1024/2012, incorporarán toda la información determinada por dicho Reglamento.
+4. De forma complementaria a la información prevista en los apartados anteriores, todos los procedimientos
+administrativos llevarán asociada la siguiente información de gestión.
+a) Manual de gestión del procedimiento.
+b) Flujograma del procedimiento o representación gráfica de la secuencia de actividades dentro de un proceso.
+c) Indicadores que se consideren necesarios para el control y evaluación de la consecución de los objetivos y la
+elaboración del cuadro de mandos para facilitar la toma de decisiones a partir de indicadores.
+d) Serie documental que resulte de aplicación, tipología documental de los documentos, y metadatos para
+identificar y contextualizar el procedimiento, de acuerdo con la política de gestión documental de la Generalitat.
+e) Servicios de interoperabilidad.
+5. El órgano responsable de la gestión del procedimiento garantizará la corrección, la completitud, la actualización
+y la coherencia de los contenidos introducidos en el Catálogo de acuerdo con los criterios, los estándares y los plazos
+definidos por sus responsables funcionales, quienes deberán validar la información antes de su publicación en la sede
+electrónica de la Generalitat, Sede PROP.
+A tal efecto, se aprobará una guía para la tramitación y aprobación de los procedimientos administrativos a tiempo
+y con todas las garantías.
+6. En todo caso, la información deberá atender a estándares de lenguaje claro y sencillo, adaptado a las
+características del colectivo al que va dirigida.
+Artículo 36. Formularios, plantillas y modelos normalizados
+1. Los formularios asociados a un procedimiento o servicio administrativo estarán disponibles en las dos lenguas
+cooficiales y se diseñarán bajo criterios de accesibilidad.
+2. Los formularios asociados a un procedimiento o servicio deberán constar en el Catálogo de procedimientos y
+servicios de la Generalitat, en la Sede PROP y, cuando las personas interesadas no estén obligadas a relacionarse
+electrónicamente, también en las oficinas de asistencia en materia de registros.
+3. Los modelos específicos de presentación de solicitudes y del resto de trámites disponibles en la sede electrónica
+serán de uso obligatorio por las personas interesadas.
+4. En caso de no utilizar el modelo específico de formulario, se requerirá la subsanación en los términos
+establecidos en la normativa básica estatal.
+5. La publicación en el Diari Oficial de la Generalitat Valenciana de normas o procedimientos no incluirá
+imágenes estáticas de los modelos específicos de presentación de las solicitudes, ni del resto de documentos normalizados.
+En su lugar, se indicará la dirección electrónica para su localización o se hará remisión a la Sede PROP.
+6. Los formularios deberán:
+a) Indicar claramente qué datos son de aportación obligatoria, por así exigirlo la normativa aplicable.
+b) Incluir un apartado destinado a que las personas interesadas puedan manifestar su oposición o, en caso de que
+así lo disponga una ley, su autorización para que el órgano gestor consulte los datos necesarios a través de los servicios y
+sistemas habilitados al efecto.
+c) Posibilitar que las personas no obligadas a relacionarse por medios electrónicos en el procedimiento puedan
+indicar este medio como preferente para las notificaciones.
+d) Posibilitar que las personas interesadas indiquen una dirección de correo electrónico y, opcionalmente, un
+dispositivo electrónico en el que recibir los avisos de las notificaciones electrónicas, dando opción a almacenar estos datos
+para futuras comunicaciones de la Generalitat.
+e) Incluir las instrucciones necesarias para su correcta cumplimentación y presentación, siempre que su
+complejidad así lo aconseje.
+f) Estar redactados en un lenguaje inclusivo y claro.
+g) Incluir la información básica en materia de protección de datos.
+7. Se promoverá el uso de formularios electrónicos con las siguientes características:
+a) Que se adapten dinámicamente a los requisitos de los datos a cumplimentar.
+
+
+Núm. 10092 / 22.04.2025 19 / 35
+CVE: DOGV-C-2025-11622 https://dogv.gva.es/
+b) Que ofrezcan la solicitud de iniciación precumplimentada, en todo o en parte, con objeto de que las personas
+interesadas verifiquen la información y, en su caso, la modifiquen y completen, garantizando el cumplimiento de la
+normativa en materia de protección de datos.
+8. El departamento con competencias en materia de simplificación administrativa aprobará reglamentariamente las
+características técnicas, de diseño y funcionales de los formularios, en la que se establecerán bloques de información
+comunes o formularios tipo.
+9. De acuerdo con la normativa reguladora en materia de simplificación administrativa, las declaraciones
+responsables y las comunicaciones se ajustarán, sin perjuicio de sus especialidades, al contenido mínimo establecido en los
+anexos II y III de este decreto. Los modelos de declaración responsable y comunicación estarán disponibles y actualizados
+en la Sede PROP.
+Artículo 37. Prestación proactiva de servicios personalizados
+1. Se impulsarán los servicios proactivos de soporte y ayuda las personas físicas y jurídicas en el momento en que
+les sean necesarios o útiles.
+2. Estos servicios de proactividad podrán consistir, entre otros, en:
+a) Avisos personalizados en relación con trámites iniciados o nuevos.
+b) Envío de información relacionada con el perfil o actividad de las personas.
+c) Confección de borradores de formularios de tramitación utilizando los datos disponibles en la Administración.
+d) Otros servicios que puedan resultar de interés a las personas.
+3. Los servicios proactivos y personalizados se prestarán a las personas físicas y jurídicas conforme a los principios
+establecidos en el artículo 3 del presente decreto y garantizando el derecho a la protección de datos personales y el conjunto
+de sus derechos y libertades.
+Artículo 38. Análisis y rediseño de procedimientos
+La Oficina de Simplificación Administrativa y Gobierno del Dato programará, impulsará y realizará, junto con los
+órganos competentes según la materia, revisiones continuas de los procedimientos y los servicios administrativos, con la
+finalidad de analizar la situación actual, diagnosticar posibles problemas y realizar propuestas de mejora y su seguimiento.
+CAPÍTULO III
+Identidad y firma electrónica en la Generalitat
+Artículo 39. Política de identidad y firma electrónica de la Generalitat
+1. Mediante un acuerdo del Consell se aprobará la política de identidad y firma electrónica de la Generalitat para la
+Administración de la Generalitat y el sector público instrumental en el ejercicio de potestades administrativas,
+incorporando, entre otros, los contenidos requeridos por la Norma Técnica de Interoperabilidad de Política de Firma y Sello
+Electrónicos y de Certificados de la Administración vigente.
+2. Los mecanismos de identificación y firma electrónica determinados en la política de identidad y firma
+electrónica deberán tener en cuenta el análisis de riesgos y los criterios de seguridad y proporcionalidad, siempre que
+permitan acreditar la autenticidad de la expresión de la voluntad y el consentimiento de las personas interesadas, así como
+la integridad e inalterabilidad de los documentos. Asimismo, la política de identidad y firma electrónica deberá recoger los
+criterios establecidos para la generación, la validación, el sellado de tiempo y la conservación de las firmas electrónicas.
+3. La política de identidad y firma electrónica determinará los sistemas de firma electrónica que deberá usar el
+personal empleado público, así como los que usarán las personas en sus relaciones administrativas.
+4. La política de identidad y firma deberá garantizar el uso de los certificados de firma con pseudónimo para
+preservar la identidad del personal empleado público que, de acuerdo con lo dispuesto en las leyes, requiera
+confidencialidad.
+CAPÍTULO IV
+Actuación administrativa automatizada, robotización e inteligencia artificial
+Artículo 40. Actuación administrativa automatizada
+1. La actuación administrativa automatizada permitirá realizar íntegramente actos o actuaciones administrativas por
+medios electrónicos, sin necesidad de intervención de forma directa de una persona empleada pública.
+
+
+Núm. 10092 / 22.04.2025 20 / 35
+CVE: DOGV-C-2025-11622 https://dogv.gva.es/
+Cuando las actuaciones administrativas automatizadas produzcan efectos jurídicos en las personas físicas se
+garantizará el derecho a no ser objeto de decisiones basadas únicamente en el tratamiento automatizado, en los términos
+previstos en el artículo 22 del Reglamento (UE) 2016/679.
+2. Las actuaciones administrativas automatizadas se autorizarán por resolución de la persona titular del órgano
+administrativo competente por razón de la materia según corresponda, que se publicará en la Sede PROP o en la sede
+electrónica asociada con el siguiente contenido:
+a) El detalle de los actos o actuaciones a automatizar.
+b) El mecanismo de firma a emplear, de entre los recogidos en la Política de identificación y firma electrónica de la
+Generalitat y el lugar en que poder verificar dicha firma.
+c) El órgano o los órganos competentes para la definición de las especificaciones, la programación, el
+mantenimiento, la supervisión y el control de calidad.
+d) El órgano encargado de auditar el sistema de información y su código fuente.
+3. El órgano competente del acto o actuación a automatizar será el responsable ante las eventuales impugnaciones.
+4. Los órganos encargados de auditar las actuaciones administrativas automatizadas serán la Intervención general,
+en el ámbito de la Administración de la Generalitat, y sus análogos en el resto de las entidades del sector público
+instrumental, en los términos de la normativa reguladora en materia de hacienda y sector público.
+Artículo 41. Implantación de la robotización y la inteligencia artificial (IA) en los procedimientos administrativos
+1. Se impulsará la redefinición y automatización inteligente de procesos a través del uso de capacidades de
+robotización e inteligencia artificial, para minimizar cargas de trabajo del personal, mejorar la calidad y eficiencia de los
+servicios y procesos de gestión y tramitación administrativa, con un fin último de ofrecer mejores servicios a la ciudadanía.
+2. Se podrán implantar soluciones de robotización en tareas administrativas repetitivas, mecánicas y masivas para
+optimizar la eficiencia de la actuación administrativa y minimizar los errores en la gestión. Estas soluciones deberán
+garantizar, en todo momento, los derechos de las personas interesadas, y tendrán que cumplir la normativa y los principios
+éticos, especialmente en lo referente a la transparencia y la no discriminación.
+3. Todas las actuaciones robotizadas deberán registrar evidencia de su ejecución, garantizando la trazabilidad,
+auditoría y respeto a los principios de integridad, confidencialidad y seguridad de los datos personales tratados.
+4. La aplicación de la IA en los procedimientos administrativos tendrá como objetivo facilitar la personalización de
+servicios, la predicción de necesidades ciudadanas y la optimización de la eficiencia de la tramitación administrativa.
+5. La Generalitat garantizará que las soluciones empleadas sean comprensibles para las personas interesadas. En el
+caso de que su uso produzca efectos jurídicos en las personas físicas, se garantizará también el derecho a no ser objeto de
+decisiones basadas únicamente en el tratamiento automatizado, en los términos previstos en el artículo 22 del Reglamento
+(UE) 2016/679.
+6. De forma previa a su puesta en marcha, los sistemas de IA deberán ser evaluados para determinar sus riesgos, el
+impacto en los derechos de las personas y el cumplimiento de la normativa en materia de protección de datos personales y
+de inteligencia artificial.
+7. Los sistemas de IA utilizados deberán integrarse en el Registro de sistemas algorítmicos, que reflejará su
+propósito, el departamento responsable, los parámetros clave y las medidas de control establecidas, de acuerdo con la
+legislación en materia de simplificación administrativa y transparencia.
+8. El órgano competente del acto o la actuación administrativa sobre la que se apliquen estas tecnologías será el
+responsable ante las eventuales impugnaciones.
+CAPÍTULO V
+Registro electrónico de representantes
+Artículo 42. Registro electrónico de representantes
+1. El Registro electrónico de representantes es el registro de apoderamientos de la Generalitat y será accesible
+desde la Sede PROP.
+2. En el Registro electrónico de representantes se inscribirán los apoderamientos que las personas físicas y jurídicas
+otorgan a las personas apoderadas para que puedan actuar en su nombre, respecto de cualquier actuación administrativa o
+ante determinados procedimientos.
+
+
+Núm. 10092 / 22.04.2025 21 / 35
+CVE: DOGV-C-2025-11622 https://dogv.gva.es/
+3. El Registro electrónico de representantes garantizará la interoperabilidad, la interconexión y la compatibilidad
+informática con el registro de apoderamientos de la Administración General del Estado en los términos que las normas
+técnicas de interoperabilidad establezcan.
+4. En el Registro electrónico de representantes podrán inscribirse:
+a) Los apoderamientos.
+b) La revocación de la persona poderdante.
+c) La renuncia de la persona apoderada.
+d) Los poderes presentados por el apoderado, previo consentimiento del poderdante.
+e) Los Entes habilitados, en los términos establecidos en la Ley 6/2024, de 5 de diciembre, y en el resto de la
+normativa que los regula.
+5. Tanto el poderdante como el apoderado podrán solicitar la inscripción del apoderamiento en el Registro
+electrónico de representantes. Para que el apoderamiento presentado por el apoderado surta efectos en el Registro, deberá
+quedar acreditado el consentimiento de la persona poderdante.
+TÍTULO IV
+Documento administrativo y expediente electrónico
+CAPÍTULO I
+Documentos y expedientes administrativos electrónicos
+Artículo 43. Documento administrativo electrónico
+1. Los documentos administrativos electrónicos deberán disponer de los datos de identificación que permitan su
+individualización, sin perjuicio de su incorporación a un expediente electrónico.
+2. Los metadatos que se deberán incorporar a los documentos administrativos electrónicos serán los que
+determinan el Esquema Nacional de Interoperabilidad y sus normas técnicas de desarrollo, así como la política de gestión
+de documentos electrónicos de la Generalitat.
+3. La obligación de facilitar un documento administrativo electrónico podrá sustituirse por la entrega de los datos
+necesarios para su acceso por medios electrónicos adecuados.
+4. Las herramientas y aplicaciones de la Generalitat que gestionen documentos administrativos electrónicos
+deberán permitir incorporar y consultar sus metadatos.
+Artículo 44. Expediente administrativo electrónico
+1. El expediente administrativo electrónico deberá formarse mediante la agregación de documentos administrativos
+electrónicos ordenados, foliados y numerados mediante un índice electrónico autenticado, que garantizará la integridad del
+expediente y que permitirá su recuperación cuando sea preciso.
+2. Los expedientes electrónicos deberán disponer de un código único e inalterable a lo largo de todo el
+procedimiento, que permitirá su identificación inequívoca por cualquier órgano de la Generalitat en un entorno de
+intercambio interadministrativo.
+3. Un mismo documento podrá formar parte de diferentes expedientes administrativos electrónicos.
+4. Los metadatos que se incorporen a los expedientes administrativos electrónicos serán los que determina el
+Esquema Nacional de Interoperabilidad y sus normas técnicas de desarrollo, así como la política de gestión de documentos
+electrónicos de la Generalitat.
+5. Las herramientas y aplicaciones de la Generalitat que gestionen expedientes administrativos electrónicos
+deberán permitir incorporar y consultar sus metadatos.
+Artículo 45. Traslado de documentos electrónicos
+1. El traslado de documentos y expedientes administrativos electrónicos a las personas interesadas se llevará a cabo
+mediante su puesta a disposición en la Sede PROP.
+2. El intercambio de documentos administrativos electrónicos entre los órganos y unidades pertenecientes a la
+Administración y los organismos autónomos de la Generalitat se llevará a cabo mediante el acceso al sistema de
+información en el que se encuentre la información, o a través de espacios habilitados para ser compartidos. En el caso de
+que el intercambio afecte a datos de carácter personal deberá disponerse de base de legitimación de las reguladas en el
+
+
+Núm. 10092 / 22.04.2025 22 / 35
+CVE: DOGV-C-2025-11622 https://dogv.gva.es/
+artículo 6.1 del Reglamento (UE) 2016/679 o, en su caso, cumplirse con lo establecido en el artículo 155 de la ley 40/2015,
+de 1 de octubre.
+3. En el caso de que los documentos electrónicos objeto de intercambio en comunicaciones internas deban estar
+indexados y foliados para su incorporación en un expediente administrativo electrónico, se usarán las herramientas
+corporativas habilitadas para tal función.
+CAPÍTULO II
+Digitalización y procesos de copia de documentos
+Artículo 46. Órganos competentes para la emisión de copias auténticas en el ámbito autonómico
+1. La expedición de copias auténticas electrónicas de cualquier documento en papel que presenten las personas
+interesadas y que se vaya a incorporar a un expediente administrativo se realizará a través del personal funcionario
+habilitado de las Oficinas de asistencia en materia de registro.
+2. Las personas interesadas podrán solicitar, en cualquier momento, la expedición de copias auténticas de los
+documentos públicos administrativos que hayan sido válidamente emitidos. En estos casos, las copias auténticas serán
+realizadas por el personal funcionario habilitado de los órganos que emitieron los documentos originales, salvo que, en
+aplicación de la normativa básica, no procediera su expedición.
+Artículo 47. Destrucción de los documentos en soporte papel u otros digitalizados
+1. La política de gestión de documentos electrónicos de la Generalitat, que es el conjunto de normas e instrucciones
+técnicas en esta materia, determinará los criterios de destrucción de los documentos originales y de las copias en papel o en
+cualquier otro soporte de la Administración de la Generalitat y del sector público instrumental en el ejercicio de potestades
+administrativas, sin perjuicio de lo establecido en el artículo 32 de la Ley Orgánica 3/2018, de 5 de diciembre, de
+Protección de datos personales y garantía de los derechos digitales.
+2. La eliminación de documentos requerirá el dictamen preceptivo de la Junta Qualificadora de Documents
+Administratius y la aprobación mediante una resolución del conseller competente en materia de cultura publicada en el
+Diari Oficial de la Generalitat Valenciana.
+3. Prescritos los plazos para la exigencia de posibles responsabilidades y de acuerdo con lo establecido en el
+apartado anterior, podrá procederse a la destrucción de los datos. La eliminación de documentos se llevará a cabo mediante
+dispositivos seguros de destrucción de la documentación o procesos externos de destrucción de datos con certificación de
+cumplimiento normativo.
+4. En ningún caso se destruirán documentos con valor histórico, artístico o de carácter relevante que aconseje su
+conservación y protección.
+Artículo 48. Externalización de determinadas tareas del proceso de digitalización para la generación de copias
+electrónicas auténticas
+1. Se podrá externalizar el proceso de digitalización, siempre que los documentos electrónicos resultantes cumplan
+las normas técnicas de interoperabilidad aplicables y sean firmados por el órgano competente del procedimiento
+administrativo.
+2. El proceso de digitalización externalizado se circunscribirá a las tareas mecánicas necesarias y se llevará a cabo
+siguiendo las medidas técnicas y organizativas necesarias para garantizar la protección de los datos de carácter personal que
+contengan los documentos objeto de la digitalización.
+3. Los pliegos que regulen la contratación del servicio de digitalización establecerán, en todo caso, el método
+mediante el cual el contratista entregará las imágenes de la digitalización, para que el órgano competente pueda firmarlas.
+En todo caso, se deberá exigir el cumplimiento de las Normas Técnicas de Interoperabilidad (NTI) aplicables, según la
+normativa que regula el Esquema Nacional de Interoperabilidad en el ámbito de la administración electrónica, en especial,
+las NTI de documento electrónico, de digitalización de documentos y, sobre todo, de procedimientos de copiado auténtico y
+conversión entre documentos electrónicos, así como desde papel u otros medios físicos a formatos electrónicos. En caso de
+que la digitalización suponga el tratamiento de datos de carácter personal, los pliegos deberán incluir el acto jurídico que
+vincule al encargado del tratamiento respecto del responsable, de acuerdo con la normativa reguladora de protección de
+datos.
+
+
+Núm. 10092 / 22.04.2025 23 / 35
+CVE: DOGV-C-2025-11622 https://dogv.gva.es/
+CAPÍTULO III
+Sistema de gestión documental
+Artículo 49. Sistema de Gestión de Documentos Electrónicos de la Generalitat
+1. El Sistema de gestión de documentos electrónicos de la Generalitat, regulado en la normativa en materia de
+gestión documental y archivos, será común para la Administración y los organismos autónomos de la Generalitat, con la
+finalidad de garantizar la transparencia, el tratamiento correcto de la información y la documentación en las fases activa y
+semiactiva, así como su conservación y disponibilidad en la fase inactiva.
+Con carácter excepcional, se podrán establecer sistemas de gestión documental específicos para ámbitos
+particulares que lo requieran. La creación o la supresión de estos sistemas deberá llevarse a cabo previa validación por parte
+de los órganos competentes en materia de archivos y de simplificación administrativa.
+2. Los servicios y las aplicaciones comunes de transformación digital deberán interoperar con el Sistema de gestión
+de documentos electrónicos de la Generalitat, que permitirá el acceso fácil a la información y a la localización y la
+recuperación de cualquier documento o información, indicando su régimen de acceso y publicidad.
+3. El Sistema de gestión de documentos electrónicos de la Generalitat y los sistemas de gestión documental
+específicos se desarrollarán de acuerdo con:
+a) La identificación única de todos los documentos y expedientes por medio de convenciones adecuadas que
+faciliten su recuperación, de acuerdo con el Esquema Nacional de Interoperabilidad.
+b) La consignación de metadatos mínimos obligatorios, y, si se considera necesario, metadatos accesorios, para
+facilitar la gestión y tratamiento de la documentación a lo largo de ciclo de vida.
+c) La clasificación de los expedientes y documentos según el cuadro de clasificación documental de la
+Administración de la Generalitat.
+d) La definición del calendario de conservación y el régimen de acceso documental, indicando las condiciones
+básicas de acceso, los plazos de conservación y la transferencia de los documentos a partir de las series documentales.
+e) La adopción de las medidas necesarias para garantizar la conservación de los documentos a lo largo de su ciclo
+de vida.
+f) La transferencia de los expedientes entre los distintos repositorios electrónicos de acuerdo con las prescripciones
+de la normativa en materia de archivos.
+g) El vocabulario de metadatos.
+h) El catálogo de tipologías documentales.
+i) El catálogo de formatos de documentos electrónicos.
+j) La definición de un plan de preservación.
+4. El órgano competente en materia de archivos impulsará el conjunto de normas e instrucciones técnicas en esta
+materia, que conformarán la política de gestión documental de la Generalitat.
+CAPÍTULO IV
+Archivo electrónico de documentos
+Artículo 50. El Archivo electrónico de la Generalitat
+1. El Archivo electrónico de la Generalitat se configura como el conjunto de sistemas y servicios que sustentan la
+gestión, la custodia y la recuperación de los documentos y los expedientes electrónicos, las agrupaciones documentales o de
+información una vez finalizados los procedimientos administrativos o actuaciones correspondientes.
+2. El Archivo electrónico de la Generalitat será común para la Administración y los organismos autónomos de la
+Generalitat, con la finalidad de garantizar la conservación y la disponibilidad de la información en la fase inactiva.
+Sin perjuicio de lo anterior y con carácter excepcional, se podrán establecer soluciones de archivo específicas para
+ámbitos particulares que lo requieran. La creación o supresión de estos sistemas deberá llevarse a cabo previa validación
+por parte de los órganos competentes en materia de archivos y de simplificación administrativa.
+3. La gestión del Archivo electrónico garantizará la puesta en marcha de las políticas de gestión documental, la
+autenticidad, la conservación, la integridad, la confidencialidad, la disponibilidad y la cadena de custodia de los expedientes
+y los documentos almacenados, debiendo cumplir con los estándares de seguridad y de disponibilidad.
+
+
+Núm. 10092 / 22.04.2025 24 / 35
+CVE: DOGV-C-2025-11622 https://dogv.gva.es/
+Artículo 51. Conservación de documentos electrónicos
+1. El órgano competente en materia de archivos determinará los períodos mínimos y máximos de conservación de
+los documentos electrónicos que formen parte del expediente de un procedimiento cuya tramitación haya concluido, de
+acuerdo con lo previsto en las normativas reguladoras en materia de archivos y de protección de datos de carácter personal. 
+2. La conservación de los documentos electrónicos permitirá su acceso e incluirá, como mínimo, su identificación,
+el contenido, los metadatos, la estructura, el formato y la firma.
+Artículo 52. Gestión archivística de los datos
+1. La información obtenida o generada que requiera ser documentada y conservada durante un periodo de tiempo
+determinado, en el ámbito de este artículo, tendrá la naturaleza de dato.
+2. Los datos se tratarán y conservarán en los sistemas de gestión documental y en los sistemas de información que
+los gestionen, en los términos que determine el órgano competente en materia de archivos.
+3. La gestión archivística permitirá asegurar la creación, la captura y la gestión de datos auténticos, fiables, usables
+e íntegros, y su conservación durante el tiempo que sea necesario para la finalidad para la que se ha generado.
+TÍTULO V
+Gobierno del Dato e interoperabilidad
+CAPÍTULO I
+Organización del Gobierno del Dato de la Generalitat
+Artículo 53. Modelo de Gobierno del Dato
+1. Se establecerá un Modelo de Gobierno del Dato como instrumento organizativo que determinará los criterios y
+los elementos que definirán el Gobierno del Dato en la Administración y el sector público instrumental de la Generalitat.
+2. El despliegue del Modelo de Gobierno del Dato se realizará mediante un programa que recogerá los aspectos
+técnicos y organizativos necesarios para implantarlo.
+3. El Modelo de Gobierno del Dato se basará en los siguientes criterios:
+a) Los datos son un activo digital compartido por la Administración y el sector público instrumental de la
+Generalitat, por lo que debe maximizarse su reutilización.
+ b) El Modelo será común y detallará las necesidades específicas de cada departamento o entidad, con la
+participación corresponsable de todas las organizaciones implicadas desde que los datos se capturan, se procesan y se
+almacenan hasta que se archivan o se eliminan. El Modelo determinará las responsabilidades necesarias para una gestión
+eficaz de los datos y definirá y asignará los roles dentro de las estructuras orgánicas.
+c) El Modelo incluirá todos los datos y se ajustará a la complejidad y las necesidades, según el principio de
+proporcionalidad.
+d) La gestión basada en datos se fundamentará en estándares que garantizarán la homogeneidad semántica y
+sintáctica de los datos.
+e) Los datos comunicarán la información de manera clara y concisa, proporcionando información significativa para
+facilitar la toma de decisiones.
+f) El Modelo deberá hacer efectivo el criterio de dato único, a través de la colaboración entre los órganos y
+sistemas custodios de un mismo dato, y la identificación unívoca de la fuente más fiable, si procede, en origen.
+g) El modelo garantizará la transparencia interdepartamental, la privacidad y la seguridad desde el diseño, la
+calidad, la corresponsabilidad en el tratamiento de los datos, la coordinación entre los distintos órganos y roles, la
+interoperabilidad, el impacto en la gestión pública y el cumplimiento normativo.
+4. El Modelo de Gobierno del Dato de la Administración de la Generalitat y su sector público instrumental se
+aprobará por acuerdo del Consell.
+5. El Modelo se establecerá según los principios y requerimientos previstos en el marco de la normativa en materia
+de protección de datos, transparencia, y estadística, garantizando la interoperabilidad y la reutilización de los datos.
+6. La Oficina de Simplificación Administrativa y Gobierno del Dato establecerá el Plan estratégico para la
+implantación del Modelo del Gobierno del Dato y coordinará su implantación en el ámbito de la Administración y el sector
+público instrumental de la Generalitat.
+
+
+Núm. 10092 / 22.04.2025 25 / 35
+CVE: DOGV-C-2025-11622 https://dogv.gva.es/
+7. Los órganos con competencias TIC serán los responsables técnicos de la implantación del Modelo de Gobierno
+del dato únicamente en el ámbito de la Administración y el sector público instrumental en el ejercicio de potestades
+administrativas.
+Artículo 54. Programa de Gobierno del Dato
+1. El Programa de Gobierno del dato tendrá el contenido mínimo siguiente:
+a) Roles y responsabilidades de las personas y las entidades que intervendrán en el modelo de gestión de los datos.
+b) Calidad de los datos.
+c) Ciclo de vida de los datos.
+d) Modelado y arquitectura de los datos.
+e) Seguridad.
+f) Metadatos.
+g) Catálogo de datos.
+h) Analítica de datos.
+i) Sistemas de evaluación y seguimiento del modelo de gobierno de los datos.
+j) Gobierno de los procesos predictivos sobre los datos, entre ellos, de la IA.
+k) Privacidad, transparencia y ética.
+l) Control del sesgo y la explicabilidad.
+m) Interoperabilidad y espacios de datos.
+2. Corresponderá a la persona titular del departamento competente en materia de simplificación administrativa la
+aprobación por resolución del Programa de Gobierno del Dato.
+Artículo 55. Registro electrónico de información de personas usuarias
+1. En cumplimiento de lo dispuesto en la normativa reguladora en materia de simplificación administrativa de la
+Generalitat, el Registro electrónico de información de personas usuarias que se relacionan con la Generalitat dispondrá de
+información común de estas para todos los procedimientos administrativos.
+2. Los sistemas de información de naturaleza administrativa deberán utilizar dicho registro atendiendo a los
+principios y la finalidad del tratamiento de los datos.
+3. El Registro electrónico de información de personas usuarias contendrá, como mínimo, los siguientes datos
+personales:
+a) Nombre y apellido, denominación o razón social.
+b) Número del documento nacional de identidad, de identidad de extranjero o de identificación fiscal.
+c) Idioma y canal preferentes para las notificaciones.
+d) Datos de contacto.
+4. El tratamiento de los datos del Registro con fines destinados a ofrecer servicios proactivos requerirá una base de
+legitimación adecuada, de las reguladas en el artículo 6.1 del Reglamento (UE) 2016/679.
+CAPÍTULO II
+Plataforma Autonómica de Interoperabilidad
+Artículo 56. Plataforma Autonómica de Interoperabilidad
+1. Para garantizar el derecho a no aportar datos y documentos que obren en poder de las administraciones públicas,
+el intercambio de información que se produzca entre estas se deberá llevar a cabo mediante el acceso a los servicios de
+verificación que proporciona la Plataforma Autonómica de Interoperabilidad (PAI).
+2. La PAI se regirá en cuanto a sus funciones, gobernanza del sistema, requisitos técnicos de intercambio,
+tecnología, estándares, trazabilidad y auditoría por la Norma Técnica de Interoperabilidad de Protocolos de intermediación
+de datos.
+3. La PAI deberá asegurar la confidencialidad y la integridad de la información intercambiada a través de los
+mecanismos correspondientes y garantizar las medidas de seguridad definidas en el Esquema Nacional de Seguridad y en
+las disposiciones reglamentarias en materia de seguridad de la información aprobadas por el Consell.
+4. La PAI asegurará la identidad de todos los agentes que intervengan en las consultas a los servicios de
+verificación, como consumidores o proveedores, de forma que todos ellos estén correctamente identificados en cada
+intercambio de datos.
+
+
+Núm. 10092 / 22.04.2025 26 / 35
+CVE: DOGV-C-2025-11622 https://dogv.gva.es/
+5. La Administración de la Generalitat y el sector público instrumental en el ejercicio de potestades administrativas
+podrán participar en la PAI siendo consumidores o proveedores de servicios de verificación. El órgano directivo
+responsable técnico de la PAI establecerá los requisitos de publicación de servicios como proveedor y su acceso como
+consumidor, a través de un procedimiento que describirá las condiciones y garantías por las que se rige el intercambio de
+datos, en base a la Norma Técnica de Interoperabilidad de Protocolos de intermediación de datos.
+Artículo 57. Acceso como consumidor a datos interoperables
+1. El acceso como consumidor a un servicio de verificación de datos se realizará del siguiente modo:
+a) Las subsecretarías de los departamentos del Consell y los órganos equivalentes del sector público instrumental
+designarán una o más personas administradoras delegadas que trasladarán a la PAI las solicitudes de acceso a los servicios
+de verificación publicados en esta.
+b) La PAI gestionará con el proveedor de los datos las peticiones de utilización de los servicios por parte de los
+organismos interesados.
+2. Cuando la petición de acceso provenga del resto de entidades del sector público de la Generalitat o de otras
+administraciones públicas, las condiciones y garantías citadas en el apartado anterior se establecerán mediante la adhesión
+al convenio marco en materia de administración digital correspondiente.
+Artículo 58. Publicación como proveedor y catálogo de servicios de verificación disponibles a través de la PAI
+1. El catálogo de servicios de verificación disponible para su acceso a través de la PAI se podrá consultar a través
+de la Sede PROP.
+2. La publicación de un nuevo servicio de verificación de datos en la PAI se realizará del siguiente modo:
+a) El órgano con competencias en simplificación administrativa coordinará las solicitudes de publicación de nuevos
+servicios.
+b) La PAI incorporará los nuevos servicios a su catálogo, garantizando el cumplimiento de los requisitos
+establecidos por el proveedor para el uso de los servicios que ofrece.
+3. La Administración de la Generalitat y el sector público instrumental en el ejercicio de potestades administrativas
+deberán poner a disposición de la PAI toda aquella información susceptible de ser intercambiada con otros órganos o
+entidades del sector público.
+Artículo 59. Trazabilidad y auditoría de los intercambios de datos
+1. Las entidades cedentes de datos interoperables tendrán el derecho y la obligación de auditar el uso que las
+entidades consumidoras les dan a los servicios de verificación.
+2. Las entidades consumidoras y las cedentes de información mantendrán la trazabilidad de los intercambios de
+datos producidos a efectos de dar respuesta a las auditorías mencionadas. La información que se debe conservar sobre la
+legitimidad de las consultas será la siguiente:
+a) Servicio de verificación de datos que se solicita.
+b) Entidad consumidora de la información y usuario final que realiza la consulta.
+c) Código del procedimiento administrativo autorizado.
+d) Sobre quién y en relación con qué expediente administrativo se realiza la consulta.
+e) Identificador de la transacción.
+f) Fecha y hora de realización de la consulta.
+3. Asimismo, las entidades consumidoras conservarán la constatación de la licitud de la consulta y la respuesta
+devuelta por el servicio de verificación de datos consultado.
+4. La PAI no almacenará información sobre el contenido del intercambio ni asumirá funciones relativas a la
+conservación de trazas y auditoría, más allá de lo previsto sobre trazabilidad en el Esquema Nacional de Seguridad y del
+resto de la normativa aplicable.
+TÍTULO VI
+Gestión electrónica de los órganos colegiados y catálogos de sistemas de información y aplicaciones
+CAPÍTULO I
+Participación electrónica en las sesiones de los órganos colegiados
+Artículo 60. Gestión electrónica de los órganos colegiados
+1. Las actuaciones de los órganos colegiados se regirán por los siguientes criterios, sin perjuicio de lo dispuesto en
+la normativa básica aplicable:
+
+
+Núm. 10092 / 22.04.2025 27 / 35
+CVE: DOGV-C-2025-11622 https://dogv.gva.es/
+a) Salvo que no resulte posible, la convocatoria, el orden del día y resto de la documentación que la acompañe se
+emitirán en soporte electrónico.
+b) Podrán celebrar sus sesiones y adoptar acuerdos a distancia a través de medios electrónicos, teniendo esta
+consideración también los telefónicos y audiovisuales.
+c) Las actas de sesión, el resto de los documentos que dejen constancia del debate y los acuerdos se formularán en
+soporte electrónico, con la firma electrónica de los cargos que correspondan.
+2. La información sobre la creación y funcionamiento de aquellos órganos colegiados de naturaleza permanente y
+administrativa se gestionará a través de una aplicación común, con la finalidad de garantizar que su actuación se ajusta a los
+principios de la simplificación administrativa.
+Artículo 61. Grabación de las sesiones y soporte audiovisual
+1. Las sesiones de los órganos colegiados podrán ser grabadas cuando exista base de legitimación para ello, de
+acuerdo con lo dispuesto en la normativa en materia de protección de datos, debiendo contemplarse los supuestos y la
+forma de grabación en las normas de funcionamiento del órgano.
+2. Las personas asistentes a la reunión deberán estar informadas, con carácter previo al inicio de la grabación, de
+quién tiene asignada la responsabilidad de esta, cuál es su finalidad, qué uso que se va a hacer de ella, desde dónde y
+quiénes podrán acceder a dicha grabación y cuál será el plazo de conservación. Asimismo, se les informará de la
+posibilidad de participar con la cámara y el micrófono desactivado para no aparecer en la grabación, salvo que estén
+obligados a ello.
+3. El soporte audiovisual resultante de la grabación se podrá adjuntar o vincular al acta de la sesión. El acta
+transcrita podrá obviar la transcripción de los debates, para los cuales se hará referencia al soporte audiovisual, y transcribir
+únicamente el contenido de los acuerdos.
+4. Se podrán declarar secretos el debate y la votación de asuntos que afecten al derecho a la intimidad, siempre que
+se acuerde por mayoría absoluta de las personas miembros del órgano colegiado.
+5. El soporte audiovisual debe ser tratado como cualquier documento electrónico bajo los mismos criterios de
+conservación y seguridad.
+CAPÍTULO II
+Catálogos de sistemas de información y aplicaciones
+Artículo 62. Catálogos de sistemas de información y aplicaciones de la Generalitat
+1. Los órganos directivos con competencias TIC en cada ámbito de la Administración de la Generalitat
+establecerán su catálogo de sistemas de información y aplicaciones, que contendrá con carácter obligatorio: la
+identificación de los responsables funcional y técnico y la información de los elementos catalogados.
+2. La CITSA designará al responsable funcional de los sistemas de información y aplicaciones que no lo tuvieran
+identificado.
+3. El catálogo de cada departamento con competencias TIC identificará las soluciones comunes de su ámbito, que
+pondrá a disposición de la Administración de la Generalitat y de sus organismos autónomos, con la finalidad de facilitar su
+uso e interoperabilidad.
+4. Cuando en los catálogos así se determine, previa resolución del órgano competente según la materia, la
+aplicación o el sistema será de uso obligatorio para todos los agentes implicados en el procedimiento o el servicio al que da
+soporte, siempre que la gestión sea competencia de la Generalitat.
+DISPOSICIONES ADICIONALES
+Primera. Aplicación a la prestación de los servicios públicos sanitarios y educativos
+Los procesos de gestión y organización que afecten a la prestación de los servicios públicos sanitarios y educativos,
+incluyendo los usos primario y secundario de la información generada y las tecnologías asociadas a dicha información, se
+regularán conforme a su legislación específica, siéndoles de aplicación supletoria las disposiciones contenidas en este
+decreto.
+
+
+Núm. 10092 / 22.04.2025 28 / 35
+CVE: DOGV-C-2025-11622 https://dogv.gva.es/
+Segunda. Aprobación de la Guía metodológica para la tramitación de disposiciones normativas
+En el plazo de cuatro meses desde la entrada en vigor de este decreto, a los efectos de clarificar y unificar los
+criterios y fases en la tramitación de las normas, el Consell aprobará por acuerdo, a propuesta del departamento con
+competencias en simplificación administrativa, una Guía metodológica para la tramitación de disposiciones normativas.
+Tercera. Aprobación de los modelos para la realización de los análisis en materia de simplificación
+administrativa, coordinación informática y protección de datos
+Tras la entrada en vigor de este decreto, se aprobarán, mediante un acuerdo del Consell, los modelos para la
+realización de análisis en simplificación administrativa, coordinación informática y protección de datos de las bases
+reguladoras de ayudas que tengan la naturaleza de acto administrativo.
+Cuarta. Aprobación de la Guía para la tramitación y la aprobación de los procedimientos administrativos
+En el plazo de cuatro meses desde la entrada en vigor de este decreto, se aprobará, mediante un acuerdo del
+Consell, la Guía para la tramitación y la aprobación de los procedimientos administrativos.
+Quinta. Política de identificación y firma
+En el plazo de seis meses desde la entrada en vigor de este decreto, se aprobará por acuerdo del Consell la política
+de identidad y firma de la Generalitat.
+Sexta. Modelo, Plan estratégico y Programa de Gobierno del Dato
+1. En el plazo de seis meses desde la entrada en vigor de este decreto se aprobará, mediante un acuerdo del Consell,
+el Modelo de Gobierno del Dato.
+2.  En el plazo de nueve meses desde la entrada en vigor de este decreto se aprobará el Plan estratégico para la
+implantación del Modelo del Gobierno del Dato y en el plazo de doce meses, el Programa de Gobierno del dato.
+Séptima. Protección de datos
+1. El tratamiento de datos personales que se realice en cumplimiento de esta norma se ajustará a lo que se dispone
+en el régimen jurídico europeo y estatal en materia de protección de datos de carácter personal.
+2. Los datos personales que las personas proporcionen a la Administración en la tramitación de los procedimientos
+regulados en esta norma o en otras serán utilizados con las finalidades y los límites previstos en su regulación.
+3. En toda la gestión de los procedimientos y tratamiento de datos regulados en este decreto, se aplicarán las
+medidas técnicas y organizativas necesarias y adecuadas para garantizar un nivel de seguridad acorde al riesgo. Estas
+medidas asegurarán, en todo caso, la confidencialidad, la integridad, la disponibilidad, la autenticidad y la trazabilidad de
+los datos, así como aquellas destinadas a hacer efectivas las garantías, las obligaciones y los derechos reconocidos en el
+régimen jurídico de protección de datos. Dichas medidas serán las establecidas por el Esquema Nacional de Seguridad.
+4. Se deberá garantizar que, en los tratamientos de datos de categorías especiales o de personas en situación de
+especial vulnerabilidad, no se lesionan sus derechos o intereses legítimos ni se agrava su situación.
+Octava. Actualización de información en los puntos de acceso de la Generalitat
+En el plazo de tres meses desde la entrada en vigor de este decreto, los órganos o unidades de la Administración y
+el sector público instrumental deberán modificar o retirar los contenidos y portales de su ámbito de competencias que estén
+desactualizados o erróneos en los puntos de acceso de la Generalitat.
+Novena. Comunicaciones de infracciones a la legalidad vigente
+Los canales electrónicos de denuncias y comunicaciones anónimas sobre infracciones normativas, irregularidades y
+malas prácticas, así como la gestión de las informaciones recibidas por estos canales se regirán por su normativa específica
+y por los acuerdos, resoluciones y protocolos aprobados en esta materia.
+A estos efectos, se podrán habilitar canales electrónicos específicos confidenciales que deberán permitir una
+comunicación bidireccional entre la persona denunciante o informante anónima y el órgano o unidad administrativa que
+tenga atribuida la investigación. Todo ello sin perjuicio de que se puedan admitir también las denuncias presentadas en los
+registros electrónicos correspondientes y la utilización de las formas de comunicación previstas en el presente decreto.
+
+
+Núm. 10092 / 22.04.2025 29 / 35
+CVE: DOGV-C-2025-11622 https://dogv.gva.es/
+Décima. Incidencia presupuestaria
+La aplicación de lo que se dispone en este decreto no tiene incidencia en la dotación de los capítulos de gasto
+asignado a los departamentos del Consell, y, en todo caso, habrá de ser atendida con los medios personales y materiales de
+estos.
+DISPOSICIÓN TRANSITORIA
+Única. Disponibilidad de medios
+Lo dispuesto en el presente decreto será de aplicación progresiva, en función del grado de implantación de las
+medidas tecnológicas y administrativas necesarias, de acuerdo con lo que establezcan los planes de simplificación
+administrativa.
+DISPOSICIÓN DEROGATORIA
+Única. Derogación normativa
+1. Quedan derogadas expresamente las siguientes disposiciones:
+a) Decreto 165/2010, de 8 de octubre, del Consell, por el que se establecen medidas de simplificación y de
+reducción de cargas administrativas en los procedimientos gestionados por la administración de la Generalitat y su sector
+público.
+b) Decreto 220/2014, de 12 de diciembre, del Consell, por el que se aprueba el Reglamento de administración
+electrónica de la Comunitat Valenciana.
+2. Asimismo, quedan derogadas cuantas disposiciones de igual o inferior rango se opongan a lo dispuesto en el
+presente decreto.
+DISPOSICIONES FINALES
+Primera. Disposición de carácter general de configuración y normalización de formularios
+En el plazo de nueve meses desde la entrada en vigor de este decreto, se aprobará una disposición de carácter
+general, por parte del departamento con competencias en materia de simplificación administrativa, que regule la
+configuración y normalización de los formularios por los que se sustancien los procedimientos y trámites administrativos.
+Segunda. Desarrollo
+Se autoriza a las personas titulares de los departamentos con competencias en materia de simplificación
+administrativa y transformación digital para dictar los actos y disposiciones necesarios para el desarrollo y la ejecución de
+este decreto.
+Tercera. Entrada en vigor
+Este decreto entrará en vigor al día siguiente de su publicación en el Diari Oficial de la Generalitat Valenciana,
+salvo los apartados 4, 5 y 6 del artículo 29 y los artículos 30, 31, 32 y 33, que entrarán en vigor al día siguiente de la
+publicación en el Diari Oficial de la Generalitat Valenciana del acuerdo por el que apruebe la Guía metodológica para la
+elaboración de la Memoria del Análisis de Impacto Normativo.
+València, 15 de abril de 2025
+Carlos Mazón Guixot
+President de la Generalitat
+Ruth María Merino Peña
+Consellera de Hacienda y Economía
+José Antonio Rovira Jover
+Conseller de Educación, Cultura, Universidades y Empleo
+
+
+Núm. 10092 / 22.04.2025 30 / 35
+CVE: DOGV-C-2025-11622 https://dogv.gva.es/
+ 
+ANEXO I  
+Relación de órganos responsables de los servicios y aplicaciones comunes de transformación 
+digital  
+Servicios comunes de transformación digital 
+ 
+SERVICIOS COMUNES ÓRGANO RESPONSABLE FUNCIONAL ÓRGANO RESPONSABLE TÉCNICO 
+Accesibilidad Órgano con competencias en atención a la 
+ciudadanía (URA) 
+Órganos con competencias TIC de su 
+ámbito 
+Archivo electrónico de la 
+Generalitat Órgano con competencias de archivos Órgano con competencias TIC 
+horizontales 
+Asistente de tramitación 
+telemática1 
+Órgano con competencias en 
+simplificación administrativa 
+Órgano con competencias TIC 
+horizontales 
+Canal Empresa Órgano con competencias en 
+simplificación administrativa 
+Órgano con competencias TIC 
+horizontales 
+Carpeta ciudadana Órgano con competencias en 
+simplificación administrativa 
+Órgano con competencias TIC 
+horizontales 
+Catálogo de 
+procedimientos y 
+servicios administrativos 
+de la Generalitat 
+Órgano con competencias en atención a la 
+ciudadanía 
+ 
+Órgano con competencias en 
+simplificación administrativa para lo 
+referente a los procedimientos internos y la 
+información de gestión de todos los 
+procedimientos 
+ 
+Órgano con competencias en archivos 
+para lo referente a la gestión documental 
+de los procedimientos 
+Órgano con competencias TIC 
+horizontales 
+Catálogos de sistemas 
+de información y 
+aplicaciones de la 
+Generalitat 
+Órgano con competencias en 
+simplificación administrativa 
+Órganos con competencias TIC de su 
+ámbito 
+Gestión electrónica de 
+órganos colegiados 
+Órgano con competencias en 
+simplificación administrativa 
+Órganos con competencias TIC de su 
+ámbito 
+Pasarela de pagos Órgano con competencias tributarias Órgano con competencias TIC en 
+materia tributaria 
+Plataforma Autonómica 
+de Interoperabilidad 
+(PAI) 
+Órgano con competencias en 
+simplificación administrativa 
+Órgano con competencias TIC 
+horizontales 
+Portafirmas corporativo2 Órgano con competencias en 
+simplificación administrativa 
+Órgano con competencias TIC 
+horizontales 
+ 
+1 Asistente de tramitación telemática: Herramienta o sistema informático que facilita a la ciudadanía la realización de trámites 
+administrativos por medios electrónicos, garantizando la validación y correcta tramitación de los procedimientos. 
+ 
+2 Portafirmas corporativo: Plataforma tecnológica integrada en la infraestructura de la Generalitat que permite la firma electrónica de 
+documentos de manera centralizada, segura y conforme a la normativa vigente.  
+
+
+Núm. 10092 / 22.04.2025 31 / 35
+CVE: DOGV-C-2025-11622 https://dogv.gva.es/
+ 
+SERVICIOS COMUNES ÓRGANO RESPONSABLE FUNCIONAL ÓRGANO RESPONSABLE TÉCNICO 
+Portal Corporativo de la 
+Generalitat 
+Órgano con competencias en 
+Simplificación Administrativa para lo 
+referente al gobierno del portal 
+ 
+Órgano con competencias en promoción 
+institucional para lo referente a 
+armonización de la información y en 
+relación con la imagen institucional 
+ 
+Cada departamento del Consell y entidad 
+del sector público será responsable de la 
+integridad, veracidad y actualización de 
+sus contenidos 
+Departamento con competencias TIC 
+horizontales 
+Portal para el personal 
+empleado público 
+(Funcion@GVA) 
+Órgano con competencias en 
+Simplificación Administrativa para lo 
+referente al gobierno del portal 
+ 
+Órgano con competencias en promoción 
+institucional para lo referente a 
+armonización de la información y en 
+relación con la imagen institucional 
+ 
+Cada unidad administrativa será 
+responsable de la integridad, veracidad y 
+actualización de sus contenidos 
+Departamento con competencias TIC 
+horizontales 
+Portales institucionales 
+Subsecretarías de los departamentos del 
+Consell, salvo que sus reglamentos 
+orgánicos y funcionales establezcan otros 
+órganos distintos, y los órganos 
+equivalentes de las entidades del sector 
+público instrumental 
+ 
+Órgano con competencias en promoción 
+institucional para lo referente a 
+armonización de la información y en 
+relación con la imagen institucional 
+ 
+Cada unidad será responsable de la 
+integridad, veracidad y actualización de 
+sus contenidos 
+Órgano con competencias TIC en su 
+ámbito 
+Registro electrónico de la 
+Generalitat 
+Órgano con competencias en atención a la 
+ciudadanía para los registros de entrada 
+ 
+Órgano con competencias en 
+simplificación para los registros de salida y 
+las notificaciones electrónicas 
+Órgano con competencias en TIC 
+horizontales 
+Registro electrónico de 
+información de personas 
+usuarias 
+Órgano con competencias en 
+simplificación administrativa 
+Órgano con competencias en TIC 
+horizontales 
+
+
+Núm. 10092 / 22.04.2025 32 / 35
+CVE: DOGV-C-2025-11622 https://dogv.gva.es/
+ 
+SERVICIOS COMUNES ÓRGANO RESPONSABLE FUNCIONAL ÓRGANO RESPONSABLE TÉCNICO 
+Registro de sistemas 
+algorítmicos 
+Órgano con competencias en 
+transparencia para la creación y publicidad 
+del Registro 
+ 
+Comisión formada por representantes de 
+los ámbitos con competencias TIC, 
+transparencia, innovación y simplificación 
+administrativa, para la para la evaluación 
+de los algoritmos que deben aparecer en 
+el Registro  
+Órgano con competencias en TIC 
+horizontales 
+Registro de personal 
+funcionario habilitado 
+ 
+Órgano con competencias en 
+simplificación administrativa  
+ 
+Órgano con competencias en atención a la 
+ciudadanía 
+ 
+Órgano con competencias en TIC 
+horizontales 
+Registro electrónico de 
+representantes 
+Órgano con competencias en 
+simplificación administrativa 
+Órgano con competencias TIC 
+horizontales 
+Registro de convenios Órgano con competencias en el Registro 
+de convenios 
+Órgano con competencias TIC en el 
+ámbito del Registro de convenios 
+Registro de contratos Órgano con competencias en el Registro 
+de contratos  
+Órgano con competencias TIC en el 
+ámbito del Registro de contratos 
+Sede PROP de la 
+Generalitat 
+Órgano con competencias en atención a la 
+ciudadanía 
+Órgano con competencias TIC 
+horizontales 
+Servicio corporativo de 
+verificación de 
+documentos3 
+Órgano con competencias en 
+simplificación administrativa 
+Órgano con competencias TIC 
+horizontales 
+Sistema de Gestión de 
+Documentos 
+Electrónicos de la 
+Generalitat 
+Órgano con competencias en 
+simplificación administrativa 
+ 
+Órgano con competencias en archivos 
+Órgano con competencias TIC 
+horizontales 
+Sistema tramitador 
+corporativo de 
+expedientes 
+administrativos 
+Órgano con competencias en 
+simplificación administrativa 
+Órgano con competencias TIC 
+horizontales 
+Tablón Electrónico Único 
+de Anuncios (TEUA) 
+Órgano con competencias en 
+simplificación Administrativa 
+Órgano con competencias TIC 
+horizontales 
+Valija electrónica Órgano con competencias en 
+simplificación administrativa 
+Órgano con competencias TIC 
+horizontales 
+Política de identificación 
+y firma 
+Órgano con competencias en 
+simplificación administrativa 
+Órgano con competencias TIC 
+horizontales 
+ 
+Órgano con competencias en 
+ciberseguridad 
+ 
+ 
+3 Servicio corporativo de verificación de documentos: Herramienta tecnológica que permite comprobar la autenticidad, integridad y 
+validez de los documentos electrónicos emitidos o gestionados por la Generalitat. Este servicio facilita la consulta y validación de 
+documentos mediante el uso de códigos seguros de verificación (CSV) 
+
+
+Núm. 10092 / 22.04.2025 33 / 35
+CVE: DOGV-C-2025-11622 https://dogv.gva.es/
+ 
+Aplicaciones comunes para la gestión de procedimientos administrativos 
+ 
+PROCEDIMIENTO APLICACIÓN4 ÓRGANO RESPONSABLE 
+FUNCIONAL5 
+ÓRGANO RESPONSABLE 
+TÉCNICO 
+Becas profesionales eBecas Función Pública Órgano con competencias 
+TIC en su ámbito 
+Contratación gvContratos Subsecretaría competente en 
+materia de Hacienda 
+ 
+Órgano con competencias 
+TIC horizontales 
+ 
+Gestión económico-
+financiera NEFIS 
+Intervención general 
+ 
+Órgano competente en 
+materia de presupuestos 
+ 
+Órgano competente  
+en materia de Tesorería 
+ 
+Órgano con competencias 
+TIC horizontales 
+ 
+Quejas 
+administrativas gvQuejas Inspección General de 
+Servicios 
+Órgano con competencias 
+TIC horizontales 
+Responsabilidad 
+patrimonial gvRESPAT 
+Comisión interdepartamental 
+para la Transformación digital 
+y la simplificación 
+administrativa - CITSA 
+ 
+Órgano con competencias 
+TIC horizontales para el flujo 
+genérico 
+ 
+Órgano con competencias 
+TIC en su ámbito para las 
+adaptaciones requeridas 
+ 
+Sanciones gvSancionador 
+ 
+Comisión interdepartamental 
+para la Transformación digital 
+y la simplificación 
+administrativa – CITSA 
+ 
+ 
+Órgano con competencias 
+TIC horizontales para el flujo 
+genérico 
+ 
+Órgano con competencias 
+TIC en su ámbito para las 
+adaptaciones requeridas 
+ 
+Subvenciones ESTER 
+Comisión interdepartamental 
+para la Transformación digital 
+y la simplificación 
+administrativa - CITSA 
+ 
+Órgano con competencias 
+TIC horizontales para el flujo 
+genérico 
+ 
+Órgano con competencias 
+TIC en su ámbito para las 
+adaptaciones requeridas 
+  
+ 
+4 O en su caso, la aplicación que la sustituya 
+5 O en su caso, el órgano que ejerza la competencia 
+
+
+Núm. 10092 / 22.04.2025 34 / 35
+CVE: DOGV-C-2025-11622 https://dogv.gva.es/
+ 
+ANEXO II  
+Contenido común de las Declaraciones Responsables 
+ 
+- Identificación del procedimiento 
+- Datos de la persona física o jurídica interesada 
+Nombre y apellidos o razón social 
+DNI o NIE 
+Teléfono o dispositivo electrónico 
+Correo electrónico 
+- Datos de la persona física o jurídica representante 
+Nombre y apellidos o razón social 
+DNI o NIE 
+Teléfono o dispositivo electrónico 
+Correo electrónico 
+- Órgano al que se dirige la solicitud 
+- Elección del tipo de notificación y del idioma de esta 
+- Correo o dispositivo electrónico para el aviso de la puesta a disposición de las notificaciones y 
+comunicaciones electrónicas 
+- En caso de consulta interactiva de datos o documentación, obtención de la no oposición / autorización  
+- Declaración responsable general 
+Cumplimiento de los requisitos establecidos en la normativa vigente y disponibilidad de la 
+documentación y compromiso de mantenerla a disposición de la Administración durante el tiempo 
+inherente al reconocimiento o ejercicio de los derechos 
+- Documentación específica necesaria 
+- Información básica de protección de datos 
+Responsable del tratamiento 
+Finalidad del tratamiento 
+Derechos de acceso, rectificación y supresión, así como derecho de limitación u oposición al 
+tratamiento y a no ser objeto de decisiones individuales automatizadas 
+- Manifestación de la persona declarante del conocimiento que conlleva la inexactitud, falsedad u omisión, 
+de los datos e información que acompañe a la declaración responsable. 
+  
+
+
+Núm. 10092 / 22.04.2025 35 / 35
+CVE: DOGV-C-2025-11622 https://dogv.gva.es/
+ 
+ANEXO III 
+Contenido común de las Comunicaciones 
+ 
+- Identificación del procedimiento 
+- Datos de la persona física o jurídica interesada 
+Nombre y apellidos o razón social 
+DNI o NIE 
+Teléfono o dispositivo electrónico 
+Correo electrónico 
+- Datos de la persona física o jurídica representante 
+Nombre y apellidos o razón social 
+DNI o NIE 
+Teléfono o dispositivo electrónico 
+Correo electrónico 
+- Órgano al que se dirige la solicitud 
+- Elección del tipo de notificación y del idioma de esta 
+- Correo o dispositivo electrónico para el aviso de la puesta a disposición de las notificaciones y 
+comunicaciones electrónicas 
+- En caso de consulta interactiva de datos o documentación, obtención de la no oposición / autorización  
+- Otros datos relevantes para el inicio de la actividad, o el reconocimiento o ejercicio del derecho  
+- Información básica de protección de datos 
+Responsable del tratamiento 
+Finalidad del tratamiento 
+Derechos de acceso, rectificación y supresión, así como derecho de limitación u oposición al 
+tratamiento y a no ser objeto de decisiones individuales automatizadas 
+- Manifestación de la persona declarante del conocimiento que conlleva la inexactitud, falsedad u omisión, 
+de los datos e información que acompañe a la comunicación. 
+ 
