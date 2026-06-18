@@ -66,8 +66,7 @@ def _find_article_text(article_ref: str, start_pos: int, text: str, next_match_p
 def parse_articles(text: str) -> list[ParsedArticle]:
     matches = list(ARTICLE_RE.finditer(text))
     if not matches:
-        cleaned = text.strip()
-        return [ParsedArticle("sin_articulo_detectado", "Pendiente de clasificar", cleaned)] if cleaned else []
+        return []  # Return empty list if no articles found, don't import garbage
 
     articles: list[ParsedArticle] = []
     seen_refs = set()
