@@ -24,6 +24,7 @@ El objetivo practico es:
 - Los textos consolidados BOE/EUR-Lex son utiles para estudiar, pero tienen caracter informativo/documental.
 - Las versiones autenticas son las publicadas oficialmente en BOE, DOGV o Diario Oficial de la Union Europea.
 - No usar PDFs de academia o Drive como fuente juridica definitiva sin contrastar con fuente oficial.
+- Autentica es una senal academica auxiliar de alta prioridad: el usuario indica que obtuvo el 75% de las plazas de la convocatoria pasada. Usarla para priorizar que estudiar y donde mirar, pero nunca como autoridad juridica final.
 - El directorio local `Archivo Oposicion TAG-GVA` puede estar desactualizado.
 - Para material academico mas actualizado, revisar Google Drive `Mi Unidad -> Opo`, pero solo como apoyo.
 - Trabajar en cambios pequenos, verificables y documentados.
@@ -39,16 +40,27 @@ El objetivo practico es:
 
 - App Streamlit local: `app.py`.
 - Base SQLite: `db/gvadicto.sqlite`.
-- Textos normativos oficiales importados: 77.
-- Articulos/bloques importados: 11989.
+- Textos normativos oficiales importados: 80.
+- Articulos/bloques importados: 12838.
 - Fuentes catalogadas: 156.
 - Temas oficiales A1-01 2025 importados: 75.
-- Enlaces tema-fuente de validacion fina: 198.
-- Hallazgos abiertos de validacion fina: 32.
+- Enlaces tema-fuente de validacion fina: 204.
+- Hallazgos abiertos de validacion fina: 23.
 - Fuentes oficiales vigiladas: BOE consolidado, BOE diario, DOGV y EUR-Lex TUE/TFUE.
 - Cobertura A1 normativa automatica: 26/26 referencias cubiertas localmente, 0 pendientes de obtencion.
 - Preguntas actuales: 20 piloto desde Ley 39/2015, con fuente y todas `requiere_revision = 1`.
 - Intentos actuales: 0.
+
+## Foco actual de producto
+
+Prioridad inmediata: consolidar la seccion `Estudio` ya creada por Claude y avanzar al siguiente corte minimo sin auditoria juridica global ahora.
+
+Estado de `Estudio`:
+
+- Ya existe una pestaña `Estudiar` en Streamlit para listar temas A1-01 por parte general/especifica.
+- Ya permite abrir un tema, mostrar su enunciado oficial y mostrar normativa/articulos vinculados cuando existen relaciones usables.
+- Siguiente corte: anotacion minima persistente.
+- Incorporar como idea de producto: seleccionar un fragmento y, mediante click derecho o accion contextual equivalente, preguntar una duda a la IA. La respuesta debe guardar fuente/contexto y quedar marcada como `requiere_revision`.
 
 ## Comandos principales
 

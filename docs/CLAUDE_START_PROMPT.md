@@ -19,12 +19,12 @@ Contexto breve:
 
 GVAdicto es una app local-first en Python + Streamlit + SQLite para preparar oposiciones GVA, con foco actual en A1-01 GVA 2025. Ya hay normativa oficial importada desde BOE/DOGV/EUR-Lex y una validacion fina tema-fuente iniciada:
 
-- 77 textos normativos oficiales.
-- 11989 articulos/bloques.
+- 80 textos normativos oficiales.
+- 12838 articulos/bloques.
 - 156 fuentes catalogadas.
 - 75 temas oficiales A1-01 2025 importados.
-- 198 enlaces tema-fuente.
-- 32 hallazgos abiertos de validacion fina.
+- 204 enlaces tema-fuente.
+- 23 hallazgos abiertos de validacion fina.
 - Preguntas: 20 piloto desde Ley 39/2015, con fuente y todas `requiere_revision=1`.
 - Intentos: 0.
 
@@ -38,6 +38,7 @@ Reglas criticas:
 - No ejecutes watchers en paralelo porque SQLite puede bloquearse.
 - No ejecutes check_source_updates.py para eurlex_html; usa scripts/check_eurlex_versions.py.
 - Autentica se ha usado solo como contraste auxiliar de cobertura; sus mapeos llevan `autentica_auxiliar_pendiente_validacion`.
+- El usuario indica que Autentica obtuvo el 75% de las plazas de la convocatoria pasada: usarla como senal auxiliar fuerte de prioridad, no como fuente juridica final.
 
 Comandos de verificacion:
 
@@ -52,7 +53,7 @@ python scripts/check_eurlex_versions.py --update-files --import-updated
 
 Objetivo siguiente:
 
-Quiero que sigamos con la validacion juridica fina tema por tema y que construyamos la futura interfaz de estudio descrita en `docs/STUDY_INTERFACE_SPEC.md`: temas ordenados por parte general/especifica, vista de tema con normativa concreta, anotaciones persistentes, comparacion tras cambios normativos y Pomodoro personalizable. Primero resuelve los hallazgos abiertos, especialmente EUR-Lex para Carta UE/RGPD/Reglamento UE-Euratom 2024/2509, y despues prepara un mapeo tema -> normas -> articulos/bloques prioritarios. No amplias preguntas salvo sobre temas validados y siempre con fuente.
+Quiero avanzar hacia una aplicacion funcional de estudio con minimo gasto de tokens. No quiero ahora una auditoria juridica global. La pestaña `Estudiar` ya existe como navegador inicial de temas; revisala sin hacer refactors globales y avanza con el siguiente corte minimo: anotacion persistente simple vinculada a `topic_id` y/o `article_id`. Incluye en el diseno la posibilidad de seleccionar un fragmento y preguntar una duda a la IA mediante click derecho o accion contextual equivalente; la respuesta debe guardar fuente/contexto y marcarse como `requiere_revision`.
 
 Nivel de rigor: extremadamente alto para validacion juridica; alto para generar preguntas una vez validado.
 

@@ -13,10 +13,11 @@ Fase 1 MVP implementada en version inicial.
 - App Streamlit local.
 - SQLite local.
 - Catalogo de fuentes externas en SQLite (`source_documents`).
-- 77 textos normativos oficiales descargados, procesados e importados.
+- 80 textos normativos oficiales descargados, procesados e importados.
 - 75 temas oficiales A1-01 2025 importados en SQLite.
-- 198 enlaces tema-fuente para validacion fina.
+- 204 enlaces tema-fuente para validacion fina.
 - 20 preguntas piloto generadas desde Ley 39/2015, todas con fuente y `requiere_revision=1`.
+- Pestaña `Estudiar` implementada en Streamlit como navegador inicial de temas A1-01.
 - Importador TXT/MD.
 - CRUD basico de preguntas.
 - Modo test.
@@ -41,12 +42,14 @@ Fase 1 MVP implementada en version inicial.
   - `data/sources/convocatorias/A1-01_2025/a1_01_2025_topic_validation_audit.csv`
   - tablas SQLite `topics`, `topic_sources`, `topic_validation_findings`
 - Autentica se ha usado como contraste auxiliar desde Drive, no como fuente juridica oficial.
+- Autentica debe tratarse como senal academica auxiliar de alta prioridad: el usuario indica que obtuvo el 75% de las plazas en la convocatoria pasada. Prioriza, pero no sustituye BOE/DOGV/EUR-Lex.
+- Claude importo directamente Carta UE, RGPD y Reglamento UE/Euratom 2024/2509 desde EUR-Lex; queda pendiente validacion de articulado exacto.
 - Vigilancia semanal creada para fuentes BOE consolidadas, BOE diario, DOGV y EUR-Lex TUE/TFUE.
 
 ## Pendiente
 
-- Resolver 32 hallazgos abiertos de validacion fina.
-- Ajustar importacion EUR-Lex para Carta de Derechos Fundamentales UE, RGPD y Reglamento UE/Euratom 2024/2509.
+- Revisar y mejorar la pestaña `Estudiar` con anotacion minima persistente.
+- Resolver 23 hallazgos abiertos de validacion fina.
 - Validar articulado exacto por tema antes de ampliar preguntas.
 - Revisar juridicamente el lote piloto antes de usarlo como banco de estudio definitivo.
 - Simulacros configurables.

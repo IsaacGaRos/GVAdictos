@@ -29,13 +29,13 @@
 - None currently
 
 ### Incomplete features
-- ⏳ **29 open validation findings** — need manual review & mapping
+- ⏳ **23 open validation findings** — need manual review & mapping
   - 8: Delimitación de artículos (select specific articles per topic)
   - 2: Temas doctrinales (need matrix, not just law refs)
   - 19: Otros (reglamentarios, competencias sectoriales)
   - **Blocker for**: Expanding questions beyond 20 pilot
   
-- ⏳ **Study interface** — Spec exists, not coded yet
+- ✅ **Study interface Phase 2.1** — Navigator tab exists in Streamlit
   - Features: Anotaciones, Pomodoro, version comparison
   - **Impact**: Medium (planned for later phase)
 
@@ -118,7 +118,7 @@
 - ❌ A critical bug is marked "In progress" with no recent activity → ✅ None open
 - ❌ Build paths have changed → ✅ Stable
 - ❌ GitHub repo is out of sync → ✅ Synced (2 commits, master)
-- ❌ Validation findings blocking work → ⚠️ 29 open (but not critical yet)
+- ❌ Validation findings blocking work → ⚠️ 23 open (but not critical for first Study UI slices)
 - ❌ Database corrupted or missing → ✅ Intact, 12,838 articles confirmed
 
 **Current status**: ✅ **GREEN** — All systems nominal

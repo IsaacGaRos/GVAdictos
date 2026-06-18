@@ -27,8 +27,8 @@ Archivos descargados:
 
 ## Estado local actual
 
-- Leyes/textos normativos importados en SQLite: 77.
-- Articulos/bloques importados: 11989.
+- Leyes/textos normativos importados en SQLite: 80.
+- Articulos/bloques importados: 12838.
 - Fuentes de temario de Drive catalogadas: 75.
 - Fuentes oficiales y auxiliares catalogadas: 156.
   - BOE consolidado: 60.
@@ -119,15 +119,17 @@ Fecha de trabajo: 2026-06-17.
 Se ha creado una capa de validacion tema-fuente en SQLite:
 
 - `topics`: 75 temas oficiales A1-01 2025.
-- `topic_sources`: 198 enlaces tema-fuente.
+- `topic_sources`: 204 enlaces tema-fuente.
   - 39 desde referencias expresas de la cobertura oficial extraida.
   - 134 inferidos desde el enunciado oficial del temario.
-  - 25 desde contraste auxiliar con Autentica, marcados como `autentica_auxiliar_pendiente_validacion`.
-- `topic_validation_findings`: 32 hallazgos abiertos.
+  - 31 desde contraste auxiliar con Autentica, marcados como `autentica_auxiliar_pendiente_validacion`.
+- `topic_validation_findings`: 32 hallazgos totales, 23 abiertos y 9 resueltos.
 - Auditoria CSV: `data/sources/convocatorias/A1-01_2025/a1_01_2025_topic_validation_audit.csv`.
 - Indicaciones auxiliares Autentica resumidas en: `data/sources/convocatorias/A1-01_2025/autentica_auxiliary_normative_indications.md`.
 
 La fuente auxiliar de Autentica usada ha sido `Opo/Autentica/Legislacion A1 2025 v4.pdf` en Google Drive. Se ha catalogado como `auxiliar_no_oficial`; no debe usarse como fuente juridica final.
+
+El usuario indica que Autentica obtuvo el 75% de las plazas de la convocatoria pasada. Debe usarse como senal auxiliar fuerte para priorizar estudio y revisar cobertura, sin sustituir fuentes oficiales.
 
 ## Normativa adicional detectada por validacion fina
 
@@ -174,18 +176,12 @@ Se han obtenido e importado fuentes oficiales adicionales para cubrir normas imp
 
 Estado tras importacion:
 
-- Textos normativos importados en SQLite: 77.
-- Articulos/bloques importados: 11989.
+- Textos normativos importados en SQLite: 80.
+- Articulos/bloques importados: 12838.
 - Fuentes catalogadas: 156.
 - Preguntas generadas: 20, todas `requiere_revision=1`.
 
-Pendiente de automatizar/importar:
-
-- Carta de Derechos Fundamentales de la Union Europea.
-- Reglamento UE 2016/679, RGPD.
-- Reglamento UE/Euratom 2024/2509, normas financieras del presupuesto de la Union.
-
-Nota importante: Autentica cita el Reglamento UE/Euratom 2018/1046 para conflictos de interes; se ha detectado que fue sustituido por el Reglamento UE/Euratom 2024/2509, por lo que queda como hallazgo abierto de validacion antes de generar preguntas.
+Claude importo posteriormente Carta de Derechos Fundamentales de la Union Europea, Reglamento UE 2016/679 RGPD y Reglamento UE/Euratom 2024/2509. Queda pendiente validar articulado exacto por tema antes de generar nuevas preguntas.
 
 ## Generacion controlada de preguntas
 

@@ -11,7 +11,7 @@ El proyecto no esta terminado: la normativa esta obtenida localmente y la valida
 Estado cuantitativo verificado:
 
 - `laws`: 77.
-- `articles`: 11989.
+- `articles`: 12838.
 - `questions`: 20, todas con `requiere_revision = 1`.
 - `attempts`: 0.
 - `source_documents`: 156.
@@ -20,7 +20,7 @@ Estado cuantitativo verificado:
 - `topic_validation_findings`: 32 abiertos.
 - `source_update_checks`: 200 aprox.
 - Cobertura normativa A1 inicial: 26 referencias expresas cubiertas, 0 pendientes.
-- Validacion fina: 39 enlaces desde cobertura expresa, 134 inferidos del temario oficial y 25 desde contraste auxiliar Autentica.
+- Validacion fina: 39 enlaces desde cobertura expresa, 134 inferidos del temario oficial y 31 desde contraste auxiliar Autentica.
 
 ## 2. Objetivo de producto
 
@@ -177,6 +177,7 @@ Importante:
 - No importar material academico como normativa vigente.
 - Si se usa para priorizar articulos/preguntas, contrastar con BOE/DOGV/EUR-Lex.
 - Los mapeos de Autentica quedan con `mapping_basis = autentica_auxiliar_pendiente_validacion`.
+- El usuario indica que Autentica obtuvo el 75% de las plazas en la convocatoria pasada: tratar sus indicaciones como senal auxiliar fuerte de prioridad, pero nunca como fuente juridica final.
 
 ## 8. Vigilancia normativa
 
@@ -247,14 +248,12 @@ streamlit run app.py
 
 Orden recomendado:
 
-1. Resolver los 32 hallazgos abiertos de `topic_validation_findings`.
-2. Ajustar importacion EUR-Lex para Carta UE, RGPD y Reglamento UE/Euratom 2024/2509.
-3. Marcar articulos/bloques clave por tema.
-4. Crear una tabla o CSV de mapeo `tema -> norma -> articulos prioritarios`.
-5. Revisar las 20 preguntas piloto y generar nuevos lotes solo sobre temas validados.
-6. Construir simulacros configurables.
-7. Implementar repeticion espaciada por fallos y dificultad.
-8. Mejorar dashboard de progreso.
+1. Revisar la pestaña `Estudiar` creada por Claude y corregir solo fallos concretos si aparecen.
+2. Crear anotacion minima persistente vinculada a `topic_id` y/o `article_id`.
+3. Incorporar al diseno la accion contextual: seleccionar fragmento y preguntar duda a IA, con modo mock/fallback y `requiere_revision`.
+4. Resolver los 23 hallazgos abiertos de `topic_validation_findings` cuando el usuario vuelva a priorizar validacion fina.
+5. Marcar articulos/bloques clave por tema.
+6. Revisar las 20 preguntas piloto y generar nuevos lotes solo sobre temas validados.
 
 Nuevo objetivo de producto indicado por el usuario:
 

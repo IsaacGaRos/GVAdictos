@@ -61,10 +61,24 @@ Debe permitir:
 - Añadir etiquetas.
 - Marcar fragmentos como `memorizar`, `repasar`, `preguntable` o `confuso`.
 - Crear una pregunta desde un fragmento seleccionado.
+- Seleccionar un fragmento y abrir una accion contextual para preguntar una duda a la IA.
 - Ocultar/mostrar anotaciones.
 - Filtrar por tipo de marca.
 
 Las anotaciones deben guardarse sin modificar el texto oficial.
+
+### Dudas con IA sobre seleccion
+
+Idea de producto: al seleccionar una parte del texto de estudio, el usuario debe poder abrir una accion contextual, idealmente click derecho si la tecnologia lo permite, para preguntar una duda a la IA sobre ese fragmento.
+
+Reglas:
+
+- Debe enviarse a la IA el fragmento seleccionado, norma, articulo/bloque, tema y fuente local.
+- La respuesta no puede modificar el texto oficial.
+- La duda y respuesta deben guardarse como anotacion vinculada al fragmento.
+- Toda respuesta juridica generada por IA debe marcarse como `requiere_revision`.
+- Si no hay API configurada, debe existir modo mock/fallback que prepare el prompt o guarde la duda sin responder.
+- La UI puede usar un boton contextual equivalente si Streamlit no permite click derecho de forma fiable en la primera version.
 
 ## Persistencia ante actualizaciones
 
@@ -88,7 +102,7 @@ Cada anotacion deberia guardar:
 - `law_id`.
 - `article_id`.
 - `content_version_id`.
-- Tipo: highlight, note, doubt, tag, bookmark, question_seed.
+- Tipo: highlight, note, doubt, ai_doubt, tag, bookmark, question_seed.
 - `start_offset` y `end_offset`.
 - Texto seleccionado exacto.
 - `prefix_context` y `suffix_context`.
@@ -107,7 +121,7 @@ Para remapear tras una actualizacion:
 
 ## Tablas propuestas
 
-Estas tablas no existen todavia; son propuesta para fase 2.
+`topics` y `topic_sources` ya existen en SQLite. El resto de tablas son propuesta para fase 2 y deben implementarse de forma incremental.
 
 ### `topics`
 
@@ -279,4 +293,3 @@ Antes de implementar anotaciones, construir el navegador de temas:
 Nivel recomendado: alto.
 
 Para versionado/anotaciones robustas: extremadamente alto.
-

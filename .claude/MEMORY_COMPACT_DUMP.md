@@ -130,9 +130,9 @@ git push origin master
 - Exported → Anki, CSV for study
 
 ### Ongoing work
-- **29 open validation findings** (delimitación articulos, temas doctrinales, etc)
+- **23 open validation findings** (delimitación articulos, temas doctrinales, etc)
 - **20 pilot questions** (all require_revision=1, need legal review)
-- **Future**: study interface (anotaciones, Pomodoro, repetición espaciada)
+- **Current product focus**: study interface. Phase 2.1 navigator exists; next is minimal annotations, then AI doubt action on selected text, Pomodoro and repetición espaciada.
 
 ---
 

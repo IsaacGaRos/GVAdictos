@@ -11,9 +11,9 @@
 | Aspect | Status | Details |
 |--------|--------|---------|
 | **Last stable version** | ✅ EUR-Lex integration | 80 laws, 12,838 articles, 3 new EUR-Lex sources |
-| **In development** | Validation findings resolution | 29 open hallazgos (delimitación, temas, otros) |
+| **In development** | Study annotations | Study navigator is implemented; 23 validation findings remain open |
 | **Last task completed** | GitHub + EUR-Lex integration | GitHub CLI + 3 EUR-Lex docs imported + Code/PRO sync ready |
-| **Next task** | Resolve validation findings | Use `scripts/audit_validation_findings.py` to inspect 29 open |
+| **Next task** | Minimal annotations | Add persistent note/highlight/doubt/bookmark linked to topic/article |
 | **Build status** | ✅ GREEN | All systems nominal, syntax OK, DB verified |
 
 ---
