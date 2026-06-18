@@ -51,6 +51,45 @@ def load_articles(search: str = "", law_id: int | None = None):
         return conn.execute(query, params).fetchall()
 
 
+def load_topics_by_part(part: str):
+    with connect() as conn:
+        return conn.execute(
+            "SELECT * FROM topics WHERE part = ? ORDER BY topic_number",
+            (part,)
+        ).fetchall()
+
+
+def load_topic_normativa(topic_id: int):
+    with connect() as conn:
+        return conn.execute(
+            """
+            SELECT DISTINCT l.id, l.name, ts.normative_reference
+            FROM topic_sources ts
+            JOIN laws l ON l.id = ts.law_id
+            WHERE ts.topic_id = ? AND ts.law_id IS NOT NULL
+            ORDER BY l.name
+            """,
+            (topic_id,)
+        ).fetchall()
+
+
+def load_topic_articles(topic_id: int, law_id: int | None = None):
+    query = """
+        SELECT DISTINCT a.*, l.name AS norma
+        FROM articles a
+        JOIN laws l ON l.id = a.law_id
+        JOIN topic_sources ts ON ts.law_id = l.id
+        WHERE ts.topic_id = ?
+    """
+    params = [topic_id]
+    if law_id:
+        query += " AND a.law_id = ?"
+        params.append(law_id)
+    query += " ORDER BY l.name, a.article_ref"
+    with connect() as conn:
+        return conn.execute(query, params).fetchall()
+
+
 def question_payload(prefix: str = "", existing=None, article=None) -> dict:
     law_value = existing["norma"] if existing else (article["norma"] if article else "")
     article_value = existing["articulo"] if existing else (article["article_ref"] if article else "")
@@ -106,7 +145,7 @@ def validate_question(data: dict) -> list[str]:
 st.title("GVAdicto")
 st.caption("MVP local-first para oposiciones GVA. Contenido juridico siempre vinculado a fuente.")
 
-tabs = st.tabs(["Inicio", "Fuentes", "Importar leyes", "Articulos", "Preguntas", "Modo test", "Fallos", "Informes y CSV"])
+tabs = st.tabs(["Inicio", "Fuentes", "Importar leyes", "Articulos", "Preguntas", "Estudiar", "Modo test", "Fallos", "Informes y CSV"])
 
 with tabs[0]:
     counts = dashboard_counts()
@@ -195,6 +234,45 @@ with tabs[4]:
                 st.warning("Pregunta eliminada.")
 
 with tabs[5]:
+    st.subheader("Estudiar por tema")
+    col1, col2 = st.columns(2)
+    with col1:
+        part = st.radio("Parte", ["general", "especial"])
+
+    topics = load_topics_by_part(part)
+    if topics:
+        topic_options = {f"Tema {row['topic_number']}: {row['official_text'][:60]}..." if len(row['official_text']) > 60 else f"Tema {row['topic_number']}: {row['official_text']}": row for row in topics}
+        selected_topic_text = st.selectbox("Temas disponibles", list(topic_options.keys()))
+        selected_topic = topic_options[selected_topic_text]
+
+        st.markdown(f"**{selected_topic['section']}**")
+        st.write(selected_topic['official_text'])
+
+        normativa = load_topic_normativa(selected_topic['id'])
+        if normativa:
+            st.subheader("Normativa asociada")
+            for norm in normativa:
+                st.write(f"- {norm['name']}")
+
+            if len(normativa) == 1:
+                law_id = normativa[0]['id']
+            else:
+                law_names = {n['name']: n['id'] for n in normativa}
+                selected_law_name = st.selectbox("Selecciona norma para ver articulos", list(law_names.keys()))
+                law_id = law_names[selected_law_name]
+
+            articles = load_topic_articles(selected_topic['id'], law_id)
+            if articles:
+                st.subheader("Articulos y bloques")
+                st.dataframe(rows_to_df(articles), use_container_width=True, hide_index=True)
+            else:
+                st.info("No hay articulos importados para esta norma aun.")
+        else:
+            st.warning("Sin normativa mapeada en validacion. Requiere delimitacion de articulos.")
+    else:
+        st.info(f"No hay temas en parte {part}.")
+
+with tabs[6]:
     st.subheader("Modo test")
     questions = list_questions()
     if not questions:
@@ -232,7 +310,7 @@ with tabs[5]:
             st.info(question["explicacion"])
             st.caption(f"Fuente: {question['fuente']}")
 
-with tabs[6]:
+with tabs[7]:
     st.subheader("Base de fallos")
     summary = mistake_summary()
     if summary:
@@ -240,7 +318,7 @@ with tabs[6]:
     else:
         st.info("Todavia no hay intentos registrados.")
 
-with tabs[7]:
+with tabs[8]:
     st.subheader("Informes y exportaciones")
     counts = dashboard_counts()
     st.json(counts)
