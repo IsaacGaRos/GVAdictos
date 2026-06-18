@@ -295,8 +295,9 @@ with tabs[5]:
                             with col_ref:
                                 st.markdown(f"**Art. {article['article_ref']}**")
                             with col_title:
-                                st.caption(article.get('title', 'Sin titulo'))
-                            if article.get('text'):
+                                title = article['title'] if article['title'] else 'Sin titulo'
+                                st.caption(title)
+                            if article['text']:
                                 st.text_area("Texto", value=article['text'], height=80, disabled=True, key=f"art_{article['id']}")
                     if len(filtered) < len(articles):
                         st.caption(f"Mostrando {len(filtered)} de {len(articles)} articulos")
