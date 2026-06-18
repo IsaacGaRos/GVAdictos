@@ -46,6 +46,7 @@ def parse_articles(text: str) -> list[ParsedArticle]:
 
     articles: list[ParsedArticle] = []
     seen_refs = set()
+    skipped_articles = []
 
     for index, match in enumerate(matches):
         start = match.start()
@@ -56,14 +57,30 @@ def parse_articles(text: str) -> list[ParsedArticle]:
 
         # Skip index/TOC lines: very short, mostly dots, or ending with page numbers
         if len(block) < 150 and ("." * 5 in block or re.match(r".*\d+\s*$", block)):
+            skipped_articles.append((article_ref, "TOC/Index line"))
             continue
 
         # Skip duplicates (same article ref already seen)
         if article_ref in seen_refs:
+            skipped_articles.append((article_ref, "Duplicate"))
+            continue
+
+        # Reject articles without meaningful text (MIN 50 chars after title)
+        text_only = block.replace(title, "", 1).strip()
+        if len(text_only) < 50:
+            skipped_articles.append((article_ref, f"No text content (only {len(text_only)} chars)"))
             continue
 
         seen_refs.add(article_ref)
         articles.append(ParsedArticle(article_ref=article_ref, title=title, text=block))
+
+    # Log skipped articles for debugging
+    if skipped_articles:
+        import sys
+        print(f"[Parser] Skipped {len(skipped_articles)} articles:", file=sys.stderr)
+        for ref, reason in skipped_articles[:10]:  # Show first 10
+            print(f"  Art. {ref}: {reason}", file=sys.stderr)
+
     return articles
 
 
