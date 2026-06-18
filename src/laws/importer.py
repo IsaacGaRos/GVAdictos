@@ -45,12 +45,24 @@ def parse_articles(text: str) -> list[ParsedArticle]:
         return [ParsedArticle("sin_articulo_detectado", "Pendiente de clasificar", cleaned)] if cleaned else []
 
     articles: list[ParsedArticle] = []
+    seen_refs = set()
+
     for index, match in enumerate(matches):
         start = match.start()
         end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
         block = text[start:end].strip()
         article_ref = match.group(2).strip()
         title = match.group(3).strip() or f"Articulo {article_ref}"
+
+        # Skip index/TOC lines: very short, mostly dots, or ending with page numbers
+        if len(block) < 150 and ("." * 5 in block or re.match(r".*\d+\s*$", block)):
+            continue
+
+        # Skip duplicates (same article ref already seen)
+        if article_ref in seen_refs:
+            continue
+
+        seen_refs.add(article_ref)
         articles.append(ParsedArticle(article_ref=article_ref, title=title, text=block))
     return articles
 
