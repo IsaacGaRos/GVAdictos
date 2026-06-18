@@ -38,10 +38,10 @@ def reimport_law(law_id: int):
     print(f"Re-importing: {law['name']} from {source_path}")
     try:
         import_law(source_path, law['name'], original_source_path=source_path)
-        print(f"✓ {law['name']} re-imported successfully")
+        print(f"[OK] {law['name']} re-imported successfully")
         return True
     except Exception as e:
-        print(f"✗ Error re-importing {law['name']}: {e}")
+        print(f"[ERROR] Re-importing {law['name']}: {e}")
         return False
 
 if __name__ == "__main__":
