@@ -235,42 +235,77 @@ with tabs[4]:
 
 with tabs[5]:
     st.subheader("Estudiar por tema")
-    col1, col2 = st.columns(2)
+
+    col1, col2, col3 = st.columns([1, 2, 2])
     with col1:
-        part = st.radio("Parte", ["general", "especial"])
+        part = st.radio("Parte", ["general", "especial"], horizontal=False)
 
     topics = load_topics_by_part(part)
-    if topics:
-        topic_options = {f"Tema {row['topic_number']}: {row['official_text'][:60]}..." if len(row['official_text']) > 60 else f"Tema {row['topic_number']}: {row['official_text']}": row for row in topics}
-        selected_topic_text = st.selectbox("Temas disponibles", list(topic_options.keys()))
-        selected_topic = topic_options[selected_topic_text]
+    if not topics:
+        st.info(f"No hay temas en parte {part}.")
+    else:
+        with col2:
+            st.markdown("**Temas disponibles**")
+            topic_options = {f"{row['topic_number']:02d}. {row['official_text'][:50]}{'...' if len(row['official_text']) > 50 else ''}": row for row in topics}
+            selected_topic_text = st.selectbox("", list(topic_options.keys()), label_visibility="collapsed")
+            selected_topic = topic_options[selected_topic_text]
 
-        st.markdown(f"**{selected_topic['section']}**")
+        with col3:
+            st.markdown(f"**Seccion**")
+            st.caption(selected_topic['section'])
+
+        st.divider()
+
+        st.markdown(f"### Tema {selected_topic['topic_number']}")
         st.write(selected_topic['official_text'])
+
+        st.divider()
 
         normativa = load_topic_normativa(selected_topic['id'])
         if normativa:
-            st.subheader("Normativa asociada")
-            for norm in normativa:
-                st.write(f"- {norm['name']}")
-
-            if len(normativa) == 1:
-                law_id = normativa[0]['id']
-            else:
+            col_norm, col_art = st.columns(2)
+            with col_norm:
+                st.markdown("**Normativa asociada**")
                 law_names = {n['name']: n['id'] for n in normativa}
-                selected_law_name = st.selectbox("Selecciona norma para ver articulos", list(law_names.keys()))
-                law_id = law_names[selected_law_name]
+                if len(normativa) == 1:
+                    law_id = normativa[0]['id']
+                    st.info(f"Norma: {normativa[0]['name']}")
+                else:
+                    selected_law_name = st.selectbox("Selecciona norma", list(law_names.keys()))
+                    law_id = law_names[selected_law_name]
 
             articles = load_topic_articles(selected_topic['id'], law_id)
+            with col_art:
+                st.markdown("**Articulos importados**")
+                if articles:
+                    st.metric("Total", len(articles))
+                else:
+                    st.metric("Total", 0)
+
             if articles:
-                st.subheader("Articulos y bloques")
-                st.dataframe(rows_to_df(articles), use_container_width=True, hide_index=True)
+                st.markdown("---")
+                st.markdown("#### Articulos y bloques")
+                search_art = st.text_input("Buscar articulo por numero o titulo", "")
+                filtered = [a for a in articles if search_art.lower() in str(a['article_ref']).lower() or search_art.lower() in (a.get('title', '') or '').lower()]
+
+                if filtered:
+                    for article in filtered[:20]:
+                        with st.container(border=True):
+                            col_ref, col_title = st.columns([1, 3])
+                            with col_ref:
+                                st.markdown(f"**Art. {article['article_ref']}**")
+                            with col_title:
+                                st.caption(article.get('title', 'Sin titulo'))
+                            if article.get('text'):
+                                st.text_area("Texto", value=article['text'], height=80, disabled=True, key=f"art_{article['id']}")
+                    if len(filtered) < len(articles):
+                        st.caption(f"Mostrando {len(filtered)} de {len(articles)} articulos")
+                else:
+                    st.info(f"No hay articulos que coincidan con '{search_art}'")
             else:
                 st.info("No hay articulos importados para esta norma aun.")
         else:
             st.warning("Sin normativa mapeada en validacion. Requiere delimitacion de articulos.")
-    else:
-        st.info(f"No hay temas en parte {part}.")
 
 with tabs[6]:
     st.subheader("Modo test")
