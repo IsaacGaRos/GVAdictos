@@ -298,7 +298,9 @@ with tabs[5]:
                                 title = article['title'] if article['title'] else 'Sin titulo'
                                 st.caption(title)
                             if article['text']:
-                                st.text_area("Texto", value=article['text'], height=80, disabled=True, key=f"art_{article['id']}")
+                                lines = len(article['text'].split('\n'))
+                                height = max(100, min(lines * 20 + 40, 400))
+                                st.text_area("", value=article['text'], height=height, disabled=True, key=f"art_{article['id']}", label_visibility="collapsed")
                     if len(filtered) < len(articles):
                         st.caption(f"Mostrando {len(filtered)} de {len(articles)} articulos")
                 else:
