@@ -14,6 +14,9 @@ from src.core.source_catalog import list_source_documents
 from src.laws.importer import import_law
 from src.mistakes.repository import ERROR_CAUSES, mistake_summary, record_attempt, weekly_summary
 from src.reports.basic import dashboard_counts
+from src.studies.annotations import (
+    create_annotation, delete_annotation, get_annotations_for_topic, update_annotation
+)
 from src.tests.repository import create_question, delete_question, get_question, list_questions, update_question
 
 
@@ -63,10 +66,16 @@ def load_topic_normativa(topic_id: int):
     with connect() as conn:
         return conn.execute(
             """
-            SELECT DISTINCT l.id, l.name, ts.normative_reference
+            SELECT
+                l.id,
+                l.name,
+                COUNT(DISTINCT ts.article_id) AS mapped_articles,
+                COUNT(ts.id) AS mapping_rows,
+                GROUP_CONCAT(DISTINCT ts.normative_reference) AS normative_reference
             FROM topic_sources ts
             JOIN laws l ON l.id = ts.law_id
             WHERE ts.topic_id = ? AND ts.law_id IS NOT NULL
+            GROUP BY l.id, l.name
             ORDER BY l.name
             """,
             (topic_id,)
@@ -74,19 +83,35 @@ def load_topic_normativa(topic_id: int):
 
 
 def load_topic_articles(topic_id: int, law_id: int | None = None):
-    query = """
-        SELECT DISTINCT a.*, l.name AS norma
-        FROM articles a
-        JOIN laws l ON l.id = a.law_id
-        JOIN topic_sources ts ON ts.law_id = l.id
-        WHERE ts.topic_id = ?
-    """
-    params = [topic_id]
-    if law_id:
-        query += " AND a.law_id = ?"
-        params.append(law_id)
-    query += " ORDER BY l.name, a.article_ref"
     with connect() as conn:
+        mapped_query = """
+            SELECT DISTINCT a.*, l.name AS norma
+            FROM topic_sources ts
+            JOIN articles a ON a.id = ts.article_id
+            JOIN laws l ON l.id = a.law_id
+            WHERE ts.topic_id = ?
+        """
+        params: list = [topic_id]
+        if law_id:
+            mapped_query += " AND a.law_id = ?"
+            params.append(law_id)
+        mapped_query += " ORDER BY l.name, CAST(a.article_ref AS INTEGER), a.article_ref"
+        mapped = conn.execute(mapped_query, params).fetchall()
+        if mapped:
+            return mapped
+
+        query = """
+            SELECT DISTINCT a.*, l.name AS norma
+            FROM articles a
+            JOIN laws l ON l.id = a.law_id
+            JOIN topic_sources ts ON ts.law_id = l.id
+            WHERE ts.topic_id = ?
+        """
+        params = [topic_id]
+        if law_id:
+            query += " AND a.law_id = ?"
+            params.append(law_id)
+        query += " ORDER BY l.name, CAST(a.article_ref AS INTEGER), a.article_ref"
         return conn.execute(query, params).fetchall()
 
 
@@ -286,7 +311,11 @@ with tabs[5]:
                 st.markdown("---")
                 st.markdown("#### Articulos y bloques")
                 search_art = st.text_input("Buscar articulo por numero o titulo", "")
-                filtered = [a for a in articles if search_art.lower() in str(a['article_ref']).lower() or search_art.lower() in (a.get('title', '') or '').lower()]
+                filtered = [
+                    a for a in articles
+                    if search_art.lower() in str(a['article_ref']).lower()
+                    or search_art.lower() in (a['title'] or '').lower()
+                ]
 
                 if filtered:
                     for article in filtered[:20]:
@@ -309,6 +338,54 @@ with tabs[5]:
                 st.info("No hay articulos importados para esta norma aun.")
         else:
             st.warning("Sin normativa mapeada en validacion. Requiere delimitacion de articulos.")
+
+        st.divider()
+
+        st.markdown("### Anotaciones")
+        with st.expander("Agregar nota, duda o marcador"):
+            col_type, col_color = st.columns([2, 1])
+            with col_type:
+                ann_type = st.selectbox("Tipo", ["note", "highlight", "doubt", "bookmark"],
+                                       format_func=lambda x: {"note": "Nota", "highlight": "Destacar", "doubt": "Duda", "bookmark": "Marcador"}.get(x, x),
+                                       key="ann_type")
+            with col_color:
+                color = st.selectbox("Color", ["", "yellow", "blue", "red", "green"],
+                                    format_func=lambda x: {"": "Sin color", "yellow": "Amarillo", "blue": "Azul", "red": "Rojo", "green": "Verde"}.get(x, x),
+                                    key="ann_color")
+
+            note_text = st.text_area("Tu nota/duda/referencia", "", height=80, key="ann_note")
+            if st.button("Guardar anotacion"):
+                if note_text:
+                    create_annotation(
+                        topic_id=selected_topic['id'],
+                        article_id=None,
+                        annotation_type=ann_type,
+                        note_text=note_text,
+                        color=color if color else None
+                    )
+                    st.success("Anotacion guardada!")
+                    st.rerun()
+                else:
+                    st.warning("Por favor escribe algo en la nota")
+
+        annotations = get_annotations_for_topic(selected_topic['id'])
+        if annotations:
+            st.markdown("#### Tus anotaciones")
+            for ann in annotations:
+                cols = st.columns([0.8, 0.2])
+                with cols[0]:
+                    icon = {"note": "📝", "highlight": "🟨", "doubt": "❓", "bookmark": "🔖"}.get(ann['annotation_type'], "📌")
+                    type_label = {"note": "Nota", "highlight": "Destacado", "doubt": "Duda", "bookmark": "Marcador"}.get(ann['annotation_type'])
+                    with st.container(border=True):
+                        st.caption(f"{icon} {type_label} — {ann['created_at'][:10]}")
+                        st.write(ann['note_text'])
+                with cols[1]:
+                    if st.button("Eliminar", key=f"del_ann_{ann['id']}"):
+                        delete_annotation(ann['id'])
+                        st.success("Anotacion eliminada")
+                        st.rerun()
+        else:
+            st.caption("Sin anotaciones en este tema.")
 
 with tabs[6]:
     st.subheader("Modo test")
