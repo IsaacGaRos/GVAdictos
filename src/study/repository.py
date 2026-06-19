@@ -20,7 +20,6 @@ class StudySchemaMissingError(StudyStorageError):
 class StudyRepository:
     def __init__(self, conn: sqlite3.Connection) -> None:
         self.conn = conn
-        self.conn.row_factory = sqlite3.Row
 
     def get_article_snapshot(self, article_id: int) -> RowDict | None:
         row = self.conn.execute(

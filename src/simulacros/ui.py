@@ -13,13 +13,10 @@ from src.simulacros.service import ExamService, ExamServiceError
 from src.core.db import connect
 
 
-@st.cache_resource
 def get_exam_service() -> ExamService | None:
-    """Get or initialize ExamService."""
+    """Get a fresh ExamService (no caching: avoids cross-thread sqlite errors)."""
     try:
-        conn = connect()
-        service = ExamService(conn)
-        return service
+        return ExamService(connect())
     except Exception as e:
         st.warning(f"Error initializing exam service: {e}")
         return None

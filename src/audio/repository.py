@@ -19,7 +19,6 @@ class AudioSchemaMissingError(AudioStorageError):
 class AudioRepository:
     def __init__(self, conn: sqlite3.Connection) -> None:
         self.conn = conn
-        self.conn.row_factory = sqlite3.Row
 
     def ensure_storage_ready(self) -> None:
         missing = missing_audio_tables(self.conn)

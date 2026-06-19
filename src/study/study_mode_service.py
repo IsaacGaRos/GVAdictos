@@ -16,7 +16,6 @@ class StudyModeService:
 
     def __init__(self, conn: sqlite3.Connection):
         self.conn = conn
-        self.conn.row_factory = sqlite3.Row
 
     def get_law_study_structure(self, law_id: int) -> dict[str, Any]:
         """

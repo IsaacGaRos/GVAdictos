@@ -22,13 +22,14 @@ INSIGHT_TYPE_LABELS = {
 }
 
 
-@st.cache_resource
 def get_ai_service() -> AIService | None:
-    """Get or initialize AIService. Returns None if API key not configured."""
+    """Get a fresh AIService. Returns None if API key not configured.
+
+    No caching: a cached sqlite connection would be bound to one thread and
+    Streamlit reruns can land on a different thread.
+    """
     try:
-        conn = connect()
-        service = AIService(conn)
-        return service
+        return AIService(connect())
     except AIConfigError:
         return None
     except Exception as e:

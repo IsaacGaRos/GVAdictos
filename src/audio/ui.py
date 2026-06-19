@@ -13,16 +13,37 @@ from src.audio.service import TTSService, TTSServiceError
 from src.core.db import connect
 
 
-@st.cache_resource
 def get_tts_service() -> TTSService | None:
-    """Get or initialize TTSService."""
+    """Get a fresh TTSService.
+
+    No caching: a cached connection would be bound to the thread that created
+    it and Streamlit reruns can land on a different thread (sqlite3 raises
+    'objects created in a thread can only be used in that same thread').
+    """
     try:
-        conn = connect()
-        service = TTSService(conn)
-        return service
+        return TTSService(connect())
     except Exception as e:
         st.warning(f"Error initializing TTS service: {e}")
         return None
+
+
+def render_tts_button(
+    key: str,
+    text: str,
+    label: str = "🔊 Escuchar",
+    speed: float = 1.0,
+    help_text: str = "Lee el texto en voz alta en el navegador (sin coste)",
+) -> None:
+    """Render a compact speaker button that reads `text` aloud on click.
+
+    Cost-free: uses the browser Web Speech API. Designed to sit inline next to
+    an article (read one article) or at the top of a topic (read everything).
+    """
+    if not text or not text.strip():
+        return
+    if st.button(label, key=f"tts_btn_{key}", help=help_text):
+        js_code = _generate_web_speech_js(text, voice=None, speed=speed, article_title=label)
+        st.components.v1.html(js_code, height=110, scrolling=False)
 
 
 def render_tts_player(article_id: int, article_title: str, article_text: str) -> None:
@@ -93,12 +114,23 @@ def _generate_web_speech_js(
     voice: str | None = None,
     speed: float = 1.0,
     article_title: str = "Article",
+    autostart: bool = True,
 ) -> str:
-    """Generate HTML/JS for Web Speech API player."""
+    """Generate HTML/JS for Web Speech API player.
+
+    autostart=True hace que empiece a leer en cuanto se inyecta el componente,
+    de modo que pulsar el icono de altavoz reproduce directamente.
+    """
     # Escape text for JavaScript
     safe_text = text.replace("\\", "\\\\").replace('"', '\\"').replace("\n", " ")
 
     voice_selection = f"voices.find(v => v.lang.includes('{voice}')) || voices[0]" if voice else "voices[0]"
+
+    autostart_js = (
+        "if (synth.getVoices().length > 0) { startSpeech(); }"
+        " else { synth.onvoiceschanged = () => { startSpeech(); }; }"
+        if autostart else ""
+    )
 
     html = f"""
     <div id="tts-player" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
@@ -166,10 +198,8 @@ def _generate_web_speech_js(
         document.getElementById('status').textContent = 'Detenido';
     }}
 
-    // Ensure voices are loaded
-    if (synth.onvoiceschanged !== undefined) {{
-        synth.onvoiceschanged = () => {{}};
-    }}
+    // Auto-arranque al inyectar el componente (icono de altavoz)
+    {autostart_js}
     </script>
     """
     return html

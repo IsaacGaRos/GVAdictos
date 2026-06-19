@@ -16,7 +16,6 @@ class ReadingPreferencesService:
     def __init__(self, conn: sqlite3.Connection, user_id: int = 1):
         self.conn = conn
         self.user_id = user_id
-        self.conn.row_factory = sqlite3.Row
 
     def get_preferences(self) -> dict[str, Any]:
         """Obtener preferencias del usuario (o defaults)."""

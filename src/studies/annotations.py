@@ -193,22 +193,15 @@ def get_annotations_for_topic(topic_id: int) -> list:
             # Obtener resumen del tema
             summary = service.get_topic_summary(topic_id)
 
-            # Convertir notas a formato compatible
-            article_ids = [
-                int(
-                    conn.execute(
-                        "SELECT DISTINCT article_id FROM topic_sources WHERE topic_id = ?",
-                        (topic_id,),
-                    ).fetchone()[0]
-                )
-                for _ in [None]
-                if conn.execute(
-                    "SELECT DISTINCT article_id FROM topic_sources WHERE topic_id = ?",
-                    (topic_id,),
-                ).fetchone()
-            ]
+            # Todos los articulos delimitados del tema (ignorando filas sin article_id)
+            article_id_rows = conn.execute(
+                "SELECT DISTINCT article_id FROM topic_sources "
+                "WHERE topic_id = ? AND article_id IS NOT NULL",
+                (topic_id,),
+            ).fetchall()
+            article_ids = [int(r["article_id"]) for r in article_id_rows]
 
-            for article_id in set(article_ids):
+            for article_id in article_ids:
                 article_state = service.get_article_state(article_id)
 
                 # Notas

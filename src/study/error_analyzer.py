@@ -15,7 +15,6 @@ class ErrorAnalyzerService:
 
     def __init__(self, conn: sqlite3.Connection):
         self.conn = conn
-        self.conn.row_factory = sqlite3.Row
 
     def analyze_exam_performance(self, exam_paper_id: int) -> dict[str, Any]:
         """

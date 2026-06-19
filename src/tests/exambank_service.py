@@ -129,7 +129,6 @@ class ExamBankService:
 
     def get_exam_paper(self, exam_paper_id: int) -> dict[str, Any] | None:
         """Obtener detalles de un examen."""
-        self.conn.row_factory = sqlite3.Row
         row = self.conn.execute(
             "SELECT * FROM exam_papers WHERE id = ?",
             (exam_paper_id,)
@@ -138,7 +137,6 @@ class ExamBankService:
 
     def get_exam_questions(self, exam_paper_id: int) -> list[dict[str, Any]]:
         """Obtener preguntas de un examen."""
-        self.conn.row_factory = sqlite3.Row
         rows = self.conn.execute(
             """
             SELECT * FROM exam_questions
@@ -151,7 +149,6 @@ class ExamBankService:
 
     def get_question_summary(self, exam_question_id: int) -> dict[str, Any]:
         """Obtener resumen de pregunta + opciones + links."""
-        self.conn.row_factory = sqlite3.Row
         question = self.conn.execute(
             "SELECT * FROM exam_questions WHERE id = ?",
             (exam_question_id,)

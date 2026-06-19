@@ -20,7 +20,6 @@ class DailyPlannerService:
 
     def __init__(self, conn: sqlite3.Connection):
         self.conn = conn
-        self.conn.row_factory = sqlite3.Row
 
     def generate_daily_plan(
         self,

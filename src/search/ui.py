@@ -9,13 +9,10 @@ from src.search.service import SearchService, SearchServiceError
 from src.core.db import connect
 
 
-@st.cache_resource
 def get_search_service() -> SearchService | None:
-    """Get or initialize SearchService."""
+    """Get a fresh SearchService (no caching: avoids cross-thread sqlite errors)."""
     try:
-        conn = connect()
-        service = SearchService(conn)
-        return service
+        return SearchService(connect())
     except Exception as e:
         st.warning(f"Error initializing search service: {e}")
         return None

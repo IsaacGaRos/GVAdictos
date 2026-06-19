@@ -15,7 +15,6 @@ class ImportanceFilterService:
 
     def __init__(self, conn: sqlite3.Connection):
         self.conn = conn
-        self.conn.row_factory = sqlite3.Row
 
     def get_important_articles(
         self,

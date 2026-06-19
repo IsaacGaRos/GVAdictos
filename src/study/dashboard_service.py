@@ -16,7 +16,6 @@ class DashboardService:
 
     def __init__(self, conn: sqlite3.Connection):
         self.conn = conn
-        self.conn.row_factory = sqlite3.Row
 
     def get_overall_progress(self) -> dict[str, Any]:
         """Resumen general de progreso."""

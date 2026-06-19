@@ -144,7 +144,6 @@ class SM2Calculator:
         if current_date is None:
             current_date = datetime.now().date().isoformat()
 
-        self.conn.row_factory = sqlite3.Row
         rows = self.conn.execute(
             """
             SELECT id, scope_type, scope_id, due_at, state, reps, lapses, ease, interval_days

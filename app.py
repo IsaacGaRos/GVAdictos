@@ -5,6 +5,14 @@ import re
 import time
 from pathlib import Path
 
+# Carga variables de entorno desde .env (ANTHROPIC_API_KEY, STRIPE_API_KEY, etc.)
+# antes de importar servicios que las leen en su inicializacion.
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except Exception:
+    pass
+
 import pandas as pd
 import streamlit as st
 
@@ -25,11 +33,13 @@ from src.studies.annotations import (
 )
 from src.tests.repository import create_question, delete_question, get_question, list_questions, update_question
 from src.ai.ui import render_ai_insights, render_ai_question_generator
-from src.audio.ui import render_tts_player
+from src.audio.ui import render_tts_button
 from src.search.ui import render_related_articles
 from src.simulacros.ui import render_exam_creator, render_exam_execution, render_exam_history
 from src.accounts.schema import ensure_accounts_tables
 from src.accounts.service import AuthService, AuthError
+from src.study.repository import StudyRepository
+from src.study.service import StudyService, StudyTarget, HIGHLIGHT_COLORS
 
 
 st.set_page_config(page_title="GVAdictos", layout="wide")
@@ -118,6 +128,44 @@ def get_user_plan(user_id: int) -> str:
             "SELECT plan FROM subscriptions_local WHERE user_id = ?", (user_id,)
         ).fetchone()
         return row["plan"] if row else "free"
+
+
+def get_study_service() -> StudyService | None:
+    """Devuelve un StudyService fresco (conexion nueva por llamada).
+
+    Sin cache: una conexion sqlite cacheada quedaria atada a un hilo y los
+    reruns de Streamlit pueden ejecutarse en otro hilo.
+    """
+    try:
+        return StudyService(StudyRepository(connect()))
+    except Exception:
+        return None
+
+
+def study_mutate(action):
+    """Ejecuta una escritura de estudio y hace commit.
+
+    El StudyRepository no hace commit por si mismo; aqui garantizamos el commit
+    y el cierre de la conexion. `action` recibe el StudyService y devuelve un valor.
+    """
+    conn = connect()
+    try:
+        svc = StudyService(StudyRepository(conn))
+        result = action(svc)
+        conn.commit()
+        return result
+    finally:
+        conn.close()
+
+
+HIGHLIGHT_COLOR_LABELS = {
+    "yellow": "🟡 Amarillo",
+    "green": "🟢 Verde",
+    "blue": "🔵 Azul",
+    "pink": "🩷 Rosa",
+    "purple": "🟣 Morado",
+    "red": "🔴 Rojo",
+}
 
 
 # ─── FUNCIONES DE DATOS ──────────────────────────────────────────────────────
@@ -373,16 +421,184 @@ def annotation_target_options(articles: list) -> dict[str, int | None]:
     return options
 
 
+def _article_location(article) -> str:
+    """Construye una etiqueta legible de capitulo/seccion del articulo."""
+    parts = []
+    chapter = (article.get("chapter") or "").strip()
+    section = (article.get("section") or "").strip()
+    if chapter:
+        parts.append(chapter)
+    if section and section != chapter:
+        parts.append(section)
+    return " · ".join(parts)
+
+
+def render_study_panel(article_id: int) -> None:
+    """Panel de estudio por articulo: marcas (importante/duda), subrayado y notas.
+
+    Usa el backend src/study (StudyService). Todo es contenido del usuario,
+    nunca contenido juridico inventado.
+    """
+    svc = get_study_service()
+    if not svc:
+        return
+    try:
+        state = svc.get_article_state(article_id)
+    except Exception:
+        # Tablas de estudio no migradas: aviso discreto, no romper la card.
+        st.caption("Funciones de estudio no disponibles (tablas pendientes de migrar).")
+        return
+
+    highlights = state.get("highlights", [])
+    notes = state.get("notes", [])
+    marks = state.get("marks", [])
+    active_marks = {m["mark_type"] for m in marks if not m.get("resolved")}
+
+    # ── Marcas rapidas: Importante / Duda ──
+    col_imp, col_dud, _ = st.columns([1, 1, 3])
+    is_important = "important" in active_marks
+    is_doubt = "doubt" in active_marks
+    with col_imp:
+        if st.button(
+            "★ Importante" if is_important else "☆ Importante",
+            key=f"mark_imp_{article_id}",
+            help="Marca este articulo como importante",
+        ):
+            study_mutate(lambda s: s.mark(
+                StudyTarget(article_id=article_id),
+                mark_type="important",
+                resolved=is_important,  # si ya estaba activo, lo desactiva
+            ))
+            st.rerun()
+    with col_dud:
+        if st.button(
+            "❓ Duda (activa)" if is_doubt else "❓ Marcar duda",
+            key=f"mark_dud_{article_id}",
+            help="Marca una duda sobre este articulo",
+        ):
+            study_mutate(lambda s: s.mark(
+                StudyTarget(article_id=article_id),
+                mark_type="doubt",
+                resolved=is_doubt,
+            ))
+            st.rerun()
+
+    # ── Subrayado y notas ──
+    with st.expander(
+        f"Subrayado y notas ({len(highlights)} subrayados · {len(notes)} notas)",
+        expanded=False,
+    ):
+        # Subrayados existentes
+        if highlights:
+            st.markdown("**Subrayados**")
+            for h in highlights:
+                color_lbl = HIGHLIGHT_COLOR_LABELS.get(h.get("color", ""), h.get("color", ""))
+                col_txt, col_del = st.columns([5, 1])
+                with col_txt:
+                    st.markdown(f"{color_lbl} _{h.get('selected_text', '')}_")
+                    if h.get("note_text"):
+                        st.caption(f"Nota: {h['note_text']}")
+                with col_del:
+                    if st.button("🗑", key=f"del_hl_{h['id']}", help="Eliminar subrayado"):
+                        study_mutate(lambda s, hid=int(h["id"]): s.delete_highlight(hid))
+                        st.rerun()
+            st.divider()
+
+        # Nuevo subrayado
+        st.markdown("**Nuevo subrayado**")
+        hl_text = st.text_area(
+            "Fragmento a subrayar",
+            key=f"new_hl_text_{article_id}",
+            height=70,
+            placeholder="Pega aqui el fragmento exacto del articulo",
+        )
+        col_c, col_n = st.columns([1, 2])
+        with col_c:
+            hl_color = st.selectbox(
+                "Color",
+                list(HIGHLIGHT_COLOR_LABELS.keys()),
+                format_func=lambda c: HIGHLIGHT_COLOR_LABELS[c],
+                key=f"new_hl_color_{article_id}",
+            )
+        with col_n:
+            hl_note = st.text_input("Nota (opcional)", key=f"new_hl_note_{article_id}")
+        if st.button("Guardar subrayado", key=f"save_hl_{article_id}"):
+            if not hl_text.strip():
+                st.error("Escribe el fragmento a subrayar.")
+            else:
+                study_mutate(lambda s: s.add_highlight(
+                    article_id=article_id,
+                    selected_text=hl_text.strip(),
+                    color=hl_color,
+                    note_text=hl_note.strip() or None,
+                ))
+                st.success("Subrayado guardado.")
+                st.rerun()
+
+        st.divider()
+
+        # Notas existentes
+        if notes:
+            st.markdown("**Notas**")
+            for n in notes:
+                col_txt, col_del = st.columns([5, 1])
+                with col_txt:
+                    st.markdown(n.get("note_text", ""))
+                    if n.get("selected_text"):
+                        st.caption(f"Sobre: {n['selected_text']}")
+                with col_del:
+                    if st.button("🗑", key=f"del_note_{n['id']}", help="Eliminar nota"):
+                        study_mutate(lambda s, nid=int(n["id"]): s.delete_article_note(nid))
+                        st.rerun()
+            st.divider()
+
+        # Nueva nota
+        st.markdown("**Nueva nota**")
+        note_text = st.text_area(
+            "Tu nota",
+            key=f"new_note_text_{article_id}",
+            height=80,
+            placeholder="Apunte personal, duda, conexion con otro articulo...",
+        )
+        if st.button("Guardar nota", key=f"save_note_{article_id}"):
+            if not note_text.strip():
+                st.error("Escribe el texto de la nota.")
+            else:
+                study_mutate(lambda s: s.add_article_note(
+                    article_id=article_id,
+                    note_text=note_text.strip(),
+                ))
+                st.success("Nota guardada.")
+                st.rerun()
+
+
 def render_article_card(article, topic_id: int) -> None:
     display_text = clean_article_text(article['text'] or '')
     if is_toc_stub(display_text):
         return
+    article_id = article['id']
+    article_title = article.get('title') or f"Art. {article['article_ref']}"
     with st.container(border=True):
-        col_ref, col_title = st.columns([1, 4])
+        # Cabecera: ref + titulo + altavoz
+        col_ref, col_title, col_audio = st.columns([1, 4, 1])
         with col_ref:
             st.markdown(f"**Art. {article['article_ref']}**")
         with col_title:
             st.markdown(f"**{article.get('title') or 'Sin titulo'}**")
+        with col_audio:
+            render_tts_button(
+                key=f"art_{topic_id}_{article_id}",
+                text=f"Artículo {article['article_ref']}. {article_title}. {display_text}",
+                label="🔊",
+                help_text="Escuchar este artículo",
+            )
+
+        # Capitulo / seccion
+        location = _article_location(article)
+        if location:
+            st.caption(f"📍 {location}")
+
+        # Texto legal
         if display_text:
             lines = display_text.count('\n') + 1
             height = max(120, min(lines * 22 + 40, 500))
@@ -391,31 +607,17 @@ def render_article_card(article, topic_id: int) -> None:
                 value=display_text,
                 height=height,
                 disabled=True,
-                key=f"art_{topic_id}_{article['id']}",
+                key=f"art_{topic_id}_{article_id}",
                 label_visibility="collapsed",
             )
-        ampliaciones = [
-            a for a in get_annotations_for_topic(topic_id)
-            if a['article_id'] == article['id']
-        ]
-        with st.expander(f"Ampliacion y notas ({len(ampliaciones)})", expanded=False):
-            if ampliaciones:
-                for a in ampliaciones:
-                    label = annotation_label(a['annotation_type'])
-                    body = a['note_text'] or a['selected_text'] or a['manual_reference'] or ''
-                    st.markdown(f"- **{label}:** {body}")
-            else:
-                st.caption(
-                    "Sin ampliacion doctrinal ni notas para este articulo. "
-                    "Las ampliaciones (doctrina, temario, Autentica) se anaden como "
-                    "anotaciones y aparecen aqui, nunca mezcladas con el texto legal."
-                )
 
-        article_title = article.get('title') or f"Art. {article['article_ref']}"
-        render_ai_insights(article['id'], article_title, display_text)
-        render_ai_question_generator(article['id'], article_title, display_text)
-        render_tts_player(article['id'], article_title, display_text)
-        render_related_articles(article['id'], article_title)
+        # Panel de estudio (marcas, subrayado, notas) — backend src/study
+        render_study_panel(article_id)
+
+        # IA y relaciones
+        render_ai_insights(article_id, article_title, display_text)
+        render_ai_question_generator(article_id, article_title, display_text)
+        render_related_articles(article_id, article_title)
 
 
 def render_paginated_articles(articles: list, topic_id: int, key_prefix: str) -> None:
@@ -667,7 +869,12 @@ def render_cuenta_tab() -> None:
         st.markdown("### Accede a tu cuenta")
         st.caption("La cuenta es opcional. Sin cuenta puedes usar la app en modo local (usuario=1).")
 
-        modo = st.radio("", ["Iniciar sesion", "Crear cuenta nueva"], horizontal=True)
+        modo = st.radio(
+            "Modo de acceso",
+            ["Iniciar sesion", "Crear cuenta nueva"],
+            horizontal=True,
+            label_visibility="collapsed",
+        )
 
         if modo == "Iniciar sesion":
             email = st.text_input("Email", key="login_email")
@@ -945,7 +1152,16 @@ with tabs[7]:
 
         st.divider()
         part_name = "Parte general" if part_label == "general" else "Parte especifica"
-        st.markdown(f"### Tema {selected_topic['topic_number']} ({part_name})")
+        col_th, col_taudio = st.columns([5, 1])
+        with col_th:
+            st.markdown(f"### Tema {selected_topic['topic_number']} ({part_name})")
+        with col_taudio:
+            render_tts_button(
+                key=f"topic_{selected_topic['id']}",
+                text=f"Tema {selected_topic['topic_number']}. {selected_topic['official_text']}",
+                label="🔊 Tema",
+                help_text="Escuchar el enunciado del tema",
+            )
         st.write(selected_topic['official_text'])
         if selected_topic['section']:
             st.caption(f"Seccion: {selected_topic['section']}")

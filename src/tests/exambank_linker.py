@@ -60,7 +60,6 @@ class ExamQuestionLinker:
         Si subsection es None, devuelve todos con ese número.
         Si es un número específico, solo ese.
         """
-        self.conn.row_factory = sqlite3.Row
 
         if subsection is not None:
             # Buscar article_ref = "25.1" o similar
@@ -217,7 +216,6 @@ class ExamQuestionLinker:
 
     def get_unlinked_questions(self, exam_paper_id: int) -> list[dict[str, Any]]:
         """Obtener preguntas sin vinculación."""
-        self.conn.row_factory = sqlite3.Row
         rows = self.conn.execute(
             """
             SELECT eq.id, eq.numero, eq.enunciado,
