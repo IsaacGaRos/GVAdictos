@@ -28,17 +28,104 @@ from src.ai.ui import render_ai_insights, render_ai_question_generator
 from src.audio.ui import render_tts_player
 from src.search.ui import render_related_articles
 from src.simulacros.ui import render_exam_creator, render_exam_execution, render_exam_history
+from src.accounts.schema import ensure_accounts_tables
+from src.accounts.service import AuthService, AuthError
 
 
 st.set_page_config(page_title="GVAdictos", layout="wide")
+
+# ─── INICIALIZACIÓN ──────────────────────────────────────────────────────────
+
+def _ensure_extra_tables() -> None:
+    """Crea tablas de usuarios, oposiciones y suscripciones si no existen."""
+    with connect() as conn:
+        ensure_accounts_tables(conn)
+        conn.executescript("""
+            CREATE TABLE IF NOT EXISTS oposiciones (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                code TEXT UNIQUE NOT NULL,
+                nombre TEXT NOT NULL,
+                administracion TEXT NOT NULL DEFAULT 'GVA',
+                activa INTEGER NOT NULL DEFAULT 1
+            );
+
+            CREATE TABLE IF NOT EXISTS user_oposicion_enrollment (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                oposicion_id INTEGER NOT NULL REFERENCES oposiciones(id) ON DELETE CASCADE,
+                enrolled_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(user_id, oposicion_id)
+            );
+
+            CREATE TABLE IF NOT EXISTS subscriptions_local (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL UNIQUE,
+                plan TEXT NOT NULL DEFAULT 'free',
+                status TEXT NOT NULL DEFAULT 'active',
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
+        """)
+        conn.commit()
+        # Insertar oposiciones de muestra si no hay ninguna
+        n = conn.execute("SELECT COUNT(*) FROM oposiciones").fetchone()[0]
+        if n == 0:
+            conn.executemany(
+                "INSERT OR IGNORE INTO oposiciones(code, nombre, administracion) VALUES (?,?,?)",
+                [
+                    ("A1-01-GVA-2025", "Oposición A1-01 GVA 2025 (Escala Superior)", "GVA"),
+                    ("C1-01-GVA-2025", "Oposición C1-01 GVA 2025 (Gestión)", "GVA"),
+                    ("A2-01-GVA-2025", "Oposición A2-01 GVA 2025 (Administración General)", "GVA"),
+                ],
+            )
+            conn.commit()
+
+
 init_db()
 ensure_runtime_dirs()
+_ensure_extra_tables()
 
 DEFAULT_ARTICLES_PAGE_SIZE = 30
 
+# ─── AUTH HELPERS ─────────────────────────────────────────────────────────────
+
+def _get_auth_service():
+    return AuthService(connect())
+
+
+def current_user() -> dict | None:
+    """Devuelve el usuario actual desde session_state o None si no hay sesión."""
+    token = st.session_state.get("auth_token")
+    if not token:
+        return None
+    try:
+        user = _get_auth_service().get_current_user(token)
+        return user
+    except Exception:
+        return None
+
+
+def current_user_id() -> int:
+    """Devuelve el user_id actual. 1 si no hay sesión (modo local sin cuenta)."""
+    user = current_user()
+    return user["id"] if user else 1
+
+
+def get_user_plan(user_id: int) -> str:
+    """Devuelve el plan del usuario: free / pro / premium."""
+    with connect() as conn:
+        row = conn.execute(
+            "SELECT plan FROM subscriptions_local WHERE user_id = ?", (user_id,)
+        ).fetchone()
+        return row["plan"] if row else "free"
+
+
+# ─── FUNCIONES DE DATOS ──────────────────────────────────────────────────────
 
 def rows_to_df(rows) -> pd.DataFrame:
-    return pd.DataFrame([dict(row) for row in rows])
+    if not rows:
+        return pd.DataFrame()
+    return pd.DataFrame(rows if isinstance(rows[0], dict) else [dict(r) for r in rows])
 
 
 def load_laws():
@@ -74,6 +161,56 @@ def load_topics_by_part(part: str):
         ).fetchall()
 
 
+def load_oposiciones(activa_only: bool = True):
+    query = "SELECT * FROM oposiciones"
+    if activa_only:
+        query += " WHERE activa = 1"
+    query += " ORDER BY administracion, nombre"
+    with connect() as conn:
+        return conn.execute(query).fetchall()
+
+
+def get_user_oposiciones(user_id: int):
+    with connect() as conn:
+        return conn.execute(
+            """
+            SELECT o.* FROM oposiciones o
+            JOIN user_oposicion_enrollment uoe ON o.id = uoe.oposicion_id
+            WHERE uoe.user_id = ?
+            ORDER BY o.nombre
+            """,
+            (user_id,),
+        ).fetchall()
+
+
+def enroll_user_oposicion(user_id: int, opo_id: int) -> bool:
+    try:
+        with connect() as conn:
+            conn.execute(
+                "INSERT OR IGNORE INTO user_oposicion_enrollment(user_id, oposicion_id) VALUES (?,?)",
+                (user_id, opo_id),
+            )
+            conn.commit()
+        return True
+    except Exception:
+        return False
+
+
+def unenroll_user_oposicion(user_id: int, opo_id: int) -> bool:
+    try:
+        with connect() as conn:
+            conn.execute(
+                "DELETE FROM user_oposicion_enrollment WHERE user_id=? AND oposicion_id=?",
+                (user_id, opo_id),
+            )
+            conn.commit()
+        return True
+    except Exception:
+        return False
+
+
+# ─── HELPERS DE TEXTO ────────────────────────────────────────────────────────
+
 _BOE_HEADER_RE = re.compile(
     r'^\s*(BOLET[IÍ]N OFICIAL DEL ESTADO|LEGISLACI[OÓ]N CONSOLIDADA|P[aá]gina\s+\d+)\s*$',
     re.IGNORECASE,
@@ -82,7 +219,6 @@ _TOC_LINE_RE = re.compile(r'\.{4,}\s*\d+\s*$')
 
 
 def clean_article_text(text: str) -> str:
-    """Strip BOE page headers and index lines from article text."""
     if not text:
         return text
     lines = text.split('\n')
@@ -91,7 +227,6 @@ def clean_article_text(text: str) -> str:
 
 
 def is_toc_stub(text: str) -> bool:
-    """Return True if text is only a TOC/index line (not useful for studying)."""
     return bool(text and len(text) < 200 and _TOC_LINE_RE.search(text))
 
 
@@ -125,7 +260,6 @@ def load_topic_normativa(topic_id: int):
 
 
 def load_topic_mapped_articles(topic_id: int, law_id: int):
-    """Articles explicitly delimited for this topic+law (topic_sources.article_id)."""
     with connect() as conn:
         return conn.execute(
             """
@@ -141,7 +275,6 @@ def load_topic_mapped_articles(topic_id: int, law_id: int):
 
 
 def load_law_all_articles(law_id: int):
-    """Every article of a law (used only behind an explicit 'whole norm' expander)."""
     with connect() as conn:
         return conn.execute(
             """
@@ -163,6 +296,8 @@ def law_has_fine_mapping(topic_id: int, law_id: int) -> bool:
         ).fetchone()[0]
         return n > 0
 
+
+# ─── COMPONENTES UI ──────────────────────────────────────────────────────────
 
 def question_payload(prefix: str = "", existing=None, article=None) -> dict:
     law_value = existing["norma"] if existing else (article["norma"] if article else "")
@@ -202,39 +337,19 @@ def question_payload(prefix: str = "", existing=None, article=None) -> dict:
 
 def validate_question(data: dict) -> list[str]:
     required = [
-        "norma",
-        "articulo",
-        "enunciado",
-        "opcion_a",
-        "opcion_b",
-        "opcion_c",
-        "opcion_d",
-        "respuesta_correcta",
-        "explicacion",
-        "fuente",
+        "norma", "articulo", "enunciado",
+        "opcion_a", "opcion_b", "opcion_c", "opcion_d",
+        "respuesta_correcta", "explicacion", "fuente",
     ]
     return [field for field in required if not str(data.get(field, "")).strip()]
 
 
 def annotation_label(annotation_type: str) -> str:
-    labels = {
-        "note": "Nota",
-        "highlight": "Subrayado",
-        "doubt": "Duda",
-        "bookmark": "Marcador",
-    }
-    return labels.get(annotation_type, annotation_type)
+    return {"note": "Nota", "highlight": "Subrayado", "doubt": "Duda", "bookmark": "Marcador"}.get(annotation_type, annotation_type)
 
 
 def color_label(color: str) -> str:
-    labels = {
-        "": "Sin color",
-        "yellow": "Amarillo",
-        "green": "Verde",
-        "blue": "Azul",
-        "pink": "Rosa",
-    }
-    return labels.get(color, color)
+    return {"": "Sin color", "yellow": "Amarillo", "green": "Verde", "blue": "Azul", "pink": "Rosa"}.get(color, color)
 
 
 def article_option_label(article) -> str:
@@ -251,7 +366,6 @@ def annotation_target_options(articles: list) -> dict[str, int | None]:
 
 
 def render_article_card(article, topic_id: int) -> None:
-    """Render one article: clean legal text as primary, ampliaciones in an expander."""
     display_text = clean_article_text(article['text'] or '')
     if is_toc_stub(display_text):
         return
@@ -260,7 +374,7 @@ def render_article_card(article, topic_id: int) -> None:
         with col_ref:
             st.markdown(f"**Art. {article['article_ref']}**")
         with col_title:
-            st.markdown(f"**{article['title'] or 'Sin titulo'}**")
+            st.markdown(f"**{article.get('title') or 'Sin titulo'}**")
         if display_text:
             lines = display_text.count('\n') + 1
             height = max(120, min(lines * 22 + 40, 500))
@@ -272,14 +386,11 @@ def render_article_card(article, topic_id: int) -> None:
                 key=f"art_{topic_id}_{article['id']}",
                 label_visibility="collapsed",
             )
-        # Ampliaciones / notes channel: real annotations only, never invented doctrine
         ampliaciones = [
             a for a in get_annotations_for_topic(topic_id)
             if a['article_id'] == article['id']
         ]
-        with st.expander(
-            f"Ampliacion y notas ({len(ampliaciones)})", expanded=False
-        ):
+        with st.expander(f"Ampliacion y notas ({len(ampliaciones)})", expanded=False):
             if ampliaciones:
                 for a in ampliaciones:
                     label = annotation_label(a['annotation_type'])
@@ -292,22 +403,14 @@ def render_article_card(article, topic_id: int) -> None:
                     "anotaciones y aparecen aqui, nunca mezcladas con el texto legal."
                 )
 
-        # AI insights (Ola D2)
         article_title = article.get('title') or f"Art. {article['article_ref']}"
         render_ai_insights(article['id'], article_title, display_text)
-
-        # AI question generator (Ola D3)
         render_ai_question_generator(article['id'], article_title, display_text)
-
-        # TTS player (Ola D4)
         render_tts_player(article['id'], article_title, display_text)
-
-        # Related articles map (Ola D5)
         render_related_articles(article['id'], article_title)
 
 
 def render_paginated_articles(articles: list, topic_id: int, key_prefix: str) -> None:
-    """Render every article in a stable order with lightweight pagination."""
     total = len(articles)
     if total == 0:
         st.info("No hay articulos importados para esta norma.")
@@ -340,10 +443,7 @@ def render_paginated_articles(articles: list, topic_id: int, key_prefix: str) ->
     page = int(page)
     start = (page - 1) * page_size
     end = min(start + page_size, total)
-    st.caption(
-        f"Mostrando articulos {start + 1}-{end} de {total}. "
-        f"Orden: numero de articulo ascendente."
-    )
+    st.caption(f"Mostrando articulos {start + 1}-{end} de {total}. Orden: numero de articulo ascendente.")
     for article in articles[start:end]:
         render_article_card(article, topic_id)
 
@@ -376,27 +476,14 @@ def render_study_annotations(topic, articles: list) -> None:
                 key=f"ann_new_color_{topic['id']}",
             )
 
-        new_selected_text = st.text_area(
-            "Texto seleccionado o fragmento",
-            key=f"ann_new_selected_{topic['id']}",
-            height=90,
-        )
+        new_selected_text = st.text_area("Texto seleccionado o fragmento", key=f"ann_new_selected_{topic['id']}", height=90)
         new_manual_reference = st.text_input(
-            "Referencia manual",
-            placeholder="Ejemplo: art. 112.2, parrafo tercero",
-            key=f"ann_new_reference_{topic['id']}",
+            "Referencia manual", placeholder="Ejemplo: art. 112.2, parrafo tercero", key=f"ann_new_reference_{topic['id']}"
         )
-        new_note_text = st.text_area(
-            "Nota",
-            key=f"ann_new_note_{topic['id']}",
-            height=110,
-        )
+        new_note_text = st.text_area("Nota", key=f"ann_new_note_{topic['id']}", height=110)
 
         if st.button("Guardar anotacion", key=f"ann_new_save_{topic['id']}"):
-            has_content = any(
-                value.strip()
-                for value in [new_selected_text, new_manual_reference, new_note_text]
-            )
+            has_content = any(v.strip() for v in [new_selected_text, new_manual_reference, new_note_text])
             if new_type != "bookmark" and not has_content:
                 st.error("Anade texto, referencia o nota antes de guardar.")
             else:
@@ -420,7 +507,7 @@ def render_study_annotations(topic, articles: list) -> None:
     for annotation in annotations:
         target = "Tema completo"
         if annotation["article_id"]:
-            article_title = annotation["article_title"] or "Sin titulo"
+            article_title = annotation.get("article_title") or "Sin titulo"
             target = f"{annotation['law_name']} - art. {annotation['article_ref']} - {article_title}"
 
         with st.container(border=True):
@@ -432,13 +519,7 @@ def render_study_annotations(topic, articles: list) -> None:
                 st.caption(f"Actualizada: {annotation['updated_at']}")
 
             if annotation["selected_text"]:
-                st.text_area(
-                    "Texto guardado",
-                    value=annotation["selected_text"],
-                    height=80,
-                    disabled=True,
-                    key=f"ann_selected_read_{annotation['id']}",
-                )
+                st.text_area("Texto guardado", value=annotation["selected_text"], height=80, disabled=True, key=f"ann_selected_read_{annotation['id']}")
             if annotation["manual_reference"]:
                 st.caption(f"Referencia: {annotation['manual_reference']}")
             if annotation["note_text"]:
@@ -449,8 +530,7 @@ def render_study_annotations(topic, articles: list) -> None:
             with st.expander("Editar anotacion"):
                 edit_target_options = dict(target_options)
                 edit_type = st.selectbox(
-                    "Tipo",
-                    ANNOTATION_TYPES,
+                    "Tipo", ANNOTATION_TYPES,
                     index=ANNOTATION_TYPES.index(annotation["annotation_type"]),
                     format_func=annotation_label,
                     key=f"ann_edit_type_{annotation['id']}",
@@ -464,36 +544,20 @@ def render_study_annotations(topic, articles: list) -> None:
                     current_target_label = target
                     edit_target_options[current_target_label] = int(annotation["article_id"])
                 edit_target = st.selectbox(
-                    "Vincular a",
-                    list(edit_target_options.keys()),
+                    "Vincular a", list(edit_target_options.keys()),
                     index=list(edit_target_options.keys()).index(current_target_label),
                     key=f"ann_edit_target_{annotation['id']}",
                 )
                 current_color = annotation["color"] if annotation["color"] in ANNOTATION_COLORS else ""
                 edit_color = st.selectbox(
-                    "Color",
-                    ANNOTATION_COLORS,
+                    "Color", ANNOTATION_COLORS,
                     index=ANNOTATION_COLORS.index(current_color),
                     format_func=color_label,
                     key=f"ann_edit_color_{annotation['id']}",
                 )
-                edit_selected_text = st.text_area(
-                    "Texto seleccionado o fragmento",
-                    value=annotation["selected_text"] or "",
-                    height=90,
-                    key=f"ann_edit_selected_{annotation['id']}",
-                )
-                edit_manual_reference = st.text_input(
-                    "Referencia manual",
-                    value=annotation["manual_reference"] or "",
-                    key=f"ann_edit_reference_{annotation['id']}",
-                )
-                edit_note_text = st.text_area(
-                    "Nota",
-                    value=annotation["note_text"] or "",
-                    height=110,
-                    key=f"ann_edit_note_{annotation['id']}",
-                )
+                edit_selected_text = st.text_area("Texto seleccionado o fragmento", value=annotation["selected_text"] or "", height=90, key=f"ann_edit_selected_{annotation['id']}")
+                edit_manual_reference = st.text_input("Referencia manual", value=annotation["manual_reference"] or "", key=f"ann_edit_reference_{annotation['id']}")
+                edit_note_text = st.text_area("Nota", value=annotation["note_text"] or "", height=110, key=f"ann_edit_note_{annotation['id']}")
                 col_update, col_delete = st.columns(2)
                 if col_update.button("Actualizar", key=f"ann_update_{annotation['id']}"):
                     update_annotation(
@@ -511,18 +575,262 @@ def render_study_annotations(topic, articles: list) -> None:
                     st.warning("Anotacion eliminada.")
 
 
+# ─── RENDERIZADO DE TABS NUEVAS ──────────────────────────────────────────────
+
+def render_cuenta_tab() -> None:
+    """Tab Cuenta: login/registro o perfil si ya esta autenticado."""
+    user = current_user()
+
+    if user:
+        # ── Perfil autenticado ──
+        plan = get_user_plan(user["id"])
+        plan_labels = {"free": "Gratuito", "pro": "Pro ($9.99/mes)", "premium": "Premium ($19.99/mes)"}
+        plan_badge = plan_labels.get(plan, plan)
+
+        col_info, col_logout = st.columns([3, 1])
+        with col_info:
+            st.markdown(f"### {user.get('full_name') or user['email']}")
+            st.caption(user["email"])
+        with col_logout:
+            if st.button("Cerrar sesion", type="secondary"):
+                try:
+                    _get_auth_service().logout(st.session_state.get("auth_token", ""))
+                except Exception:
+                    pass
+                st.session_state.pop("auth_token", None)
+                st.rerun()
+
+        st.divider()
+        col_plan, col_uid = st.columns(2)
+        col_plan.metric("Plan actual", plan_badge)
+        col_uid.metric("ID de usuario", user["id"])
+
+        # Oposiciones del usuario
+        st.divider()
+        st.markdown("#### Mis oposiciones")
+        mis_opos = get_user_oposiciones(user["id"])
+        if mis_opos:
+            for o in mis_opos:
+                st.markdown(f"- **{o['nombre']}** ({o['administracion']})")
+        else:
+            st.info("No estas inscrito en ninguna oposicion. Ve a la pestana **Oposiciones** para inscribirte.")
+
+        # Planes
+        st.divider()
+        st.markdown("#### Planes disponibles")
+        col_f, col_p, col_pr = st.columns(3)
+        with col_f:
+            st.markdown("**Gratuito**")
+            st.caption("Estudio basico, SRS")
+            st.markdown("**0 €/mes**")
+        with col_p:
+            st.markdown("**Pro**")
+            st.caption("IA, TTS, Examenes")
+            st.markdown("**9,99 €/mes**")
+            if plan == "free":
+                st.info("Configura STRIPE_API_KEY para activar pagos")
+        with col_pr:
+            st.markdown("**Premium**")
+            st.caption("Todo + Drive backup")
+            st.markdown("**19,99 €/mes**")
+            if plan in ("free", "pro"):
+                st.info("Configura STRIPE_API_KEY para activar pagos")
+
+        # Cambiar contrasena
+        st.divider()
+        with st.expander("Cambiar contrasena"):
+            old_pw = st.text_input("Contrasena actual", type="password", key="pw_old")
+            new_pw = st.text_input("Nueva contrasena (min. 8 caracteres)", type="password", key="pw_new")
+            new_pw2 = st.text_input("Repetir nueva contrasena", type="password", key="pw_new2")
+            if st.button("Guardar nueva contrasena"):
+                if new_pw != new_pw2:
+                    st.error("Las contrasenas no coinciden.")
+                elif len(new_pw) < 8:
+                    st.error("La contrasena debe tener al menos 8 caracteres.")
+                else:
+                    try:
+                        _get_auth_service().change_password(user["id"], old_pw, new_pw)
+                        st.success("Contrasena actualizada correctamente.")
+                    except AuthError as e:
+                        st.error(str(e))
+
+    else:
+        # ── Login / Registro ──
+        st.markdown("### Accede a tu cuenta")
+        st.caption("La cuenta es opcional. Sin cuenta puedes usar la app en modo local (usuario=1).")
+
+        modo = st.radio("", ["Iniciar sesion", "Crear cuenta nueva"], horizontal=True)
+
+        if modo == "Iniciar sesion":
+            email = st.text_input("Email", key="login_email")
+            password = st.text_input("Contrasena", type="password", key="login_pw")
+            if st.button("Entrar", type="primary"):
+                if not email or not password:
+                    st.error("Introduce email y contrasena.")
+                else:
+                    try:
+                        token = _get_auth_service().login(email, password)
+                        st.session_state["auth_token"] = token
+                        st.success("Sesion iniciada correctamente.")
+                        st.rerun()
+                    except AuthError as e:
+                        st.error(str(e))
+                    except Exception as e:
+                        st.error(f"Error inesperado: {e}")
+
+        else:  # Registro
+            full_name = st.text_input("Nombre completo (opcional)", key="reg_name")
+            email = st.text_input("Email", key="reg_email")
+            password = st.text_input("Contrasena (min. 8 caracteres)", type="password", key="reg_pw")
+            password2 = st.text_input("Repetir contrasena", type="password", key="reg_pw2")
+            if st.button("Crear cuenta", type="primary"):
+                if not email or not password:
+                    st.error("Email y contrasena son obligatorios.")
+                elif password != password2:
+                    st.error("Las contrasenas no coinciden.")
+                elif len(password) < 8:
+                    st.error("La contrasena debe tener al menos 8 caracteres.")
+                else:
+                    try:
+                        svc = _get_auth_service()
+                        svc.register(email, password, full_name or None)
+                        token = svc.login(email, password)
+                        st.session_state["auth_token"] = token
+                        st.success("Cuenta creada y sesion iniciada.")
+                        st.rerun()
+                    except AuthError as e:
+                        st.error(str(e))
+                    except Exception as e:
+                        st.error(f"Error inesperado: {e}")
+
+
+def render_oposiciones_tab() -> None:
+    """Tab Oposiciones: ver y gestionar inscripciones."""
+    user_id = current_user_id()
+    user = current_user()
+
+    st.markdown("### Oposiciones disponibles")
+    st.caption("Inscribete en las oposiciones que preparas para personalizar tu estudio.")
+
+    if not user:
+        st.info("Inicia sesion en la pestana **Cuenta** para guardar tus inscripciones. En modo anonimo se usa usuario=1.")
+
+    opos = load_oposiciones()
+    if not opos:
+        st.warning("No hay oposiciones cargadas.")
+        return
+
+    mis_opos_ids = {o["id"] for o in get_user_oposiciones(user_id)}
+
+    for opo in opos:
+        with st.container(border=True):
+            col_info, col_btn = st.columns([4, 1])
+            with col_info:
+                st.markdown(f"**{opo['nombre']}**")
+                st.caption(f"{opo['administracion']} · {opo['code']}")
+            with col_btn:
+                enrolled = opo["id"] in mis_opos_ids
+                if enrolled:
+                    if st.button("Desinscribirse", key=f"unenroll_{opo['id']}", type="secondary"):
+                        unenroll_user_oposicion(user_id, opo["id"])
+                        st.rerun()
+                else:
+                    if st.button("Inscribirse", key=f"enroll_{opo['id']}", type="primary"):
+                        enroll_user_oposicion(user_id, opo["id"])
+                        st.rerun()
+
+    st.divider()
+    st.markdown("#### Mis inscripciones")
+    mis_opos = get_user_oposiciones(user_id)
+    if mis_opos:
+        for o in mis_opos:
+            st.markdown(f"- {o['nombre']}")
+    else:
+        st.info("Aun no estas inscrito en ninguna oposicion.")
+
+    # Añadir oposicion personalizada
+    st.divider()
+    with st.expander("Anadir oposicion personalizada"):
+        col_code, col_nombre, col_adm = st.columns([1, 2, 1])
+        new_code = col_code.text_input("Codigo (unico)", placeholder="B2-01-GVA-2025", key="new_opo_code")
+        new_nombre = col_nombre.text_input("Nombre", placeholder="Oposicion B2-01", key="new_opo_nombre")
+        new_adm = col_adm.text_input("Administracion", value="GVA", key="new_opo_adm")
+        if st.button("Crear oposicion", key="create_opo"):
+            if not new_code or not new_nombre:
+                st.error("Codigo y nombre son obligatorios.")
+            else:
+                try:
+                    with connect() as conn:
+                        conn.execute(
+                            "INSERT INTO oposiciones(code, nombre, administracion) VALUES (?,?,?)",
+                            (new_code, new_nombre, new_adm or "GVA"),
+                        )
+                        conn.commit()
+                    st.success(f"Oposicion '{new_nombre}' creada.")
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"Error: {e}")
+
+
+# ─── CABECERA ────────────────────────────────────────────────────────────────
+
 st.title("GVAdictos")
 st.caption("MVP local-first para oposiciones GVA. Contenido juridico siempre vinculado a fuente.")
 
-tabs = st.tabs(["Inicio", "Fuentes", "Importar leyes", "Articulos", "Preguntas", "Estudiar", "Modo test", "Modo examen", "Fallos", "Informes y CSV"])
+# Banner de usuario activo
+user = current_user()
+if user:
+    plan = get_user_plan(user["id"])
+    plan_str = {"free": "Gratuito", "pro": "Pro", "premium": "Premium"}.get(plan, plan)
+    st.sidebar.success(f"Sesion: {user.get('full_name') or user['email']}\nPlan: {plan_str}")
+else:
+    st.sidebar.info("Modo local (sin cuenta)\nVe a Cuenta para iniciar sesion.")
 
+# ─── TABS ────────────────────────────────────────────────────────────────────
+
+TABS = [
+    "Inicio", "Cuenta", "Oposiciones",
+    "Fuentes", "Importar leyes", "Articulos", "Preguntas",
+    "Estudiar", "Modo test", "Modo examen",
+    "Fallos", "Informes y CSV"
+]
+tabs = st.tabs(TABS)
+
+# ── Inicio ──────────────────────────────────────────────────────────────────
 with tabs[0]:
     counts = dashboard_counts()
     cols = st.columns(len(counts))
     for col, (label, value) in zip(cols, counts.items()):
         col.metric(label.capitalize(), value)
 
+    # Estado del usuario en la pantalla principal
+    st.divider()
+    col_u, col_o = st.columns(2)
+    with col_u:
+        if user:
+            st.success(f"Conectado como **{user.get('full_name') or user['email']}**")
+        else:
+            st.info("Usando modo local (sin cuenta). Ve a **Cuenta** para crear una sesion.")
+    with col_o:
+        mis_opos = get_user_oposiciones(current_user_id())
+        if mis_opos:
+            nombres = ", ".join(o["nombre"] for o in mis_opos[:2])
+            if len(mis_opos) > 2:
+                nombres += f" (+{len(mis_opos)-2} mas)"
+            st.info(f"Oposiciones: {nombres}")
+        else:
+            st.info("Sin oposiciones seleccionadas. Ve a **Oposiciones** para inscribirte.")
+
+# ── Cuenta ──────────────────────────────────────────────────────────────────
 with tabs[1]:
+    render_cuenta_tab()
+
+# ── Oposiciones ─────────────────────────────────────────────────────────────
+with tabs[2]:
+    render_oposiciones_tab()
+
+# ── Fuentes ─────────────────────────────────────────────────────────────────
+with tabs[3]:
     st.subheader("Catalogo de fuentes")
     sources = list_source_documents()
     if sources:
@@ -530,7 +838,8 @@ with tabs[1]:
     else:
         st.info("No hay fuentes catalogadas. Carga un manifiesto con scripts/import_source_manifest.py.")
 
-with tabs[2]:
+# ── Importar leyes ───────────────────────────────────────────────────────────
+with tabs[4]:
     st.subheader("Importar TXT/MD")
     uploaded = st.file_uploader("Archivo de ley", type=["txt", "md"])
     law_name = st.text_input("Nombre de la norma")
@@ -544,7 +853,8 @@ with tabs[2]:
     if laws:
         st.dataframe(rows_to_df(laws), use_container_width=True, hide_index=True)
 
-with tabs[3]:
+# ── Articulos ────────────────────────────────────────────────────────────────
+with tabs[5]:
     st.subheader("Articulos importados")
     laws = load_laws()
     law_options = {"Todas": None} | {row["name"]: row["id"] for row in laws}
@@ -570,7 +880,8 @@ with tabs[3]:
                     create_question(data)
                     st.success("Pregunta guardada.")
 
-with tabs[4]:
+# ── Preguntas ────────────────────────────────────────────────────────────────
+with tabs[6]:
     st.subheader("CRUD basico de preguntas")
     with st.expander("Crear pregunta manual", expanded=True):
         data = question_payload("new_")
@@ -602,7 +913,8 @@ with tabs[4]:
                 delete_question(selected_id)
                 st.warning("Pregunta eliminada.")
 
-with tabs[5]:
+# ── Estudiar ─────────────────────────────────────────────────────────────────
+with tabs[7]:
     st.subheader("Estudiar por tema")
 
     part_label = st.radio(
@@ -616,14 +928,11 @@ with tabs[5]:
     if not topics:
         st.info(f"No hay temas en la parte {part_label}.")
     else:
-        # Full topic titles, never truncated
         topic_options = {
             f"Tema {row['topic_number']:02d} - {row['official_text']}": row
             for row in topics
         }
-        selected_topic_text = st.selectbox(
-            "Selecciona tema", list(topic_options.keys())
-        )
+        selected_topic_text = st.selectbox("Selecciona tema", list(topic_options.keys()))
         selected_topic = topic_options[selected_topic_text]
 
         st.divider()
@@ -644,9 +953,7 @@ with tabs[5]:
             )
         else:
             st.markdown("#### Normas de este tema")
-            st.caption(
-                f"{len(normativa)} norma(s) vinculada(s) especificamente a este tema."
-            )
+            st.caption(f"{len(normativa)} norma(s) vinculada(s) especificamente a este tema.")
             for norma in normativa:
                 law_id = norma['id']
                 mapped = load_topic_mapped_articles(selected_topic['id'], law_id)
@@ -668,15 +975,13 @@ with tabs[5]:
                             a for a in mapped
                             if not search_art
                             or search_art.lower() in str(a['article_ref']).lower()
-                            or search_art.lower() in (a['title'] or '').lower()
+                            or search_art.lower() in (a.get('title') or '').lower()
                         ]
                         for article in shown:
                             render_article_card(article, selected_topic['id'])
                         if not shown:
                             st.info(f"Ningun articulo coincide con '{search_art}'.")
                     else:
-                        # No fine delimitation: be explicit, do NOT present the whole
-                        # law as if it were this topic's articles.
                         st.warning(
                             "Sin delimitacion fina de articulos para este tema. "
                             "Aun no esta validado que subconjunto de esta norma entra "
@@ -688,10 +993,7 @@ with tabs[5]:
                             f"Ver toda la norma sin delimitar ({len(all_articles)} articulos)",
                             expanded=False,
                         ):
-                            st.caption(
-                                "Referencia completa de la norma. NO equivale a los "
-                                "articulos concretos del tema."
-                            )
+                            st.caption("Referencia completa de la norma. NO equivale a los articulos concretos del tema.")
                             render_paginated_articles(
                                 all_articles,
                                 selected_topic['id'],
@@ -700,7 +1002,8 @@ with tabs[5]:
 
         render_study_annotations(selected_topic, articles_for_annotations)
 
-with tabs[6]:
+# ── Modo test ────────────────────────────────────────────────────────────────
+with tabs[8]:
     st.subheader("Modo test")
     questions = list_questions()
     if not questions:
@@ -738,11 +1041,12 @@ with tabs[6]:
             st.info(question["explicacion"])
             st.caption(f"Fuente: {question['fuente']}")
 
-with tabs[7]:
+# ── Modo examen ──────────────────────────────────────────────────────────────
+with tabs[9]:
     st.subheader("Modo examen (Ola E1)")
-    tab1, tab2 = st.tabs(["Crear y ejecutar", "Historial"])
+    tab_ex1, tab_ex2 = st.tabs(["Crear y ejecutar", "Historial"])
 
-    with tab1:
+    with tab_ex1:
         if "exam_finished" not in st.session_state:
             st.session_state.exam_finished = False
 
@@ -751,10 +1055,11 @@ with tabs[7]:
         else:
             render_exam_creator()
 
-    with tab2:
+    with tab_ex2:
         render_exam_history()
 
-with tabs[8]:
+# ── Fallos ───────────────────────────────────────────────────────────────────
+with tabs[10]:
     st.subheader("Base de fallos")
     summary = mistake_summary()
     if summary:
@@ -762,7 +1067,8 @@ with tabs[8]:
     else:
         st.info("Todavia no hay intentos registrados.")
 
-with tabs[9]:
+# ── Informes y CSV ───────────────────────────────────────────────────────────
+with tabs[11]:
     st.subheader("Informes y exportaciones")
     counts = dashboard_counts()
     st.json(counts)

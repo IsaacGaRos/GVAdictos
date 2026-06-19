@@ -8,10 +8,32 @@ from typing import Any
 from src.core.paths import DB_PATH, ensure_runtime_dirs
 
 
+class DictRow(dict):
+    """Row que se comporta como dict Y soporta acceso posicional row[0].
+
+    Compatibilidad total con código legado que usa row[0] o row["col"].
+    """
+
+    def __getitem__(self, key):
+        if isinstance(key, int):
+            return list(self.values())[key]
+        return super().__getitem__(key)
+
+    def get(self, key, default=None):
+        if isinstance(key, int):
+            vals = list(self.values())
+            return vals[key] if key < len(vals) else default
+        return super().get(key, default)
+
+
+def _dict_row_factory(cursor, row):
+    return DictRow(zip([col[0] for col in cursor.description], row))
+
+
 def connect(db_path: Path = DB_PATH) -> sqlite3.Connection:
     ensure_runtime_dirs()
     conn = sqlite3.connect(db_path)
-    conn.row_factory = lambda cur, row: dict(zip([col[0] for col in cur.description], row))
+    conn.row_factory = _dict_row_factory
     conn.execute("PRAGMA foreign_keys = ON")
     return conn
 

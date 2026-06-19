@@ -21,7 +21,7 @@ class AccountsSchemaMissingError(AccountsStorageError):
 class AccountsRepository:
     def __init__(self, conn: sqlite3.Connection) -> None:
         self.conn = conn
-        self.conn.row_factory = sqlite3.Row
+        # Keep whatever row_factory the caller set (dict factory from src.core.db)
 
     def ensure_storage_ready(self) -> None:
         missing = missing_accounts_tables(self.conn)
