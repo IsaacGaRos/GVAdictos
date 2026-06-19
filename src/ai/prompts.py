@@ -184,3 +184,55 @@ Requisitos:
 
 Análisis:
 """
+
+
+def get_question_generation_prompt(
+    article_title: str,
+    article_text: str,
+    estilo: str = "normal",
+) -> str:
+    """Prompt para generar una pregunta de test sobre un artículo.
+
+    Estilos: normal, dificil, oficial, trampa
+    """
+    style_descriptions = {
+        "normal": "una pregunta de dificultad media que evalúa comprensión del concepto principal",
+        "dificil": "una pregunta difícil que requiere conocimiento detallado y atención a detalles",
+        "oficial": "una pregunta en el estilo de los exámenes oficiales de oposición (4 opciones, una correcta)",
+        "trampa": "una pregunta con una trampa sutil que confunde a quien no domina el tema",
+    }
+
+    style_desc = style_descriptions.get(estilo, style_descriptions["normal"])
+
+    return f"""Eres un especialista en diseño de exámenes de oposición que crea preguntas tipo test.
+
+Artículo: {article_title}
+
+Texto legal:
+{article_text}
+
+Tarea: Crea {style_desc}.
+
+Formato de respuesta EXACTO (debe ser parseable):
+
+PREGUNTA: [enunciado de la pregunta, máximo 200 caracteres]
+
+OPCIONES:
+A) [opción A, máximo 100 caracteres]
+B) [opción B, máximo 100 caracteres]
+C) [opción C, máximo 100 caracteres]
+D) [opción D, máximo 100 caracteres]
+
+RESPUESTA CORRECTA: [letra: A, B, C o D]
+
+EXPLICACIÓN: [párrafo explicativo de por qué es correcta, máximo 200 caracteres]
+
+Requisitos:
+- La pregunta debe ser clara y sin ambigüedades
+- Las opciones deben ser plausibles pero solo una correcta
+- No inventes información no presente en el artículo
+- Usa lenguaje legal pero accesible
+- Marca esta pregunta como generada por IA (pendiente de revisión humana)
+
+Respuesta:
+"""

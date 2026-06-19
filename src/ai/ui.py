@@ -129,3 +129,66 @@ def render_ai_insights(article_id: int, article_title: str, article_text: str) -
                 st.error(f"Error generando insight: {e}")
             except Exception as e:
                 st.error(f"Error inesperado: {e}")
+
+
+def render_ai_question_generator(article_id: int, article_title: str, article_text: str) -> None:
+    """Render question generator for an article (Ola D3)."""
+    service = get_ai_service()
+    if not service:
+        return
+
+    with st.expander("Generar pregunta IA (Ola D3)", expanded=False):
+        st.markdown("**Generar pregunta tipo test**")
+
+        col1, col2 = st.columns(2)
+        with col1:
+            estilo = st.selectbox(
+                "Estilo de pregunta",
+                ["normal", "dificil", "oficial", "trampa"],
+                format_func=lambda x: {
+                    "normal": "Normal",
+                    "dificil": "Difícil",
+                    "oficial": "Estilo oficial",
+                    "trampa": "Con trampa",
+                }.get(x, x),
+                key=f"question_style_{article_id}",
+            )
+        with col2:
+            show_cost = col2.checkbox("Ver coste estimado", value=False)
+
+        if show_cost:
+            st.caption(
+                "Estimación: ~2 minutos, ~$0.02-0.08 por pregunta con Opus 4.8"
+            )
+
+        if st.button("Generar pregunta", key=f"generate_question_{article_id}_{estilo}"):
+            try:
+                with st.spinner(f"Generando pregunta ({estilo})..."):
+                    result = service.generate_question(
+                        article_id,
+                        article_title,
+                        article_text,
+                        estilo=estilo,
+                        use_cache=True,
+                    )
+
+                st.success("Pregunta generada.")
+                with st.container(border=True):
+                    st.markdown(f"**{result['pregunta']}**")
+                    st.markdown("**Opciones:**")
+                    for letra, texto in result["opciones"]:
+                        marker = "✓" if letra == result["respuesta_correcta"] else " "
+                        st.caption(f"{marker} {letra}) {texto}")
+                    if result.get("explicacion"):
+                        with st.expander("Explicación"):
+                            st.markdown(result["explicacion"])
+
+                st.info(
+                    "Esta pregunta está pendiente de revisión. "
+                    "Verifica la calidad antes de usarla para estudiar."
+                )
+
+            except AIServiceError as e:
+                st.error(f"Error generando pregunta: {e}")
+            except Exception as e:
+                st.error(f"Error inesperado: {e}")

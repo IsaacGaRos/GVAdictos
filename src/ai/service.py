@@ -309,3 +309,108 @@ class AIService:
     def set_model(self, model: str) -> None:
         """Override the default Claude model."""
         self.model = model
+
+    def generate_question(
+        self,
+        article_id: int,
+        article_title: str,
+        article_text: str,
+        estilo: str = "normal",
+        topic_id: int | None = None,
+        use_cache: bool = True,
+    ) -> dict[str, Any]:
+        """Generate a test question about an article.
+
+        Returns dict with keys: question_id, pregunta, respuesta_correcta, opciones, explicacion
+        """
+        input_hash = self._hash_input(f"question:{estilo}:{article_text}")
+
+        prompt = prompts.get_question_generation_prompt(
+            article_title,
+            article_text,
+            estilo,
+        )
+        response = self._generate_with_claude(prompt, max_tokens=1500)
+
+        # Parse response
+        question_data = self._parse_question_response(response)
+        if not question_data:
+            raise AIServiceError("Failed to parse question response from Claude")
+
+        # Store in database
+        question_id = self.repo.create_ai_question(
+            article_id=article_id,
+            topic_id=topic_id,
+            estilo=estilo,
+            enunciado=question_data["pregunta"],
+            respuesta_correcta=question_data["respuesta_correcta"],
+            explicacion_razonada=question_data.get("explicacion"),
+            options=question_data.get("opciones", []),
+            model=self.model,
+            prompt_version=self.prompt_version,
+            input_hash=input_hash,
+        )
+
+        return {
+            "question_id": question_id,
+            "pregunta": question_data["pregunta"],
+            "respuesta_correcta": question_data["respuesta_correcta"],
+            "opciones": question_data.get("opciones", []),
+            "explicacion": question_data.get("explicacion"),
+        }
+
+    def _parse_question_response(self, response: str) -> dict[str, Any] | None:
+        """Parse question response from Claude."""
+        lines = response.strip().split("\n")
+        data = {}
+        current_section = None
+        opciones_raw = []
+
+        for line in lines:
+            line = line.strip()
+            if line.startswith("PREGUNTA:"):
+                data["pregunta"] = line.replace("PREGUNTA:", "").strip()
+                current_section = None
+            elif line.startswith("OPCIONES:"):
+                current_section = "opciones"
+            elif line.startswith("RESPUESTA CORRECTA:"):
+                data["respuesta_correcta"] = line.replace("RESPUESTA CORRECTA:", "").strip()
+                current_section = None
+            elif line.startswith("EXPLICACIÓN:"):
+                data["explicacion"] = line.replace("EXPLICACIÓN:", "").strip()
+                current_section = None
+            elif current_section == "opciones" and len(line) > 0:
+                if line[0] in "ABCD" and len(line) > 2 and line[1] == ")":
+                    opciones_raw.append(line[3:].strip())
+
+        # Format options as tuples (letra, texto)
+        if opciones_raw:
+            data["opciones"] = list(zip("ABCD", opciones_raw[: 4]))
+
+        # Validate required fields
+        required = {"pregunta", "respuesta_correcta"}
+        if not required.issubset(set(data.keys())):
+            return None
+
+        return data
+
+    def get_question(self, question_id: int) -> dict[str, Any] | None:
+        """Retrieve an AI question."""
+        return self.repo.get_ai_question(question_id)
+
+    def mark_question_for_review(self, question_id: int) -> None:
+        """Mark a question as requiring human review."""
+        self.repo.update_ai_question_validation(
+            question_id,
+            "pendiente_de_validacion",
+            requiere_revision=True,
+        )
+
+    def validate_question(self, question_id: int, is_valid: bool = True) -> None:
+        """Validate or reject a question."""
+        status = "validado" if is_valid else "rechazado"
+        self.repo.update_ai_question_validation(
+            question_id,
+            status,
+            requiere_revision=False,
+        )
