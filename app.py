@@ -130,7 +130,8 @@ def rows_to_df(rows) -> pd.DataFrame:
 
 def load_laws():
     with connect() as conn:
-        return conn.execute("SELECT * FROM laws ORDER BY imported_at DESC").fetchall()
+        rows = conn.execute("SELECT * FROM laws ORDER BY imported_at DESC").fetchall()
+        return [dict(r) if not isinstance(r, dict) else r for r in rows]
 
 
 def load_articles(search: str = "", law_id: int | None = None):
@@ -150,15 +151,17 @@ def load_articles(search: str = "", law_id: int | None = None):
         params.extend([term, term, term, term])
     query += " ORDER BY l.name, a.article_ref LIMIT 500"
     with connect() as conn:
-        return conn.execute(query, params).fetchall()
+        rows = conn.execute(query, params).fetchall()
+        return [dict(r) if not isinstance(r, dict) else r for r in rows]
 
 
 def load_topics_by_part(part: str):
     with connect() as conn:
-        return conn.execute(
+        rows = conn.execute(
             "SELECT * FROM topics WHERE part = ? ORDER BY topic_number",
             (part,)
         ).fetchall()
+        return [dict(r) if not isinstance(r, dict) else r for r in rows]
 
 
 def load_oposiciones(activa_only: bool = True):
@@ -167,12 +170,13 @@ def load_oposiciones(activa_only: bool = True):
         query += " WHERE activa = 1"
     query += " ORDER BY administracion, nombre"
     with connect() as conn:
-        return conn.execute(query).fetchall()
+        rows = conn.execute(query).fetchall()
+        return [dict(r) if not isinstance(r, dict) else r for r in rows]
 
 
 def get_user_oposiciones(user_id: int):
     with connect() as conn:
-        return conn.execute(
+        rows = conn.execute(
             """
             SELECT o.* FROM oposiciones o
             JOIN user_oposicion_enrollment uoe ON o.id = uoe.oposicion_id
@@ -181,6 +185,7 @@ def get_user_oposiciones(user_id: int):
             """,
             (user_id,),
         ).fetchall()
+        return [dict(r) if not isinstance(r, dict) else r for r in rows]
 
 
 def enroll_user_oposicion(user_id: int, opo_id: int) -> bool:
@@ -241,7 +246,7 @@ def topic_has_fine_mapping(topic_id: int) -> bool:
 
 def load_topic_normativa(topic_id: int):
     with connect() as conn:
-        return conn.execute(
+        rows = conn.execute(
             """
             SELECT
                 l.id,
@@ -257,11 +262,12 @@ def load_topic_normativa(topic_id: int):
             """,
             (topic_id,)
         ).fetchall()
+        return [dict(r) if not isinstance(r, dict) else r for r in rows]
 
 
 def load_topic_mapped_articles(topic_id: int, law_id: int):
     with connect() as conn:
-        return conn.execute(
+        rows = conn.execute(
             """
             SELECT DISTINCT a.*, l.name AS norma
             FROM topic_sources ts
@@ -272,11 +278,12 @@ def load_topic_mapped_articles(topic_id: int, law_id: int):
             """,
             (topic_id, law_id),
         ).fetchall()
+        return [dict(r) if not isinstance(r, dict) else r for r in rows]
 
 
 def load_law_all_articles(law_id: int):
     with connect() as conn:
-        return conn.execute(
+        rows = conn.execute(
             """
             SELECT a.*, l.name AS norma
             FROM articles a
@@ -286,6 +293,7 @@ def load_law_all_articles(law_id: int):
             """,
             (law_id,),
         ).fetchall()
+        return [dict(r) if not isinstance(r, dict) else r for r in rows]
 
 
 def law_has_fine_mapping(topic_id: int, law_id: int) -> bool:
