@@ -1,0 +1,124 @@
+{
+  "generated_at": "2026-06-18T15:13:16",
+  "uses_temp_db": true,
+  "temp_db_path": "C:\\Users\\isaac\\AppData\\Local\\Temp\\gvadicto_study_demo_4_gq43ku\\study_demo.sqlite",
+  "article_state": {
+    "article_id": 1,
+    "notes": [
+      {
+        "id": 1,
+        "article_id": 1,
+        "law_id_snapshot": 1,
+        "article_ref_snapshot": "1",
+        "anchor_key": null,
+        "selected_text": null,
+        "note_text": "Nota demo actualizada",
+        "tags": null,
+        "created_at": "2026-06-18 13:13:16",
+        "updated_at": "2026-06-18 13:13:16",
+        "archived_at": null
+      }
+    ],
+    "highlights": [
+      {
+        "id": 1,
+        "article_id": 1,
+        "law_id_snapshot": 1,
+        "article_ref_snapshot": "1",
+        "anchor_key": null,
+        "selected_text": "texto clave actualizado",
+        "start_offset": null,
+        "end_offset": null,
+        "color": "green",
+        "note_text": null,
+        "created_at": "2026-06-18 13:13:16",
+        "updated_at": "2026-06-18 13:13:16",
+        "archived_at": null
+      }
+    ],
+    "marks": [
+      {
+        "id": 1,
+        "topic_id": null,
+        "article_id": 1,
+        "mark_type": "important",
+        "note_text": "Alta prioridad",
+        "resolved": 0,
+        "created_at": "2026-06-18 13:13:16",
+        "updated_at": "2026-06-18 13:13:16"
+      }
+    ],
+    "progress": {
+      "id": 1,
+      "topic_id": null,
+      "article_id": 1,
+      "status": "reviewing",
+      "completion_percent": 60,
+      "total_minutes": 25,
+      "pomodoro_count": 0,
+      "last_activity_at": "2026-06-18 13:13:16",
+      "created_at": "2026-06-18 13:13:16",
+      "updated_at": "2026-06-18 13:13:16"
+    },
+    "last_review": {
+      "id": 1,
+      "topic_id": null,
+      "article_id": 1,
+      "last_reviewed_at": "2026-06-18 13:13:16",
+      "last_result": "good",
+      "confidence": 4,
+      "next_review_at": "2026-06-25",
+      "review_count": 1,
+      "notes": null,
+      "created_at": "2026-06-18 13:13:16",
+      "updated_at": "2026-06-18 13:13:16"
+    }
+  },
+  "topic_summary": {
+    "topic_id": 1,
+    "article_count": 2,
+    "notes": 1,
+    "highlights": 1,
+    "doubt_marks": 1,
+    "important_marks": 1,
+    "progress_average": 40.0,
+    "topic_progress": null,
+    "topic_marks": [],
+    "topic_last_review": null,
+    "latest_review": {
+      "id": 1,
+      "topic_id": null,
+      "article_id": 1,
+      "last_reviewed_at": "2026-06-18 13:13:16",
+      "last_result": "good",
+      "confidence": 4,
+      "next_review_at": "2026-06-25",
+      "review_count": 1,
+      "notes": null,
+      "created_at": "2026-06-18 13:13:16",
+      "updated_at": "2026-06-18 13:13:16"
+    }
+  },
+  "law_summary": {
+    "law_id": 1,
+    "article_count": 2,
+    "notes": 1,
+    "highlights": 1,
+    "doubt_marks": 1,
+    "important_marks": 1,
+    "progress_average": 40.0,
+    "latest_review": {
+      "id": 1,
+      "topic_id": null,
+      "article_id": 1,
+      "last_reviewed_at": "2026-06-18 13:13:16",
+      "last_result": "good",
+      "confidence": 4,
+      "next_review_at": "2026-06-25",
+      "review_count": 1,
+      "notes": null,
+      "created_at": "2026-06-18 13:13:16",
+      "updated_at": "2026-06-18 13:13:16"
+    }
+  }
+}

@@ -1,1 +1,1 @@
-"""Core services for GVAdicto."""
+"""Core services for GVAdictos."""

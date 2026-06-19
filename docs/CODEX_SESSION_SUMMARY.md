@@ -1,5 +1,7 @@
 # Resumen de sesion Codex
 
+> Nota 2026-06-18: resumen historico. Para recuentos actuales usar `docs/CURRENT_STATUS.md`.
+
 Se implemento la Fase 1 MVP solicitada en la especificacion inicial.
 
 Decisiones:

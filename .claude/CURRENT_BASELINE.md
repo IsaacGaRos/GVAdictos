@@ -1,26 +1,28 @@
-# ✅ Current Baseline
+﻿# âœ… Current Baseline
 
-**Last updated**: 2026-06-17T21:00:00 UTC  
-**Project**: GVAdictos  
+> Nota 2026-06-18: este baseline es historico. Para el estado actual usar `docs/CLAUDE_HANDOFF.md` y `.claude/NEXT_CHAT_START_HERE.md`. Recuento actual: 81 leyes, 11509 articulos, 75 temas, 742 topic_sources.
+
+**Last updated**: 2026-06-17T21:00:00 UTC
+**Project**: GVAdictos
 **Last verified**: 2026-06-17 (today)
 
 ---
 
-## 🟢 What's Working (Confirmed)
+## ðŸŸ¢ What's Working (Confirmed)
 
-- ✅ **Python codebase**: Compiles without errors (`python -m compileall`)
-- ✅ **SQLite database**: 80 laws, 12,838 articles, schema intact
-- ✅ **EUR-Lex import**: 3 new sources (Carta UE, RGPD, Reglamento 2024/2509)
-- ✅ **GitHub integration**: SSH authenticated, public repo, 2 commits
-- ✅ **Article parsing**: 849 new articles imported successfully
-- ✅ **Validation findings**: 3 EUR-Lex findings resolved
-- ✅ **Documentation**: COLLABORATION.md, GITHUB_SETUP.md ready
-- ✅ **Code + PRO sync**: Infrastructure in place (SYNC_CHECKLIST.md)
-- ✅ **Scripts**: `audit_validation_findings.py`, `import_eurlex_direct.py` tested
+- âœ… **Python codebase**: Compiles without errors (`python -m compileall`)
+- âœ… **SQLite database**: 80 laws, 12,838 articles, schema intact
+- âœ… **EUR-Lex import**: 3 new sources (Carta UE, RGPD, Reglamento 2024/2509)
+- âœ… **GitHub integration**: SSH authenticated, public repo, 2 commits
+- âœ… **Article parsing**: 849 new articles imported successfully
+- âœ… **Validation findings**: 3 EUR-Lex findings resolved
+- âœ… **Documentation**: COLLABORATION.md, GITHUB_SETUP.md ready
+- âœ… **Code + PRO sync**: Infrastructure in place (SYNC_CHECKLIST.md)
+- âœ… **Scripts**: `audit_validation_findings.py`, `import_eurlex_direct.py` tested
 
 ---
 
-## 🟡 What's NOT Working / Pending Issues
+## ðŸŸ¡ What's NOT Working / Pending Issues
 
 ### Known bugs (critical)
 - None currently
@@ -29,20 +31,20 @@
 - None currently
 
 ### Incomplete features
-- ⏳ **23 open validation findings** — need manual review & mapping
-  - 8: Delimitación de artículos (select specific articles per topic)
+- â³ **23 open validation findings** â€” need manual review & mapping
+  - 8: DelimitaciÃ³n de artÃ­culos (select specific articles per topic)
   - 2: Temas doctrinales (need matrix, not just law refs)
   - 19: Otros (reglamentarios, competencias sectoriales)
   - **Blocker for**: Expanding questions beyond 20 pilot
-  
-- ✅ **Study interface Phase 2.1** — Navigator tab exists in Streamlit
+
+- âœ… **Study interface Phase 2.1** â€” Navigator tab exists in Streamlit
   - Features: Anotaciones, Pomodoro, version comparison
   - **Impact**: Medium (planned for later phase)
 
-- ⏳ **Spaced repetition** — Not implemented
+- â³ **Spaced repetition** â€” Not implemented
   - **Impact**: Medium (planned for later phase)
 
-- ⏳ **Question bank expansion** — Only 20 pilot Qs from Ley 39/2015
+- â³ **Question bank expansion** â€” Only 20 pilot Qs from Ley 39/2015
   - **Blocker**: Waiting for validation findings resolution
   - **Impact**: High (essential for study)
 
@@ -51,33 +53,33 @@
 
 ---
 
-## 🔨 Last Build Status
+## ðŸ”¨ Last Build Status
 
 | Aspect | Status | Details |
 |--------|--------|---------|
 | **Last build date** | 2026-06-17 | Today (EUR-Lex import session) |
-| **Build result** | ✅ SUCCESS | All 3 EUR-Lex sources imported |
+| **Build result** | âœ… SUCCESS | All 3 EUR-Lex sources imported |
 | **Output generated** | 849 articles | From Carta UE (54) + RGPD (99) + Reglamento (696) |
 | **Installation path** | `data/sources/leyes_originales/EURLEX/` | 3 HTML files, ~2.9 MB |
-| **Verified** | ✅ Yes | `python -m compileall` passed, DB stats confirm |
+| **Verified** | âœ… Yes | `python -m compileall` passed, DB stats confirm |
 
 ---
 
-## 📊 Last Runtime Verification
+## ðŸ“Š Last Runtime Verification
 
-**Date**: 2026-06-17 21:00 UTC  
-**Test scenario**: EUR-Lex import + GitHub sync  
-**Outcome**: ✅ PASS
+**Date**: 2026-06-17 21:00 UTC
+**Test scenario**: EUR-Lex import + GitHub sync
+**Outcome**: âœ… PASS
 
 **Details**:
 ```
 1. Downloaded 3 EUR-Lex sources (direct URL, no SPARQL)
-2. Converted XHTML → TXT → SQLite articles
+2. Converted XHTML â†’ TXT â†’ SQLite articles
 3. Updated topic_validation_findings status
 4. Pushed to GitHub (2 commits)
-5. Verified syntax: python -m compileall ✅
-6. Verified DB: SELECT COUNT(*) FROM articles = 12,838 ✅
-7. Verified GitHub: gh repo view shows PUBLIC ✅
+5. Verified syntax: python -m compileall âœ…
+6. Verified DB: SELECT COUNT(*) FROM articles = 12,838 âœ…
+7. Verified GitHub: gh repo view shows PUBLIC âœ…
 ```
 
 **KPI results**:
@@ -88,7 +90,7 @@
 
 ---
 
-## 🔐 Config/Dependencies
+## ðŸ” Config/Dependencies
 
 ### Runtime environment
 - **Language**: Python 3.9+ (required by Streamlit)
@@ -110,22 +112,22 @@
 
 ---
 
-## 🚨 Critical Alerts
+## ðŸš¨ Critical Alerts
 
 **IF ANY OF THESE ARE TRUE, STOP AND REVIEW BEFORE PROCEEDING**:
 
-- ❌ Last build was more than 2 weeks ago → ✅ Today (fresh)
-- ❌ A critical bug is marked "In progress" with no recent activity → ✅ None open
-- ❌ Build paths have changed → ✅ Stable
-- ❌ GitHub repo is out of sync → ✅ Synced (2 commits, master)
-- ❌ Validation findings blocking work → ⚠️ 23 open (but not critical for first Study UI slices)
-- ❌ Database corrupted or missing → ✅ Intact, 12,838 articles confirmed
+- âŒ Last build was more than 2 weeks ago â†’ âœ… Today (fresh)
+- âŒ A critical bug is marked "In progress" with no recent activity â†’ âœ… None open
+- âŒ Build paths have changed â†’ âœ… Stable
+- âŒ GitHub repo is out of sync â†’ âœ… Synced (2 commits, master)
+- âŒ Validation findings blocking work â†’ âš ï¸ 23 open (but not critical for first Study UI slices)
+- âŒ Database corrupted or missing â†’ âœ… Intact, 12,838 articles confirmed
 
-**Current status**: ✅ **GREEN** — All systems nominal
+**Current status**: âœ… **GREEN** â€” All systems nominal
 
 ---
 
-## 📝 How to Update This File
+## ðŸ“ How to Update This File
 
 **After each task or session**:
 
@@ -139,7 +141,7 @@
 
 **Template for new issue**:
 ```
-- ⏳ **[Feature/Bug name]** — [1-2 sentence description]
+- â³ **[Feature/Bug name]** â€” [1-2 sentence description]
   - **Blocker for**: [What depends on this]
   - **Impact**: Low/Medium/High
 ```
@@ -148,5 +150,5 @@
 
 ---
 
-*This is the "current mirror" — always accurate = saves hours of debugging in future chats.*  
+*This is the "current mirror" â€” always accurate = saves hours of debugging in future chats.*
 *Keep it fresh. Both Code and PRO check this before deciding what to work on.*

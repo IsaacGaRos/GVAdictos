@@ -1,0 +1,14 @@
+{
+  "applied": true,
+  "planned_count": 33,
+  "total_before": 3781,
+  "fine_before": 3574,
+  "own_existing": 0,
+  "broken_fk_before": 0,
+  "backup": "C:\\Users\\isaac\\Desktop\\GVAdictos\\db\\gvadicto.backup_pre2k_sectoriales_20260619_063835.sqlite",
+  "own_deleted": 0,
+  "inserted": 33,
+  "total_after": 3814,
+  "fine_after": 3607,
+  "broken_fk_after": 0
+}

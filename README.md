@@ -1,6 +1,6 @@
-# GVAdicto
+# GVAdictos
 
-App local para preparar oposiciones GVA, empezando por C2 GVA. Este MVP prioriza importacion de leyes, preguntas tipo test, registro de fallos y exportacion local.
+App local-first para estudiar la oposicion A1-01 GVA 2025. Este MVP prioriza normativa trazada, estudio por temas, preguntas tipo test con fuente, registro de fallos y exportacion local.
 
 ## Instalacion
 

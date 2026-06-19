@@ -1,10 +1,10 @@
-# Especificacion - Interfaz de estudio GVAdicto
+# Especificacion - Interfaz de estudio GVAdictos
 
 Fecha: 2026-06-17
 
 ## Objetivo
 
-GVAdicto debe evolucionar desde un MVP de importacion normativa y preguntas a una app de estudio completa para oposiciones GVA.
+GVAdictos debe evolucionar desde un MVP de importacion normativa y preguntas a una app de estudio completa para oposiciones GVA.
 
 La app debe abrir el repositorio/local workspace y ofrecer un apartado de estudio donde el opositor pueda:
 

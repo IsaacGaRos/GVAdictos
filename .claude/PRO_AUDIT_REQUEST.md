@@ -1,5 +1,7 @@
 # SOLICITUD PRO: Auditoría normas vigentes A1-01 2025
 
+> Nota 2026-06-18: este documento contiene cifras historicas previas a la reconstruccion deduplicada de `articles`. Para estado actual usar `docs/CLAUDE_HANDOFF.md`.
+
 **Fecha**: 2026-06-18  
 **De**: Code  
 **Para**: PRO  

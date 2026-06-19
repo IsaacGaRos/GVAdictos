@@ -1,0 +1,443 @@
+# Apply mapping review
+
+- CSV: `reports\mapping_review_template.csv`
+- Mode: dry-run
+- Validation: rows=177 errors=0 warnings=6 planned_mappings=0 protected_topic_law_pairs=12
+- Backup: no creado
+- Inserted: 0
+- Skipped: 0
+
+## Planned mappings
+
+_Sin filas._
+
+
+## Validation issues
+
+| Nivel | Fila | Codigo | Mensaje |
+| --- | --- | --- | --- |
+| WARNING | 88 | law_id_invalid | law_id must be numeric. |
+| WARNING | 94 | law_id_invalid | law_id must be numeric. |
+| WARNING | 101 | law_id_invalid | law_id must be numeric. |
+| WARNING | 155 | law_id_invalid | law_id must be numeric. |
+| WARNING | 159 | law_id_invalid | law_id must be numeric. |
+| WARNING | 163 | law_id_invalid | law_id must be numeric. |
+
+
+## Before
+
+```json
+{
+  "total_topics": 75,
+  "fine_mapping_topics": 12,
+  "fallback_topics": 63,
+  "partial_topics": 1,
+  "mapped_topics": 11,
+  "ambiguous_topics": 6,
+  "topic_status_counts": {
+    "fallback": 57,
+    "partial": 1,
+    "mapped": 11,
+    "ambiguous": 6
+  },
+  "affected_law_count": 75,
+  "progress_percent": 16.0,
+  "top_urgent_topics": [
+    {
+      "topic_id": 4,
+      "part": "general",
+      "topic_number": 4,
+      "topic_title": "El Poder Judicial: la regulación constitucional de la justicia. El Consejo General del Poder Judicial: Composición y funciones. La regulación constitucional del Tribunal Constitucional. El Defensor del Pueblo: Naturaleza, competencias y resoluciones.",
+      "topic_status": "fallback",
+      "law_count": 4,
+      "unresolved_law_count": 4,
+      "unresolved_article_total": 799,
+      "linked_article_count": 0,
+      "law_titles": "Constitucion Espanola 1978; Ley Organica 2/1979 Tribunal Constitucional; Ley Organica 3/1981 Defensor del Pueblo; Ley Organica 6/1985 Poder Judicial"
+    },
+    {
+      "topic_id": 22,
+      "part": "especial",
+      "topic_number": 7,
+      "topic_title": "La jurisdicción contencioso-administrativa. Naturaleza. Cuestiones a las que se extiende. Órganos y competencias. Las partes y el objeto del recurso contencioso-administrativo. Los procedimientos ante la jurisdicción contencioso-administrativa. Recursos y ejecución de sentencias. Plazos y medidas cautelares. Costas procesales. Núm. 10164 / 01.08.2025 4 / 11 CVE: DOGV-C-2025-30507 https://dogv.gva.es/",
+      "topic_status": "fallback",
+      "law_count": 2,
+      "unresolved_law_count": 2,
+      "unresolved_article_total": 772,
+      "linked_article_count": 0,
+      "law_titles": "Ley 29/1998 Jurisdiccion Contencioso Administrativa; Ley Organica 6/1985 Poder Judicial"
+    },
+    {
+      "topic_id": 34,
+      "part": "especial",
+      "topic_number": 19,
+      "topic_title": "La Administración electrónica. El Real decreto 203/2021, de 30 de marzo, por el que se aprueba el Reglamento de actuación y funcionamiento del sector público por medios electrónicos: preceptos básicos. Decreto 54/2025, de 15 de abril, del Consell, de simplificación administrativa y transformación digital: Título II. Instrumentos de la transformación digital.",
+      "topic_status": "fallback",
+      "law_count": 6,
+      "unresolved_law_count": 6,
+      "unresolved_article_total": 687,
+      "linked_article_count": 0,
+      "law_titles": "Decreto 54/2025 simplificacion administrativa y transformacion digital; Decreto-ley 14/2025 hiperregulacion agilizacion procedimientos unidad mercado; Ley 39/2015 Procedimiento Administrativo Comun; Ley 40/2015 Regimen Juridico Sector Publico; Ley 6/2024 Generalitat Simplificacion Administrativa; Real Decreto 203/2021 Sector Publico Electronico"
+    },
+    {
+      "topic_id": 16,
+      "part": "especial",
+      "topic_number": 1,
+      "topic_title": "Las fuentes del derecho administrativo (I): concepto de fuentes del derecho. Las normas jurídicas: aplicación y eficacia general. El derecho de la Unión Europea. Los tratados internacionales. La primacía del Derecho europeo respecto de la Constitución y sus consecuencias para el sistema de fuentes. La Constitución. La ley: sus clases. Los principios de legalidad, reserva de ley, de jerarquía normativa y de competencia. Los estatutos de autonomía. Las leyes de las comunidades autónomas. Referencia a la costumbre y principios generales del derecho.",
+      "topic_status": "fallback",
+      "law_count": 4,
+      "unresolved_law_count": 4,
+      "unresolved_article_total": 665,
+      "linked_article_count": 0,
+      "law_titles": "Constitucion Espanola 1978; Ley Organica 5/1982 Estatuto Autonomia Comunitat Valenciana; Tratado de Funcionamiento de la Union Europea version consolidada 2025-03-15; Tratado de la Union Europea version consolidada 2025-03-15"
+    },
+    {
+      "topic_id": 18,
+      "part": "especial",
+      "topic_number": 3,
+      "topic_title": "La Administración pública como persona jurídica. Las potestades administrativas. La actividad discrecional: sus límites y control. Las relaciones entre la administración y los tribunales de justicia. Conflictos de jurisdicción entre los tribunales de justicia y la Administración.",
+      "topic_status": "fallback",
+      "law_count": 2,
+      "unresolved_law_count": 2,
+      "unresolved_article_total": 631,
+      "linked_article_count": 0,
+      "law_titles": "Ley Organica 2/1987 Conflictos Jurisdiccionales; Ley Organica 6/1985 Poder Judicial"
+    },
+    {
+      "topic_id": 7,
+      "part": "general",
+      "topic_number": 7,
+      "topic_title": "El Estatuto de Autonomía de la Comunitat Valenciana: Las competencias. Las relaciones con el Estado y otras Comunidades Autónomas. Relaciones con la Unión Europea. Acción Exterior. Administración Local. Economía y Hacienda.",
+      "topic_status": "fallback",
+      "law_count": 3,
+      "unresolved_law_count": 3,
+      "unresolved_article_total": 497,
+      "linked_article_count": 0,
+      "law_titles": "Ley Organica 5/1982 Estatuto Autonomia Comunitat Valenciana; Tratado de Funcionamiento de la Union Europea version consolidada 2025-03-15; Tratado de la Union Europea version consolidada 2025-03-15"
+    },
+    {
+      "topic_id": 51,
+      "part": "especial",
+      "topic_number": 36,
+      "topic_title": "La Función Pública en la Generalitat (IV). Situaciones administrativas de los funcionarios al servicio de la Generalitat. Derechos, deberes e incompatibilidades del personal empleado público. Régimen disciplinario. Responsabilidad civil, penal y administrativa de los funcionarios. Referencia a la responsabilidad contable. Los conflictos de intereses.",
+      "topic_status": "fallback",
+      "law_count": 7,
+      "unresolved_law_count": 7,
+      "unresolved_article_total": 448,
+      "linked_article_count": 0,
+      "law_titles": "Decreto 42/2019 Condiciones Trabajo Personal Funcionario Generalitat consolidado DOGV; Ley 31/1995 Prevencion Riesgos Laborales; Ley 4/2021 Funcion Publica Valenciana; Ley 53/1984 Incompatibilidades Personal Administraciones Publicas; Ley Organica 2/1982 Tribunal de Cuentas; Real Decreto 33/1986 Regimen Disciplinario Funcionarios; Real Decreto Legislativo 5/2015 TREBEP"
+    },
+    {
+      "topic_id": 48,
+      "part": "especial",
+      "topic_number": 33,
+      "topic_title": "La Función Pública en la Generalitat (I): Ley 4/2021, de 16 de abril, de la Generalitat, de la Función Pública Valenciana: Objeto, principios y ámbito de aplicación de la ley. Organización de la administración de la Generalitat en materia de función pública. Personal al servicio de las administraciones públicas.",
+      "topic_status": "fallback",
+      "law_count": 3,
+      "unresolved_law_count": 3,
+      "unresolved_article_total": 426,
+      "linked_article_count": 0,
+      "law_titles": "Decreto-ley 14/2025 hiperregulacion agilizacion procedimientos unidad mercado; Ley 4/2021 Funcion Publica Valenciana; Real Decreto Legislativo 5/2015 TREBEP"
+    },
+    {
+      "topic_id": 66,
+      "part": "especial",
+      "topic_number": 51,
+      "topic_title": "Las competencias de la Generalitat en materia de políticas de prestación social, servicios sociales, dependencia, personas con discapacidad, familias, infancia y adolescencia, adopciones, juventud, mujer, personas migrantes y voluntariado social. Principales normas reguladoras: aspectos generales.",
+      "topic_status": "fallback",
+      "law_count": 3,
+      "unresolved_law_count": 3,
+      "unresolved_article_total": 425,
+      "linked_article_count": 0,
+      "law_titles": "Ley 26/2018 Derechos Infancia Adolescencia Comunitat Valenciana; Ley 3/2019 Servicios Sociales Inclusivos Comunitat Valenciana; Ley Organica 5/1982 Estatuto Autonomia Comunitat Valenciana"
+    },
+    {
+      "topic_id": 63,
+      "part": "especial",
+      "topic_number": 48,
+      "topic_title": "Características del ordenamiento jurídico de la Unión Europea. Fuentes del derecho de la Unión Europea. Tratados constitutivos. Actos jurídicos de la Unión: reglamentos, directivas, decisiones, recomendaciones y dictámenes.",
+      "topic_status": "ambiguous",
+      "law_count": 4,
+      "unresolved_law_count": 4,
+      "unresolved_article_total": 417,
+      "linked_article_count": 0,
+      "law_titles": "Carta de Derechos Fundamentales de la Union Europea; Tratado de Funcionamiento de la Union Europea version consolidada 2025-03-15; Tratado de la Union Europea version consolidada 2025-03-15"
+    },
+    {
+      "topic_id": 64,
+      "part": "especial",
+      "topic_number": 49,
+      "topic_title": "Derechos fundamentales y ciudadanía de la Unión. El mercado interior: la libre circulación de mercancías, libre circulación de trabajadores, libre circulación de personas, servicios y capitales. Las competencias y garantías sobre el espacio de libertad, seguridad y justicia.",
+      "topic_status": "ambiguous",
+      "law_count": 4,
+      "unresolved_law_count": 4,
+      "unresolved_article_total": 417,
+      "linked_article_count": 0,
+      "law_titles": "Carta de Derechos Fundamentales de la Union Europea; Tratado de Funcionamiento de la Union Europea version consolidada 2025-03-15; Tratado de la Union Europea version consolidada 2025-03-15"
+    },
+    {
+      "topic_id": 65,
+      "part": "especial",
+      "topic_number": 50,
+      "topic_title": "Derecho de la Unión Europea. El Derecho Primario y el Derecho Derivado. Jerarquía de las normas. La relación entre el Derecho de la Unión Europea y el ordenamiento jurídico de los Estados Miembros. Principios y control. La participación de las Comunidades Autónomas y de la Generalitat en la formación y en la ejecución del derecho de la Unión Europea.",
+      "topic_status": "ambiguous",
+      "law_count": 4,
+      "unresolved_law_count": 4,
+      "unresolved_article_total": 417,
+      "linked_article_count": 0,
+      "law_titles": "Carta de Derechos Fundamentales de la Union Europea; Tratado de Funcionamiento de la Union Europea version consolidada 2025-03-15; Tratado de la Union Europea version consolidada 2025-03-15"
+    },
+    {
+      "topic_id": 12,
+      "part": "general",
+      "topic_number": 12,
+      "topic_title": "Las instituciones y organismos de la Unión Europea. Composición y funciones: el Parlamento Europeo, el Consejo Europeo, el Consejo de la Unión Europea, La Comisión Europea, el Tribunal de Justicia de la Unión Europea, el Banco Central Europeo, el Tribunal de Cuentas. El Comité Económico y Social. El Comité de las Regiones.",
+      "topic_status": "fallback",
+      "law_count": 2,
+      "unresolved_law_count": 2,
+      "unresolved_article_total": 416,
+      "linked_article_count": 0,
+      "law_titles": "Tratado de Funcionamiento de la Union Europea version consolidada 2025-03-15; Tratado de la Union Europea version consolidada 2025-03-15"
+    },
+    {
+      "topic_id": 13,
+      "part": "general",
+      "topic_number": 13,
+      "topic_title": "Naturaleza, valores y finalidades y objetivos de la Unión Europea. Los miembros de la Unión Europea. Las competencias de la Unión Europea, delimitación, clasificación y principios de su ejercicio.",
+      "topic_status": "fallback",
+      "law_count": 2,
+      "unresolved_law_count": 2,
+      "unresolved_article_total": 416,
+      "linked_article_count": 0,
+      "law_titles": "Tratado de Funcionamiento de la Union Europea version consolidada 2025-03-15; Tratado de la Union Europea version consolidada 2025-03-15"
+    },
+    {
+      "topic_id": 21,
+      "part": "especial",
+      "topic_number": 6,
+      "topic_title": "La iniciativa legislativa y la potestad para dictar reglamentos y otras disposiciones. Forma, estructura y procedimiento de elaboración de los proyectos normativos de la Generalitat. Las exigencias de calidad normativa y programación.",
+      "topic_status": "fallback",
+      "law_count": 4,
+      "unresolved_law_count": 4,
+      "unresolved_article_total": 414,
+      "linked_article_count": 0,
+      "law_titles": "Ley 1/2022 Transparencia Buen Gobierno Comunitat Valenciana; Ley 39/2015 Procedimiento Administrativo Comun; Ley 5/1983 Gobierno Valenciano Consell; Ley 6/2024 Generalitat Simplificacion Administrativa"
+    }
+  ],
+  "risks": {
+    "broken_article_links": 0,
+    "article_law_mismatches": 0,
+    "topic_law_groups_without_law_id": 6,
+    "topic_law_groups_without_article_mapping": 155
+  }
+}
+```
+
+## After
+
+```json
+{
+  "total_topics": 75,
+  "fine_mapping_topics": 12,
+  "fallback_topics": 63,
+  "partial_topics": 1,
+  "mapped_topics": 11,
+  "ambiguous_topics": 6,
+  "topic_status_counts": {
+    "fallback": 57,
+    "partial": 1,
+    "mapped": 11,
+    "ambiguous": 6
+  },
+  "affected_law_count": 75,
+  "progress_percent": 16.0,
+  "top_urgent_topics": [
+    {
+      "topic_id": 4,
+      "part": "general",
+      "topic_number": 4,
+      "topic_title": "El Poder Judicial: la regulación constitucional de la justicia. El Consejo General del Poder Judicial: Composición y funciones. La regulación constitucional del Tribunal Constitucional. El Defensor del Pueblo: Naturaleza, competencias y resoluciones.",
+      "topic_status": "fallback",
+      "law_count": 4,
+      "unresolved_law_count": 4,
+      "unresolved_article_total": 799,
+      "linked_article_count": 0,
+      "law_titles": "Constitucion Espanola 1978; Ley Organica 2/1979 Tribunal Constitucional; Ley Organica 3/1981 Defensor del Pueblo; Ley Organica 6/1985 Poder Judicial"
+    },
+    {
+      "topic_id": 22,
+      "part": "especial",
+      "topic_number": 7,
+      "topic_title": "La jurisdicción contencioso-administrativa. Naturaleza. Cuestiones a las que se extiende. Órganos y competencias. Las partes y el objeto del recurso contencioso-administrativo. Los procedimientos ante la jurisdicción contencioso-administrativa. Recursos y ejecución de sentencias. Plazos y medidas cautelares. Costas procesales. Núm. 10164 / 01.08.2025 4 / 11 CVE: DOGV-C-2025-30507 https://dogv.gva.es/",
+      "topic_status": "fallback",
+      "law_count": 2,
+      "unresolved_law_count": 2,
+      "unresolved_article_total": 772,
+      "linked_article_count": 0,
+      "law_titles": "Ley 29/1998 Jurisdiccion Contencioso Administrativa; Ley Organica 6/1985 Poder Judicial"
+    },
+    {
+      "topic_id": 34,
+      "part": "especial",
+      "topic_number": 19,
+      "topic_title": "La Administración electrónica. El Real decreto 203/2021, de 30 de marzo, por el que se aprueba el Reglamento de actuación y funcionamiento del sector público por medios electrónicos: preceptos básicos. Decreto 54/2025, de 15 de abril, del Consell, de simplificación administrativa y transformación digital: Título II. Instrumentos de la transformación digital.",
+      "topic_status": "fallback",
+      "law_count": 6,
+      "unresolved_law_count": 6,
+      "unresolved_article_total": 687,
+      "linked_article_count": 0,
+      "law_titles": "Decreto 54/2025 simplificacion administrativa y transformacion digital; Decreto-ley 14/2025 hiperregulacion agilizacion procedimientos unidad mercado; Ley 39/2015 Procedimiento Administrativo Comun; Ley 40/2015 Regimen Juridico Sector Publico; Ley 6/2024 Generalitat Simplificacion Administrativa; Real Decreto 203/2021 Sector Publico Electronico"
+    },
+    {
+      "topic_id": 16,
+      "part": "especial",
+      "topic_number": 1,
+      "topic_title": "Las fuentes del derecho administrativo (I): concepto de fuentes del derecho. Las normas jurídicas: aplicación y eficacia general. El derecho de la Unión Europea. Los tratados internacionales. La primacía del Derecho europeo respecto de la Constitución y sus consecuencias para el sistema de fuentes. La Constitución. La ley: sus clases. Los principios de legalidad, reserva de ley, de jerarquía normativa y de competencia. Los estatutos de autonomía. Las leyes de las comunidades autónomas. Referencia a la costumbre y principios generales del derecho.",
+      "topic_status": "fallback",
+      "law_count": 4,
+      "unresolved_law_count": 4,
+      "unresolved_article_total": 665,
+      "linked_article_count": 0,
+      "law_titles": "Constitucion Espanola 1978; Ley Organica 5/1982 Estatuto Autonomia Comunitat Valenciana; Tratado de Funcionamiento de la Union Europea version consolidada 2025-03-15; Tratado de la Union Europea version consolidada 2025-03-15"
+    },
+    {
+      "topic_id": 18,
+      "part": "especial",
+      "topic_number": 3,
+      "topic_title": "La Administración pública como persona jurídica. Las potestades administrativas. La actividad discrecional: sus límites y control. Las relaciones entre la administración y los tribunales de justicia. Conflictos de jurisdicción entre los tribunales de justicia y la Administración.",
+      "topic_status": "fallback",
+      "law_count": 2,
+      "unresolved_law_count": 2,
+      "unresolved_article_total": 631,
+      "linked_article_count": 0,
+      "law_titles": "Ley Organica 2/1987 Conflictos Jurisdiccionales; Ley Organica 6/1985 Poder Judicial"
+    },
+    {
+      "topic_id": 7,
+      "part": "general",
+      "topic_number": 7,
+      "topic_title": "El Estatuto de Autonomía de la Comunitat Valenciana: Las competencias. Las relaciones con el Estado y otras Comunidades Autónomas. Relaciones con la Unión Europea. Acción Exterior. Administración Local. Economía y Hacienda.",
+      "topic_status": "fallback",
+      "law_count": 3,
+      "unresolved_law_count": 3,
+      "unresolved_article_total": 497,
+      "linked_article_count": 0,
+      "law_titles": "Ley Organica 5/1982 Estatuto Autonomia Comunitat Valenciana; Tratado de Funcionamiento de la Union Europea version consolidada 2025-03-15; Tratado de la Union Europea version consolidada 2025-03-15"
+    },
+    {
+      "topic_id": 51,
+      "part": "especial",
+      "topic_number": 36,
+      "topic_title": "La Función Pública en la Generalitat (IV). Situaciones administrativas de los funcionarios al servicio de la Generalitat. Derechos, deberes e incompatibilidades del personal empleado público. Régimen disciplinario. Responsabilidad civil, penal y administrativa de los funcionarios. Referencia a la responsabilidad contable. Los conflictos de intereses.",
+      "topic_status": "fallback",
+      "law_count": 7,
+      "unresolved_law_count": 7,
+      "unresolved_article_total": 448,
+      "linked_article_count": 0,
+      "law_titles": "Decreto 42/2019 Condiciones Trabajo Personal Funcionario Generalitat consolidado DOGV; Ley 31/1995 Prevencion Riesgos Laborales; Ley 4/2021 Funcion Publica Valenciana; Ley 53/1984 Incompatibilidades Personal Administraciones Publicas; Ley Organica 2/1982 Tribunal de Cuentas; Real Decreto 33/1986 Regimen Disciplinario Funcionarios; Real Decreto Legislativo 5/2015 TREBEP"
+    },
+    {
+      "topic_id": 48,
+      "part": "especial",
+      "topic_number": 33,
+      "topic_title": "La Función Pública en la Generalitat (I): Ley 4/2021, de 16 de abril, de la Generalitat, de la Función Pública Valenciana: Objeto, principios y ámbito de aplicación de la ley. Organización de la administración de la Generalitat en materia de función pública. Personal al servicio de las administraciones públicas.",
+      "topic_status": "fallback",
+      "law_count": 3,
+      "unresolved_law_count": 3,
+      "unresolved_article_total": 426,
+      "linked_article_count": 0,
+      "law_titles": "Decreto-ley 14/2025 hiperregulacion agilizacion procedimientos unidad mercado; Ley 4/2021 Funcion Publica Valenciana; Real Decreto Legislativo 5/2015 TREBEP"
+    },
+    {
+      "topic_id": 66,
+      "part": "especial",
+      "topic_number": 51,
+      "topic_title": "Las competencias de la Generalitat en materia de políticas de prestación social, servicios sociales, dependencia, personas con discapacidad, familias, infancia y adolescencia, adopciones, juventud, mujer, personas migrantes y voluntariado social. Principales normas reguladoras: aspectos generales.",
+      "topic_status": "fallback",
+      "law_count": 3,
+      "unresolved_law_count": 3,
+      "unresolved_article_total": 425,
+      "linked_article_count": 0,
+      "law_titles": "Ley 26/2018 Derechos Infancia Adolescencia Comunitat Valenciana; Ley 3/2019 Servicios Sociales Inclusivos Comunitat Valenciana; Ley Organica 5/1982 Estatuto Autonomia Comunitat Valenciana"
+    },
+    {
+      "topic_id": 63,
+      "part": "especial",
+      "topic_number": 48,
+      "topic_title": "Características del ordenamiento jurídico de la Unión Europea. Fuentes del derecho de la Unión Europea. Tratados constitutivos. Actos jurídicos de la Unión: reglamentos, directivas, decisiones, recomendaciones y dictámenes.",
+      "topic_status": "ambiguous",
+      "law_count": 4,
+      "unresolved_law_count": 4,
+      "unresolved_article_total": 417,
+      "linked_article_count": 0,
+      "law_titles": "Carta de Derechos Fundamentales de la Union Europea; Tratado de Funcionamiento de la Union Europea version consolidada 2025-03-15; Tratado de la Union Europea version consolidada 2025-03-15"
+    },
+    {
+      "topic_id": 64,
+      "part": "especial",
+      "topic_number": 49,
+      "topic_title": "Derechos fundamentales y ciudadanía de la Unión. El mercado interior: la libre circulación de mercancías, libre circulación de trabajadores, libre circulación de personas, servicios y capitales. Las competencias y garantías sobre el espacio de libertad, seguridad y justicia.",
+      "topic_status": "ambiguous",
+      "law_count": 4,
+      "unresolved_law_count": 4,
+      "unresolved_article_total": 417,
+      "linked_article_count": 0,
+      "law_titles": "Carta de Derechos Fundamentales de la Union Europea; Tratado de Funcionamiento de la Union Europea version consolidada 2025-03-15; Tratado de la Union Europea version consolidada 2025-03-15"
+    },
+    {
+      "topic_id": 65,
+      "part": "especial",
+      "topic_number": 50,
+      "topic_title": "Derecho de la Unión Europea. El Derecho Primario y el Derecho Derivado. Jerarquía de las normas. La relación entre el Derecho de la Unión Europea y el ordenamiento jurídico de los Estados Miembros. Principios y control. La participación de las Comunidades Autónomas y de la Generalitat en la formación y en la ejecución del derecho de la Unión Europea.",
+      "topic_status": "ambiguous",
+      "law_count": 4,
+      "unresolved_law_count": 4,
+      "unresolved_article_total": 417,
+      "linked_article_count": 0,
+      "law_titles": "Carta de Derechos Fundamentales de la Union Europea; Tratado de Funcionamiento de la Union Europea version consolidada 2025-03-15; Tratado de la Union Europea version consolidada 2025-03-15"
+    },
+    {
+      "topic_id": 12,
+      "part": "general",
+      "topic_number": 12,
+      "topic_title": "Las instituciones y organismos de la Unión Europea. Composición y funciones: el Parlamento Europeo, el Consejo Europeo, el Consejo de la Unión Europea, La Comisión Europea, el Tribunal de Justicia de la Unión Europea, el Banco Central Europeo, el Tribunal de Cuentas. El Comité Económico y Social. El Comité de las Regiones.",
+      "topic_status": "fallback",
+      "law_count": 2,
+      "unresolved_law_count": 2,
+      "unresolved_article_total": 416,
+      "linked_article_count": 0,
+      "law_titles": "Tratado de Funcionamiento de la Union Europea version consolidada 2025-03-15; Tratado de la Union Europea version consolidada 2025-03-15"
+    },
+    {
+      "topic_id": 13,
+      "part": "general",
+      "topic_number": 13,
+      "topic_title": "Naturaleza, valores y finalidades y objetivos de la Unión Europea. Los miembros de la Unión Europea. Las competencias de la Unión Europea, delimitación, clasificación y principios de su ejercicio.",
+      "topic_status": "fallback",
+      "law_count": 2,
+      "unresolved_law_count": 2,
+      "unresolved_article_total": 416,
+      "linked_article_count": 0,
+      "law_titles": "Tratado de Funcionamiento de la Union Europea version consolidada 2025-03-15; Tratado de la Union Europea version consolidada 2025-03-15"
+    },
+    {
+      "topic_id": 21,
+      "part": "especial",
+      "topic_number": 6,
+      "topic_title": "La iniciativa legislativa y la potestad para dictar reglamentos y otras disposiciones. Forma, estructura y procedimiento de elaboración de los proyectos normativos de la Generalitat. Las exigencias de calidad normativa y programación.",
+      "topic_status": "fallback",
+      "law_count": 4,
+      "unresolved_law_count": 4,
+      "unresolved_article_total": 414,
+      "linked_article_count": 0,
+      "law_titles": "Ley 1/2022 Transparencia Buen Gobierno Comunitat Valenciana; Ley 39/2015 Procedimiento Administrativo Comun; Ley 5/1983 Gobierno Valenciano Consell; Ley 6/2024 Generalitat Simplificacion Administrativa"
+    }
+  ],
+  "risks": {
+    "broken_article_links": 0,
+    "article_law_mismatches": 0,
+    "topic_law_groups_without_law_id": 6,
+    "topic_law_groups_without_article_mapping": 155
+  }
+}
+```

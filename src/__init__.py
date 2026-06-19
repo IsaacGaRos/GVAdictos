@@ -1,1 +1,1 @@
-"""GVAdicto local study app."""
+"""GVAdictos local study app."""

@@ -5,8 +5,19 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from scripts.import_official_sources import PROCESSED_DIR, convert_to_text
 from src.core.db import connect
 from src.laws.importer import import_law
+
+
+def mime_type_for_path(path: Path) -> str:
+    suffix = path.suffix.lower()
+    if suffix == ".pdf":
+        return "application/pdf"
+    if suffix in {".html", ".htm"}:
+        return "text/html"
+    return "text/plain"
+
 
 def find_duplicates():
     """Find laws with duplicate article refs."""
@@ -37,7 +48,13 @@ def reimport_law(law_id: int):
 
     print(f"Re-importing: {law['name']} from {source_path}")
     try:
-        import_law(source_path, law['name'], original_source_path=source_path)
+        PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
+        text_path = PROCESSED_DIR / f"reimport_{law_id}.txt"
+        text_path.write_text(
+            convert_to_text(source_path, mime_type_for_path(source_path)),
+            encoding="utf-8",
+        )
+        import_law(text_path, law['name'], original_source_path=source_path)
         print(f"[OK] {law['name']} re-imported successfully")
         return True
     except Exception as e:
@@ -73,4 +90,4 @@ if __name__ == "__main__":
     if remaining:
         print(f"WARNING: {len(remaining)} duplicates remain")
     else:
-        print("✓ All duplicates removed!")
+        print("[OK] All duplicates removed!")

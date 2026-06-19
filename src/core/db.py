@@ -83,6 +83,26 @@ def init_db(db_path: Path = DB_PATH) -> None:
                 comentario TEXT
             );
 
+            CREATE TABLE IF NOT EXISTS study_annotations (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                topic_id INTEGER REFERENCES topics(id) ON DELETE CASCADE,
+                article_id INTEGER REFERENCES articles(id) ON DELETE SET NULL,
+                annotation_type TEXT NOT NULL CHECK(annotation_type IN ('note', 'highlight', 'doubt', 'bookmark')),
+                selected_text TEXT,
+                manual_reference TEXT,
+                note_text TEXT,
+                color TEXT,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                CHECK(topic_id IS NOT NULL OR article_id IS NOT NULL)
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_study_annotations_topic
+                ON study_annotations(topic_id, updated_at);
+
+            CREATE INDEX IF NOT EXISTS idx_study_annotations_article
+                ON study_annotations(article_id, updated_at);
+
             CREATE TABLE IF NOT EXISTS source_documents (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 source_kind TEXT NOT NULL,

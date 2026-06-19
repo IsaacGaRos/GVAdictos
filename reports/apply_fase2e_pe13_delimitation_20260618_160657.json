@@ -1,0 +1,56 @@
+{
+  "applied": false,
+  "mapping_basis": "validacion_articulos_claude_fase2e_pe13_2026_06_18",
+  "topic": {
+    "id": 28,
+    "topic_number": 13,
+    "part": "especial",
+    "official_text": "La Ley 40/2015, de 1 de octubre, de régimen jurídico del sector público: Disposiciones generales, principios de actuación y funcionamiento del sector público. Relaciones interadministrativas. Decreto 176/2014, de 10 de octubre, del Consell, por el que se regulan los convenios que suscriba la Generalitat y su registro."
+  },
+  "segments": [
+    {
+      "label": "PE-13 Ley 40/2015 Titulo Preliminar",
+      "law_id": 4,
+      "count": 54,
+      "ranges": [
+        [
+          1,
+          53
+        ]
+      ],
+      "first": "1",
+      "last": "53"
+    },
+    {
+      "label": "PE-13 Ley 40/2015 Titulo III",
+      "law_id": 4,
+      "count": 19,
+      "ranges": [
+        [
+          140,
+          158
+        ]
+      ],
+      "first": "140",
+      "last": "158"
+    },
+    {
+      "label": "PE-13 Decreto 176/2014 convenios Generalitat",
+      "law_id": 27,
+      "count": 21,
+      "ranges": [
+        [
+          1,
+          21
+        ]
+      ],
+      "first": "1",
+      "last": "21"
+    }
+  ],
+  "planned_count": 94,
+  "own_existing": 0,
+  "total_before": 1192,
+  "fine_before": 985,
+  "broken_fk_before": 0
+}

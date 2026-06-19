@@ -1,4 +1,4 @@
-# CLAUDE.md - GVAdicto
+# CLAUDE.md - GVAdictos
 
 ## Rol del asistente
 
@@ -6,7 +6,7 @@ Actua como ingeniero senior pragmatico y como asistente de estudio juridico con 
 
 ## Objetivo del proyecto
 
-GVAdicto es una app local-first para preparar oposiciones GVA. El foco actual es A1-01 GVA 2025, aunque el MVP nacio como base para C2/GVA.
+GVAdictos es una app local-first para preparar oposiciones GVA. El foco actual es A1-01 GVA 2025.
 
 El objetivo practico es:
 

@@ -1,291 +1,168 @@
-# Traspaso a Claude Code - GVAdicto
+﻿# Traspaso a Claude Code - GVAdictos
 
-Fecha de traspaso: 2026-06-17
+Fecha de traspaso: 2026-06-18
+Responsable de esta actualizacion: Codex
 
 ## 1. Resumen ejecutivo
 
-GVAdicto es una app local-first para estudiar oposiciones GVA. El MVP usa Python, Streamlit y SQLite. Ahora mismo el foco real es A1-01 GVA 2025, con normativa oficial descargada, importada, trazada y vigilada.
+GVAdictos es una app local-first para estudiar la oposicion A1-01 GVA 2025. El MVP usa Python, Streamlit y SQLite. El foco actual no es C2: cualquier referencia principal a C2 debe tratarse como residuo antiguo salvo que el usuario pida limpiarla.
 
-El proyecto no esta terminado: la normativa esta obtenida localmente y la validacion juridica fina tema por tema esta iniciada, pero sigue pendiente cerrar hallazgos, validar articulos exactos y revisar preguntas.
+La normativa oficial A1 esta importada y catalogada. La validacion juridica fina esta en curso. Ya se completo y aplico a SQLite la delimitacion por articulos de los temas prioritarios 8, 17, 18, 21, 32, 52, 54 y 55.
 
-Estado cuantitativo verificado:
+Estado cuantitativo verificado el 2026-06-18:
 
-- `laws`: 77.
-- `articles`: 12838.
+- `laws`: 81.
+- `articles`: 11509.
 - `questions`: 20, todas con `requiere_revision = 1`.
 - `attempts`: 0.
-- `source_documents`: 156.
+- `source_documents`: 157.
+- `source_update_checks`: 206 aprox.
 - `topics`: 75.
-- `topic_sources`: 198.
-- `topic_validation_findings`: 32 abiertos.
-- `source_update_checks`: 200 aprox.
-- Cobertura normativa A1 inicial: 26 referencias expresas cubiertas, 0 pendientes.
-- Validacion fina: 39 enlaces desde cobertura expresa, 134 inferidos del temario oficial y 31 desde contraste auxiliar Autentica.
+- `topic_sources`: 742.
+- `topic_validation_findings`: 21 abiertos, 11 resueltos.
 
-## 2. Objetivo de producto
-
-Queremos una herramienta local para:
-
-- Importar normativa oficial sin alterar originales.
-- Segmentar articulos/bloques.
-- Crear preguntas tipo test con fuente.
-- Resolver tests y registrar errores.
-- Identificar fallos recurrentes.
-- Generar simulacros.
-- Aplicar repeticion espaciada.
-- Mantener normativa actualizada mediante vigilancia semanal.
-- Usar material academico de Drive solo como apoyo, nunca como fuente juridica definitiva.
-
-## 3. Reglas juridicas no negociables
+## 2. Reglas juridicas no negociables
 
 - No inventar contenido juridico.
-- Toda pregunta debe tener fuente explicita.
-- Toda explicacion debe poder trazarse a norma, articulo o documento oficial.
-- No afirmar que una norma esta vigente sin fuente oficial.
-- No usar documentos de academia como autoridad juridica final.
-- BOE consolidado y EUR-Lex consolidado son textos informativos/documentales.
-- La validacion juridica humana sigue pendiente aunque la fuente este importada.
-- Si se generan preguntas con IA, marcar `requiere_revision = 1`.
+- Toda pregunta o explicacion debe tener fuente.
+- No modificar originales oficiales en `data/sources/leyes_originales`.
+- No usar documentos de academia como fuente juridica final.
+- Autentica y CEF son apoyo academico y senal de prioridad, no autoridad normativa.
+- El usuario indico que Autentica obtuvo el 75% de las plazas en la convocatoria pasada; por eso sus indicaciones pesan mucho para priorizar, pero siempre hay que contrastar con BOE, DOGV/GVA o EUR-Lex.
+- Todo contenido juridico generado por IA debe quedar marcado como `requiere_revision = 1` si entra en tablas de preguntas/contenido generado.
+- La validacion humana final sigue pendiente aunque Codex haya contrastado articulos con fuente oficial.
 
-## 4. Estructura del proyecto
-
-Raiz:
+## 3. Estructura relevante
 
 - `app.py`: UI Streamlit.
-- `requirements.txt`: dependencias.
-- `AGENTS.md`: reglas heredadas de Codex.
-- `CLAUDE.md`: instrucciones para Claude Code.
-- `db/gvadicto.sqlite`: base de datos local.
-- `data/sources/leyes_originales`: originales oficiales descargados.
-- `data/processed/official_sources`: textos procesados.
-- `data/sources/convocatorias/A1-01_2025`: bases, correcciones y CSV de temario/cobertura.
-- `data/sources/drive_inventory`: inventario de Drive.
-- `docs`: documentacion de estado, auditoria y roadmap.
-- `docs/STUDY_INTERFACE_SPEC.md`: especificacion de la futura interfaz de estudio, anotaciones, versionado y Pomodoro.
-
-Codigo:
-
-- `src/core/db.py`: schema SQLite y conexion.
-- `src/core/paths.py`: rutas.
+- `db/gvadicto.sqlite`: base local.
+- `src/core/db.py`: esquema SQLite.
+- `src/laws/importer.py`: parser/importador de normas.
 - `src/core/source_catalog.py`: catalogo de fuentes.
-- `src/laws/importer.py`: importacion de normas y parser de articulos.
-- `src/tests/repository.py`: CRUD de preguntas.
-- `src/mistakes/repository.py`: intentos y fallos.
-- `src/reports/basic.py`: contadores.
-- `src/core/export.py`: exportaciones CSV/Anki.
+- `src/studies/annotations.py`: CRUD de anotaciones de estudio.
+- `scripts/import_official_sources.py`: convierte PDF/HTML y reimporta normas.
+- `scripts/check_source_updates.py`: vigilancia generica BOE/DOGV por hash.
+- `scripts/check_eurlex_versions.py`: vigilancia EUR-Lex; usar este para EUR-Lex, no el checker generico.
+- `scripts/apply_a1_article_validation.py`: importa Reglamento Les Corts BOE 2026 y aplica mapeos articulo-tema validados.
+- `scripts/reimport_with_deduplication.py`: reimportador de mantenimiento corregido para convertir PDF/HTML a TXT antes de llamar a `import_law`; no debe importar PDFs directamente.
+- `.claude/VALIDACION_ARTICULOS_POR_TEMA.md`: documento juridico operativo con articulos exactos y justificacion oficial.
+- `docs/STUDY_INTERFACE_SPEC.md`: especificacion de interfaz de estudio, anotaciones, versionado y Pomodoro.
 
-Scripts:
+## 4. Estado normativo A1
 
-- `scripts/import_law.py`: importar TXT/MD manual.
-- `scripts/import_source_manifest.py`: cargar manifiestos CSV en `source_documents`.
-- `scripts/import_boe_pdf_laws.py`: importador historico de BOE PDF.
-- `scripts/build_extra_sources_manifest.py`: descarga fuentes oficiales extra BOE/DOGV.
-- `scripts/build_a1_topic_validation_sources_manifest.py`: descarga fuentes oficiales implicitas para validacion fina A1.
-- `scripts/build_a1_autentica_supplemental_sources_manifest.py`: descarga fuentes oficiales detectadas por contraste auxiliar Autentica.
-- `scripts/import_official_sources.py`: convierte PDF/HTML y llama al importador.
-- `scripts/import_topics_and_validate_coverage.py`: importa 75 temas, enlaza fuentes y genera auditoria tema-fuente.
-- `scripts/generate_controlled_questions.py`: genera lote piloto controlado, limpia entradas de indice del PDF, prefiere bloques de articulo con texto real y marca siempre `requiere_revision=1`.
-- `scripts/check_source_updates.py`: hash/update de fuentes BOE/DOGV.
-- `scripts/check_eurlex_versions.py`: vigilancia EUR-Lex por SPARQL y XHTML.
-- `scripts/export_anki.py`: exportacion basica.
-- `scripts/backup.py`: backup.
+Fuentes oficiales principales ya importadas: Constitucion, Ley 39/2015, Ley 40/2015, TREBEP, LCSP, LGSS, Estatuto CV, Ley 5/1983, Ley 1/1987, Ley 14/2003, Ley 33/2003, TUE/TFUE, Carta UE, RGPD y Reglamento UE/Euratom 2024/2509, ademas de normativa autonomica y reglamentaria de apoyo.
 
-## 5. Base de datos
+Reglamento de Les Corts:
 
-SQLite en `db/gvadicto.sqlite`.
+- Antes existia en BD el DOGV consolidado 2024.
+- Codex importo el texto vigente BOE 2026 desde `BOE-A-2026-5880`.
+- Nueva norma en `laws`: `Reglamento de Les Corts BOE 2026`.
+- Fuente local: `data/sources/leyes_originales/BOE/BOE-A-2026-5880_Reglamento_Les_Corts_2026.html`.
+- Texto procesado: `data/processed/official_sources/BOE-A-2026-5880.txt`.
+- Tambien queda en `source_documents` como `source_kind = boe_html`, `external_id = BOE-A-2026-5880`.
+- Hay hash base de vigilancia creado con `python scripts/check_source_updates.py --source-kind boe_html`.
 
-Tablas principales:
+Limitacion conocida: el parser actual no detecta bien todos los articulos ordinales iniciales del Reglamento 2026, pero no afecta al Tema 8 porque los arts. 112-139 si se parsean.
 
-- `laws`: normas/textos importados, hash, ruta, estado de validacion.
-- `articles`: articulos/bloques segmentados, fuente, hash original.
-- `questions`: preguntas tipo test.
-- `attempts`: intentos del usuario.
-- `source_documents`: catalogo de fuentes externas/oficiales.
-- `source_update_checks`: comprobaciones de cambios por hash.
-- `topics`: temario oficial A1-01 2025.
-- `topic_sources`: enlaces tema -> norma/articulo con base de mapeo.
-- `topic_validation_findings`: hallazgos abiertos de validacion juridica.
+## 5. Mapeos aplicados
 
-Todas las normas y articulos importados quedan por defecto con `validation_status = pendiente_de_validacion`.
+`scripts/apply_a1_article_validation.py` es idempotente: descarga/cataloga Reglamento 2026, solo lo reimporta si cambia el hash o faltan articulos, borra solo mapeos de su propio `mapping_basis` y reinserta filas. Esto evita regenerar `article_id` sin necesidad ahora que existen anotaciones persistentes.
 
-## 6. Normativa A1 importada
+`mapping_basis` aplicado:
 
-Fuentes oficiales importadas:
+```text
+validacion_articulos_codex_2026_06_18
+```
 
-- Textos normativos en SQLite: 77.
-- BOE/DOGV/EUR-Lex catalogados en `source_documents`.
+`validation_status` aplicado a esos mapeos:
 
-Incluye, entre otras:
+```text
+validado_fuente_oficial_pendiente_revision_humana
+```
 
-- Constitucion Espanola.
-- Ley 39/2015.
-- Ley 40/2015.
-- TREBEP.
-- Ley 7/1985.
-- LO 3/2007.
-- LO 1/2004.
-- Estatuto de los Trabajadores.
-- LO 2/2012.
-- Ley 38/2003.
-- RD 203/2021.
-- LCSP.
-- Ley 1/2015 Generalitat.
-- Ley 4/2021 Funcion Publica Valenciana.
-- Ley 4/2023 Trans/LGTBI.
-- Ley 5/1983 Consell.
-- Ley 6/2024 Simplificacion Administrativa.
-- Ley 8/2010 Regimen Local CV.
-- Ley 9/2003 Igualdad mujeres/hombres.
-- Ley 14/2003 Patrimonio Generalitat.
-- Ley 20/2017 Tasas.
-- Ley 6/2025 Presupuestos Generalitat 2025.
-- Decreto 204/2025 prorroga presupuestaria 2026.
-- Decreto 103/2014 precios publicos.
-- Decreto 128/2017 ayudas publicas.
-- Decreto 176/2014 convenios.
-- Decreto 41/2016 calidad servicios.
-- Decreto 54/2025 simplificacion y transformacion digital.
-- Decreto-ley 14/2025.
-- TUE `02016M/TXT-20250315`.
-- TFUE `02016E/TXT-20250315`.
+Recuento aplicado:
 
-Tambien se incorporaron fuentes implicitas o detectadas por Autentica: Estatuto CV, LOREG, Ley Electoral Valenciana, leyes de instituciones estatutarias, LJCA, LOTC, LO 2/1987 conflictos jurisdiccionales, Ley 33/2003 patrimonio AAPP, LGSS, LOFCA, Ley 22/2009, Ley 13/1997, Ley 22/2001, RD 635/2014, Ley 25/2018, Ley 8/2016, Reglamento de Les Corts, decretos 3/2017, 42/2019, 49/2021, Decreto 25/2017, Orden 18/2023 NEFIS y Orden 27/12/2001 de clasificacion economica, entre otras.
+- Tema 8 PG: 51 articulos unicos.
+- Tema 17 PE: 170 articulos unicos, 184 filas de mapeo, 3 referencias sin articulo parseado.
+- Tema 18 PE: 48 articulos unicos.
+- Tema 21 PE: 114 articulos unicos.
+- Tema 32 PE: 114 articulos unicos.
+- Tema 52 PE: 8 articulos unicos, 10 filas de mapeo.
+- Tema 54 PE: 2 articulos unicos, 5 filas de mapeo.
+- Tema 55 PE: 7 articulos unicos, 12 filas de mapeo.
 
-Matrices y auditorias:
+Hallazgos cerrados por este trabajo:
 
-`data/sources/convocatorias/A1-01_2025/a1_01_2025_cobertura_normativa.csv`
+- Tema 8: delimitacion Reglamento Les Corts.
+- Tema 17: delimitacion patrimonio/Ley 33/2003.
 
-`data/sources/convocatorias/A1-01_2025/a1_01_2025_topic_validation_audit.csv`
+Siguen abiertos los hallazgos sectoriales de temas 52/54/55 porque el Estatuto CV ya esta delimitado, pero falta matriz de normas sectoriales principales.
 
-`data/sources/convocatorias/A1-01_2025/autentica_auxiliary_normative_indications.md`
+## 6. Cambios en la app de estudio
 
-## 7. Google Drive y material academico
+`app.py` ya tenia pestana `Estudiar`. Codex corrigio el comportamiento de carga de articulos:
 
-El usuario aviso que `Archivo Oposicion TAG-GVA` puede estar desactualizado.
+- Si un tema tiene filas `topic_sources.article_id`, Estudio muestra solo esos articulos delimitados.
+- Si no hay mapeo fino por articulo, conserva fallback por `law_id`.
+- `load_topic_normativa` agrupa por norma y cuenta articulos unicos.
+- Se corrigio un uso incorrecto de `sqlite3.Row.get`.
 
-Drive revisado:
+Esto era necesario porque, antes de la correccion, un tema con LCSP arts. 1-114 habria mostrado toda la ley en vez de los 114 articulos delimitados.
 
-- `Mi Unidad -> Opo`.
-- Carpetas principales: `Autentica` y `EraCEF`.
-- Se catalogaron 75 PDFs desde `Opo/EraCEF/TemarioAulaVirtualCompleto`.
-- Se uso `Opo/Autentica/Legislacion A1 2025 v4.pdf` como contraste auxiliar de cobertura normativa.
-- El manifiesto local es `data/sources/drive_inventory/opo_temario_aula_virtual_2026.csv`.
+## 7. Vigilancia normativa
 
-Importante:
-
-- Drive es apoyo academico, no fuente oficial.
-- No importar material academico como normativa vigente.
-- Si se usa para priorizar articulos/preguntas, contrastar con BOE/DOGV/EUR-Lex.
-- Los mapeos de Autentica quedan con `mapping_basis = autentica_auxiliar_pendiente_validacion`.
-- El usuario indica que Autentica obtuvo el 75% de las plazas en la convocatoria pasada: tratar sus indicaciones como senal auxiliar fuerte de prioridad, pero nunca como fuente juridica final.
-
-## 8. Vigilancia normativa
-
-La vigilancia debe ejecutarse en secuencia para evitar bloqueos SQLite:
+Ejecutar en secuencia, no en paralelo, para evitar bloqueos SQLite:
 
 ```powershell
 python scripts/check_source_updates.py --source-kind boe_consolidado --update-files
 python scripts/check_source_updates.py --source-kind boe_pdf --update-files
+python scripts/check_source_updates.py --source-kind boe_html --update-files
 python scripts/check_source_updates.py --source-kind dogv_pdf --update-files
 python scripts/check_eurlex_versions.py --update-files --import-updated
 ```
 
-No ejecutar en paralelo.
+No usar `check_source_updates.py --source-kind eurlex_html`; EUR-Lex necesita `check_eurlex_versions.py`.
 
-No ejecutar `check_source_updates.py --source-kind eurlex_html`; ese script generico no pone las cabeceras adecuadas para XHTML EUR-Lex. EUR-Lex debe ir por `check_eurlex_versions.py`.
+Codex tenia configurada una vigilancia semanal en el mismo chat. Esa automatizacion no migra automaticamente a Claude Code; si se trabaja fuera de Codex hay que recrearla con Task Scheduler, cron o flujo equivalente.
 
-En Codex habia una automatizacion semanal llamada `GVAdicto vigilancia normativa semanal`, configurada como seguimiento en el mismo chat. Si se migra completamente a Claude Code, esa automatizacion de Codex no se transfiere automaticamente. Habra que recrearla con una tarea programada, cron, Task Scheduler o un flujo propio de Claude si se quiere mantener.
-
-## 9. Comandos de verificacion
-
-Compilar:
+## 8. Verificacion ya ejecutada
 
 ```powershell
+python scripts/import_official_sources.py
+python scripts/apply_a1_article_validation.py
 python -m compileall app.py src scripts
+python scripts/check_source_updates.py --source-kind boe_html
+git diff --check
 ```
 
-Conteo rapido:
+`git diff --check` no reporto errores de whitespace; solo avisos esperables LF/CRLF.
 
-```powershell
-python - <<'PY'
-from src.core.db import connect
-with connect() as conn:
-    for table in ["laws", "articles", "questions", "attempts", "source_documents", "source_update_checks"]:
-        print(table, conn.execute(f"select count(*) from {table}").fetchone()[0])
-PY
-```
+Tambien se probo CRUD real de `study_annotations` con creacion, actualizacion y borrado de una anotacion temporal. Streamlit responde en `http://localhost:8501` con estado HTTP 200. Queda pendiente una prueba visual humana navegando por la pestaña Estudiar.
 
-En PowerShell sin heredoc Unix:
+## 9. Riesgos pendientes
 
-```powershell
-@'
-from src.core.db import connect
-with connect() as conn:
-    for table in ["laws", "articles", "questions", "attempts", "source_documents", "source_update_checks"]:
-        print(table, conn.execute(f"select count(*) from {table}").fetchone()[0])
-'@ | python -
-```
-
-Ejecutar app:
-
-```powershell
-streamlit run app.py
-```
-
-## 10. Problemas conocidos
-
-- El parser de articulos es simple; para algunos PDFs/EUR-Lex genera muchos bloques por protocolos, anexos o indices.
-- TUE/TFUE importan tambien protocolos/declaraciones asociados del XHTML consolidado.
-- Algunos textos consolidados son instrumentos documentales, no versiones juridicas autenticas.
-- Hay 20 preguntas piloto desde Ley 39/2015; el generador evita entradas de indice, pero no son definitivas y requieren revision juridica.
-- EUR-Lex pendiente: Carta de Derechos Fundamentales UE, RGPD y Reglamento UE/Euratom 2024/2509 no se importaron automaticamente con el descargador simple.
 - No hay tests automatizados formales.
-- La UI es MVP; no hay sistema avanzado de simulacros ni repeticion espaciada.
-- La automatizacion de Codex no migra automaticamente a Claude.
-- SQLite puede bloquearse si se ejecutan watchers en paralelo.
+- Hay 20 preguntas piloto de Ley 39/2015; no deben considerarse banco definitivo hasta revision juridica.
+- El parser de articulos es simple y puede generar falsos positivos en PDFs complejos.
+- En Ley 33/2003 hay 3 referencias de disposiciones (`DA 3`, `DT 1.1`, `DT 5`) sin `article_id` porque el importador no parsea disposiciones como articulos.
+- Los temas 52/54/55 necesitan normas sectoriales ademas del Estatuto CV.
+- Anotacion minima persistente ya implementada: tabla `study_annotations`, repositorio `src/studies/annotations.py` y CRUD en pestaÃ±a Estudiar.
+- Falta remapeo avanzado de anotaciones tras cambios normativos y comparacion de versiones.
 
-## 11. Siguiente trabajo recomendado
+## 10. Siguiente trabajo recomendado
 
-Orden recomendado:
+1. Probar `streamlit run app.py` y verificar visualmente la pestana Estudiar:
+   - Tema general 8 debe mostrar Reglamento Les Corts BOE 2026 arts. 112-139 junto con Ley 5/1983 y Ley 1/1987 delimitadas.
+   - Tema especial 21 debe mostrar 114 articulos LCSP delimitados, no toda la ley.
+   - Tema especial 32 debe mostrar 114 articulos LGSS delimitados.
+2. Mejorar la experiencia de anotaciones: filtros por tipo, contador por articulo y mejor flujo para seleccionar fragmentos.
+3. Incorporar accion contextual futura: seleccionar fragmento y preguntar duda a IA, con modo mock/fallback y sin generar contenido juridico no trazado.
+4. Revisar las 20 preguntas piloto y despues generar preguntas solo sobre articulos validados, siempre con fuente y `requiere_revision = 1`.
+5. Continuar los 21 hallazgos abiertos de validacion fina, priorizando normas sectoriales de competencias y temas con indicaciones fuertes de Autentica.
 
-1. Revisar la pestaña `Estudiar` creada por Claude y corregir solo fallos concretos si aparecen.
-2. Crear anotacion minima persistente vinculada a `topic_id` y/o `article_id`.
-3. Incorporar al diseno la accion contextual: seleccionar fragmento y preguntar duda a IA, con modo mock/fallback y `requiere_revision`.
-4. Resolver los 23 hallazgos abiertos de `topic_validation_findings` cuando el usuario vuelva a priorizar validacion fina.
-5. Marcar articulos/bloques clave por tema.
-6. Revisar las 20 preguntas piloto y generar nuevos lotes solo sobre temas validados.
+## 11. Nivel recomendado
 
-Nuevo objetivo de producto indicado por el usuario:
-
-- Crear una interfaz de estudio completa dentro de la app.
-- Mostrar todos los temas ordenados y separados en parte general / parte especifica.
-- Al entrar en cada tema, mostrar que normativa entra y prepararla para estudiar.
-- Permitir subrayados, notas, dudas, etiquetas y ediciones tipicas de opositor.
-- Mantener esas anotaciones aunque se actualice la normativa si el contenido no cambia.
-- Si el contenido cambia, permitir comparar version anterior y nueva conservando el trabajo previo.
-- Incluir Pomodoro personalizable en la interfaz de estudio.
-
-La especificacion detallada esta en `docs/STUDY_INTERFACE_SPEC.md`.
-
-Nivel de inteligencia recomendado:
-
-- Validacion juridica: extremadamente alto.
-- Generacion inicial de preguntas tras validacion: alto.
-- UI, filtros, exportaciones, simulacros: medio/alto.
-
-## 12. Como debe trabajar Claude
-
-Antes de cambiar codigo:
-
-- Leer `CLAUDE.md`.
-- Leer este documento.
-- Revisar `docs/A1_LEGISLATION_AUDIT.md`.
-- Ejecutar conteos de DB si va a tocar datos.
-- Proponer alcance minimo y verificacion.
-
-Al terminar:
-
-- Listar archivos tocados.
-- Indicar comandos ejecutados.
-- Indicar riesgos juridicos.
-- Indicar siguiente paso y nivel de rigor recomendado.
+- Prueba visual Streamlit: medio.
+- Mejoras simples de anotaciones: medio/alto.
+- Remapeo robusto de anotaciones tras cambios normativos: extremadamente alto.
+- Validacion juridica sectorial o generacion avanzada de preguntas: extremadamente alto para validar, alto para generar una vez validado.

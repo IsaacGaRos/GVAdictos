@@ -1,0 +1,42 @@
+{
+  "checked_at": "2026-06-18T15:13:16",
+  "db_hash_before": "59b6dbfa3430c33acf944cbe658397b8265fef595f5a1a27bcca8bf5ded8ff02",
+  "db_hash_after": "59b6dbfa3430c33acf944cbe658397b8265fef595f5a1a27bcca8bf5ded8ff02",
+  "db_unchanged": true,
+  "ready_for_ui": false,
+  "migration_status": "pending",
+  "existing_tables": [
+    "study_annotations"
+  ],
+  "missing_tables": [
+    "study_article_notes",
+    "study_highlights",
+    "study_progress",
+    "study_marks",
+    "study_last_reviews"
+  ],
+  "missing_base_tables": [],
+  "counts": {
+    "study_article_notes": null,
+    "study_highlights": null,
+    "study_progress": null,
+    "study_marks": null,
+    "study_last_reviews": null
+  },
+  "doubt_marks": null,
+  "important_marks": null,
+  "progress_average_by_topic": [],
+  "latest_review": null,
+  "referential_issues": {
+    "notes_missing_articles": null,
+    "highlights_missing_articles": null,
+    "progress_missing_articles": null,
+    "progress_missing_topics": null,
+    "marks_missing_articles": null,
+    "marks_missing_topics": null,
+    "reviews_missing_articles": null,
+    "reviews_missing_topics": null
+  },
+  "problems": [],
+  "recommendation": "Run scripts/migrate_study_features.py --dry-run first; apply only after explicit approval."
+}

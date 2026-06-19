@@ -1,0 +1,69 @@
+{
+  "checked_at": "2026-06-18T14:56:58",
+  "ok": true,
+  "failures": [],
+  "db_hash_before": "8b4f4606a04b010ebc3079450a9ac6e8ab2abbe31f49015f242398a7aa25241d",
+  "db_hash_after": "8b4f4606a04b010ebc3079450a9ac6e8ab2abbe31f49015f242398a7aa25241d",
+  "db_unchanged": true,
+  "database": {
+    "db_path": "C:\\Users\\isaac\\Desktop\\GVAdictos\\db\\gvadicto.sqlite",
+    "accessible": true,
+    "missing_tables": [],
+    "counts": {
+      "topics": 75,
+      "laws": 81,
+      "articles": 6792,
+      "topic_sources": 868,
+      "questions": 20,
+      "source_documents": 157
+    },
+    "mapping_rows": 868,
+    "fine_mapping_rows": 661,
+    "fine_mapping_topics": 12
+  },
+  "checks": {
+    "validate_article_quality": {
+      "command": "C:\\Users\\isaac\\AppData\\Local\\Programs\\Python\\Python310\\python.exe scripts/validate_article_quality.py",
+      "exit_code": 0,
+      "ok": true,
+      "stdout_tail": [
+        "Total articles: 6792",
+        "",
+        "BLOCKING CHECKS:",
+        "",
+        "INFORMATIONAL:",
+        "  [info] 1. duplicate law+ref groups: 0",
+        "  [info] 2. articles without real body (<30 chars): 0",
+        "  [info] 3. articles with a nested article header: 0",
+        "  [info] 4. articles with index/dotted-leader text: 0",
+        "  [info] 5. articles dragging structure/page furniture: 0",
+        "  [info] 5b. lowercase-citation rows: 0",
+        "  [info] 6. topics sharing an identical mapped article set: 0",
+        "  [info] 7. topic-law links without specific articles: 169",
+        "  [info] 8. topics WITHOUT fine mapping (fallback): 63/75",
+        "  [info] 9. topics with missing/too-short title: 0",
+        "  [info] 10. legal text with doctrinal markers: 0",
+        "  [info] FK. broken topic_sources article_id: 0",
+        "",
+        "RESULT: PASS"
+      ],
+      "stderr_tail": []
+    },
+    "report_mapping_status": {
+      "command": "C:\\Users\\isaac\\AppData\\Local\\Programs\\Python\\Python310\\python.exe scripts/report_mapping_status.py",
+      "exit_code": 0,
+      "ok": true,
+      "stdout_tail": [
+        "Wrote C:\\Users\\isaac\\Desktop\\GVAdictos\\reports\\mapping_status.md",
+        "Wrote C:\\Users\\isaac\\Desktop\\GVAdictos\\reports\\mapping_status.json"
+      ],
+      "stderr_tail": []
+    }
+  },
+  "http": {
+    "enabled": false,
+    "ok": null,
+    "status": null,
+    "error": ""
+  }
+}

@@ -1,5 +1,7 @@
 # Auditoria A1-01 GVA 2025
 
+> Nota 2026-06-18: los recuentos de articulos de este informe son historicos. Para el estado operativo actual usar `docs/CURRENT_STATUS.md` y `docs/CLAUDE_HANDOFF.md`.
+
 Fecha de trabajo: 2026-05-29
 Actualizacion EUR-Lex: 2026-06-17
 
@@ -218,7 +220,7 @@ El script:
 
 Automatizacion creada:
 
-- `GVAdicto vigilancia normativa semanal`
+- `GVAdictos vigilancia normativa semanal`
 - Frecuencia: lunes a las 08:00.
 - Alcance actual: fuentes `boe_consolidado`, `boe_pdf`, `dogv_pdf` y versiones consolidadas EUR-Lex de TUE/TFUE.
 

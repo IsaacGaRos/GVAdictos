@@ -99,10 +99,10 @@ Estos documentos no deben importarse como texto definitivo sin revisar fuente of
 1. Revisar `Opo/EraCEF/TemarioAulaVirtualCompleto/General` y `Especial`.
 2. Identificar dentro de esas carpetas los PDFs o Docs correspondientes a normas concretas.
 3. Convertir solo 1-2 documentos piloto a TXT/MD.
-4. Importarlos en GVAdicto y validar si el parser de articulos funciona con ese formato.
+4. Importarlos en GVAdictos y validar si el parser de articulos funciona con ese formato.
 5. Mejorar el importador PDF/Docs solo despues de ver el formato real.
 
-## Catalogo cargado en GVAdicto
+## Catalogo cargado en GVAdictos
 
 Se creo un manifiesto local en `data/sources/drive_inventory/opo_temario_aula_virtual_2026.csv` con 60 PDFs de `Opo/EraCEF/TemarioAulaVirtualCompleto`.
 

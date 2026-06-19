@@ -1,8 +1,8 @@
-# AGENTS.md - GVAdicto
+# AGENTS.md - GVAdictos
 
 ## Objetivo
 
-GVAdicto es una app local para preparar oposiciones GVA, especialmente C2 GVA.
+GVAdictos es una app local-first para estudiar la oposicion A1-01 GVA 2025.
 
 ## Reglas criticas
 
