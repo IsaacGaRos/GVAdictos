@@ -27,6 +27,7 @@ from src.tests.repository import create_question, delete_question, get_question,
 from src.ai.ui import render_ai_insights, render_ai_question_generator
 from src.audio.ui import render_tts_player
 from src.search.ui import render_related_articles
+from src.simulacros.ui import render_exam_creator, render_exam_execution, render_exam_history
 
 
 st.set_page_config(page_title="GVAdictos", layout="wide")
@@ -513,7 +514,7 @@ def render_study_annotations(topic, articles: list) -> None:
 st.title("GVAdictos")
 st.caption("MVP local-first para oposiciones GVA. Contenido juridico siempre vinculado a fuente.")
 
-tabs = st.tabs(["Inicio", "Fuentes", "Importar leyes", "Articulos", "Preguntas", "Estudiar", "Modo test", "Fallos", "Informes y CSV"])
+tabs = st.tabs(["Inicio", "Fuentes", "Importar leyes", "Articulos", "Preguntas", "Estudiar", "Modo test", "Modo examen", "Fallos", "Informes y CSV"])
 
 with tabs[0]:
     counts = dashboard_counts()
@@ -738,6 +739,22 @@ with tabs[6]:
             st.caption(f"Fuente: {question['fuente']}")
 
 with tabs[7]:
+    st.subheader("Modo examen (Ola E1)")
+    tab1, tab2 = st.tabs(["Crear y ejecutar", "Historial"])
+
+    with tab1:
+        if "exam_finished" not in st.session_state:
+            st.session_state.exam_finished = False
+
+        if st.session_state.exam_finished or "exam_id" in st.session_state:
+            render_exam_execution()
+        else:
+            render_exam_creator()
+
+    with tab2:
+        render_exam_history()
+
+with tabs[8]:
     st.subheader("Base de fallos")
     summary = mistake_summary()
     if summary:
@@ -745,7 +762,7 @@ with tabs[7]:
     else:
         st.info("Todavia no hay intentos registrados.")
 
-with tabs[8]:
+with tabs[9]:
     st.subheader("Informes y exportaciones")
     counts = dashboard_counts()
     st.json(counts)
