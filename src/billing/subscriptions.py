@@ -1,11 +1,17 @@
-"""Subscription management for Stripe integration (F5)."""
+"""Subscription service for managing user billing and feature access.
+
+Uses SQLAlchemy ORM and Stripe for payment processing.
+"""
 
 from __future__ import annotations
 
-import sqlite3
-from typing import Any
+from typing import Optional
 from datetime import datetime
 from enum import Enum
+from sqlalchemy.orm import Session
+
+from src.db.models import Subscription, User, Entitlement
+from src.billing import stripe_integration
 
 
 class Plan(str, Enum):
@@ -15,78 +21,124 @@ class Plan(str, Enum):
     PREMIUM = "premium"
 
 
-class Subscription:
-    """Subscription model for billing."""
+class SubscriptionService:
+    """Service for subscription management."""
 
     PLANS = {
-        "free": {"price": 0, "features": ["1_oposicion", "basic_ai"]},
-        "pro": {"price": 9.99, "features": ["unlimited_oposiciones", "full_ai", "tts"]},
-        "premium": {"price": 19.99, "features": ["unlimited_oposiciones", "full_ai", "tts", "srs", "admin"]},
+        "free": {
+            "price": 0,
+            "features": ["study", "srs"],
+            "description": "Estudio básico",
+        },
+        "pro": {
+            "price": 9.99,
+            "features": ["study", "srs", "ai_insights", "tts", "exams"],
+            "description": "Una oposición",
+        },
+        "premium": {
+            "price": 19.99,
+            "features": [
+                "study",
+                "srs",
+                "ai_insights",
+                "tts",
+                "exams",
+                "drive_backup",
+            ],
+            "description": "Oposiciones ilimitadas",
+        },
     }
 
-    def __init__(self, conn: sqlite3.Connection) -> None:
-        self.conn = conn
+    def __init__(self, db: Session) -> None:
+        self.db = db
 
     def create_subscription(
         self,
         user_id: int,
         plan: str = "free",
-        stripe_customer_id: str | None = None,
-    ) -> int:
+        stripe_customer_id: Optional[str] = None,
+        stripe_subscription_id: Optional[str] = None,
+    ) -> Subscription:
         """Create a subscription for user."""
-        cursor = self.conn.execute(
-            """
-            INSERT INTO subscriptions(user_id, plan, stripe_customer_id, status)
-            VALUES (?, ?, ?, 'active')
-            """,
-            (user_id, plan, stripe_customer_id),
+        if plan not in self.PLANS:
+            raise ValueError(f"Invalid plan: {plan}")
+
+        sub = Subscription(
+            user_id=user_id,
+            plan=plan,
+            status="active",
+            stripe_customer_id=stripe_customer_id,
+            stripe_subscription_id=stripe_subscription_id,
         )
-        self.conn.commit()
-        return int(cursor.lastrowid)
+        self.db.add(sub)
+        self.db.commit()
 
-    def get_user_subscription(self, user_id: int) -> dict[str, Any] | None:
-        """Get user's current subscription."""
-        row = self.conn.execute(
-            "SELECT * FROM subscriptions WHERE user_id = ? ORDER BY created_at DESC LIMIT 1",
-            (user_id,),
-        ).fetchone()
-        return dict(row) if row else None
+        # Grant entitlements
+        stripe_integration._grant_entitlements(user_id, plan, self.db)
 
-    def upgrade_plan(self, user_id: int, new_plan: str) -> bool:
-        """Upgrade user to a new plan."""
+        return sub
+
+    def get_subscription(self, user_id: int) -> Optional[Subscription]:
+        """Get user's active subscription."""
+        return (
+            self.db.query(Subscription)
+            .filter_by(user_id=user_id)
+            .order_by(Subscription.created_at.desc())
+            .first()
+        )
+
+    def upgrade_plan(self, user_id: int, new_plan: str) -> Subscription:
+        """Upgrade user to new plan."""
         if new_plan not in self.PLANS:
-            return False
+            raise ValueError(f"Invalid plan: {new_plan}")
 
-        self.conn.execute(
-            "UPDATE subscriptions SET plan = ?, updated_at = CURRENT_TIMESTAMP WHERE user_id = ?",
-            (new_plan, user_id),
-        )
-        self.conn.commit()
-        return True
-
-    def check_feature_access(self, user_id: int, feature: str) -> bool:
-        """Check if user has access to a feature."""
-        sub = self.get_user_subscription(user_id)
+        sub = self.get_subscription(user_id)
         if not sub:
-            return feature in self.PLANS["free"]["features"]
+            return self.create_subscription(user_id, new_plan)
 
-        plan = sub["plan"]
-        return feature in self.PLANS.get(plan, {}).get("features", [])
+        sub.plan = new_plan
+        sub.status = "active"
+        self.db.commit()
 
-    def create_checkout_session(self, user_id: int, plan: str) -> str:
-        """Create Stripe checkout session (mock for MVP)."""
-        # MVP: Return mock session ID
-        # Real implementation: stripe.checkout.Session.create(...)
-        return f"session_{user_id}_{plan}_{datetime.utcnow().timestamp()}"
+        # Grant new entitlements
+        stripe_integration._grant_entitlements(user_id, new_plan, self.db)
 
-    def handle_webhook(self, event_type: str, data: dict) -> None:
-        """Handle Stripe webhook events."""
-        if event_type == "invoice.payment_succeeded":
-            user_id = data.get("user_id")
-            plan = data.get("plan")
-            if user_id and plan:
-                self.upgrade_plan(user_id, plan)
-        elif event_type == "invoice.payment_failed":
-            user_id = data.get("user_id")
-            if user_id:
-                self.upgrade_plan(user_id, "free")
+        return sub
+
+    def downgrade_plan(self, user_id: int, new_plan: str = "free") -> Subscription:
+        """Downgrade user to lower plan."""
+        sub = self.upgrade_plan(user_id, new_plan)
+
+        # Revoke paid features if downgrading from paid plan
+        if new_plan == "free":
+            stripe_integration._revoke_entitlements(user_id, self.db)
+
+        return sub
+
+    def get_user_plan(self, user_id: int) -> str:
+        """Get user's current plan."""
+        sub = self.get_subscription(user_id)
+        return sub.plan if sub else "free"
+
+    def has_feature(self, user_id: int, feature: str) -> bool:
+        """Check if user has access to feature."""
+        return stripe_integration.has_entitlement(user_id, feature, self.db)
+
+    def cancel_subscription(self, user_id: int) -> Optional[Subscription]:
+        """Cancel user's subscription (downgrade to free)."""
+        sub = self.get_subscription(user_id)
+        if not sub:
+            return None
+
+        sub.status = "canceled"
+        sub.canceled_at = datetime.utcnow()
+        self.db.commit()
+
+        # Revoke paid features
+        stripe_integration._revoke_entitlements(user_id, self.db)
+
+        return sub
+
+    def get_plan_info(self, plan: str) -> dict:
+        """Get plan information."""
+        return self.PLANS.get(plan, {})

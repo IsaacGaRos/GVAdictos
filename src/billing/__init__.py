@@ -1,5 +1,8 @@
-"""Billing module for subscriptions and payments (F5)."""
+"""Billing module for subscriptions and payments (F5).
 
-from src.billing.stripe_integration import STRIPE_INTEGRATION_SPEC
-
-__all__ = ["STRIPE_INTEGRATION_SPEC"]
+Exports:
+  - stripe_integration.create_checkout_session()
+  - stripe_integration.handle_webhook_event()
+  - stripe_integration.has_entitlement()
+  - subscriptions.SubscriptionService
+"""

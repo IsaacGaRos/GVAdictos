@@ -161,3 +161,82 @@ class UserOposicionEnrollment(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     oposicion_id = Column(Integer, ForeignKey("oposiciones.id"), nullable=False)
     enrolled_at = Column(DateTime, default=datetime.utcnow)
+
+
+# F5 — Billing & Subscriptions
+class Subscription(Base):
+    __tablename__ = "subscriptions"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    stripe_customer_id = Column(String, unique=True)
+    stripe_subscription_id = Column(String, unique=True)
+    plan = Column(String, nullable=False)  # 'free', 'pro', 'premium'
+    status = Column(String, nullable=False)  # 'active', 'canceled', 'past_due'
+    current_period_start = Column(DateTime)
+    current_period_end = Column(DateTime)
+    canceled_at = Column(DateTime)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class Entitlement(Base):
+    __tablename__ = "entitlements"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    feature = Column(String, nullable=False)  # 'unlimited_exams', 'ai_insights', 'drive_backup'
+    granted_at = Column(DateTime, default=datetime.utcnow)
+    expires_at = Column(DateTime)
+
+
+# F6 — Drive Backup
+class BackupHistory(Base):
+    __tablename__ = "backup_history"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    backup_type = Column(String, nullable=False)  # 'auto', 'manual'
+    drive_file_id = Column(String)
+    drive_file_name = Column(String)
+    backup_size_bytes = Column(Integer)
+    status = Column(String, nullable=False)  # 'success', 'failed', 'pending'
+    created_at = Column(DateTime, default=datetime.utcnow)
+    error_message = Column(Text)
+
+
+# E5 — Exam Progress & Results
+class ExamResult(Base):
+    __tablename__ = "exam_results"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    exam_id = Column(Integer, ForeignKey("mock_exams.id"), nullable=False)
+    question_id = Column(Integer)
+    selected_answer = Column(String)
+    is_correct = Column(Boolean)
+    time_spent_seconds = Column(Integer)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+# Optional: Global source & versioning tables
+class SourceVersion(Base):
+    __tablename__ = "source_versions"
+
+    id = Column(Integer, primary_key=True)
+    source_name = Column(String, nullable=False)
+    version = Column(String, nullable=False)
+    content_hash = Column(String)
+    checked_at = Column(DateTime, default=datetime.utcnow)
+    is_current = Column(Boolean, default=True)
+
+
+class LawVersion(Base):
+    __tablename__ = "law_versions"
+
+    id = Column(Integer, primary_key=True)
+    law_id = Column(Integer, ForeignKey("laws.id"), nullable=False)
+    version = Column(String, nullable=False)
+    content_hash = Column(String, nullable=False)
+    changed_at = Column(DateTime, default=datetime.utcnow)
+    is_current = Column(Boolean, default=True)

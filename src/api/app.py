@@ -6,22 +6,21 @@ Reuses existing service layer from src/ modules.
 
 from __future__ import annotations
 
-from fastapi import FastAPI, Depends, HTTPException, status, Header
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-import sqlite3
 
 from src.api.models import *
-from src.api.routes import auth, articles, topics, exams, study
-from src.core.db import connect
-from src.core.paths import DB_PATH
-from src.accounts.service import AuthService
+from src.api.routes import auth, articles, topics, exams, study, billing, oposiciones
+from src.db.database import init_db
 
 # Lifecycle
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Startup and shutdown logic."""
     print("[API] Starting GVAdictos API server...")
+    print("[API] Initializing database...")
+    init_db()
     yield
     print("[API] Shutting down...")
 
@@ -44,43 +43,14 @@ app.add_middleware(
 )
 
 
-# Dependency: get DB connection
-def get_db() -> sqlite3.Connection:
-    """Get database connection."""
-    return connect(DB_PATH)
-
-
-# Dependency: get current user
-def get_current_user(
-    authorization: str = Header(None),
-    db: sqlite3.Connection = Depends(get_db),
-) -> dict:
-    """Extract and verify current user from token."""
-    if not authorization or not authorization.startswith("Bearer "):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Missing or invalid authorization header",
-        )
-
-    token = authorization.split(" ")[1]
-    auth_service = AuthService(db)
-    user = auth_service.get_current_user(token)
-
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid or expired token",
-        )
-
-    return user
-
-
 # Routes
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(articles.router, prefix="/api/articles", tags=["articles"])
 app.include_router(topics.router, prefix="/api/topics", tags=["topics"])
 app.include_router(exams.router, prefix="/api/exams", tags=["exams"])
 app.include_router(study.router, prefix="/api/study", tags=["study"])
+app.include_router(billing.router, prefix="/api/billing", tags=["billing"])
+app.include_router(oposiciones.router, prefix="/api/oposiciones", tags=["oposiciones"])
 
 
 # Health check

@@ -1,109 +1,170 @@
-"""Multi-oposición service for F7 implementation."""
+"""Multi-oposición service for F7.
+
+Allows users to:
+  - Browse available oposiciones (GVA + others)
+  - Enroll in multiple oposiciones
+  - Switch between oposiciones when studying
+  - See progress per oposición
+"""
 
 from __future__ import annotations
 
-import sqlite3
-from typing import Any
+from typing import Optional, List, Dict, Any
+from datetime import datetime
+from sqlalchemy.orm import Session
+
+from src.db.models import (
+    Oposicion,
+    UserOposicionEnrollment,
+    Topic,
+    User,
+)
 
 
 class OposicionService:
     """Service for managing multiple oposiciones."""
 
-    def __init__(self, conn: sqlite3.Connection) -> None:
-        self.conn = conn
+    def __init__(self, db: Session) -> None:
+        self.db = db
 
     def create_oposicion(
         self,
         code: str,
         nombre: str,
         administracion: str = "GVA",
-    ) -> int:
+    ) -> Oposicion:
         """Create a new oposición."""
-        cursor = self.conn.execute(
-            """
-            INSERT INTO oposiciones(code, nombre, administracion, activa)
-            VALUES (?, ?, ?, 1)
-            """,
-            (code, nombre, administracion),
-        )
-        self.conn.commit()
-        return int(cursor.lastrowid)
+        opo = Oposicion(code=code, nombre=nombre, administracion=administracion, activa=True)
+        self.db.add(opo)
+        self.db.commit()
+        return opo
 
-    def list_oposiciones(self, activa_only: bool = True) -> list[dict[str, Any]]:
+    def list_oposiciones(self, activa_only: bool = True) -> List[Dict[str, Any]]:
         """List available oposiciones."""
-        query = "SELECT * FROM oposiciones"
-        params = []
+        query = self.db.query(Oposicion)
 
         if activa_only:
-            query += " WHERE activa = 1"
+            query = query.filter_by(activa=True)
 
-        query += " ORDER BY administracion, code"
+        opos = query.order_by(Oposicion.administracion, Oposicion.code).all()
 
-        rows = self.conn.execute(query, params).fetchall()
-        return [dict(row) for row in rows]
+        return [
+            {
+                "id": o.id,
+                "code": o.code,
+                "nombre": o.nombre,
+                "administracion": o.administracion,
+                "activa": o.activa,
+            }
+            for o in opos
+        ]
 
-    def enroll_user(self, user_id: int, oposicion_id: int) -> bool:
-        """Enroll user in an oposición."""
-        try:
-            self.conn.execute(
-                """
-                INSERT INTO user_oposicion_enrollment(user_id, oposicion_id)
-                VALUES (?, ?)
-                """,
-                (user_id, oposicion_id),
-            )
-            self.conn.commit()
-            return True
-        except sqlite3.IntegrityError:
-            return False  # Already enrolled
+    def get_oposicion(self, opo_id: int) -> Optional[Dict[str, Any]]:
+        """Get oposición by ID."""
+        opo = self.db.query(Oposicion).filter_by(id=opo_id).first()
 
-    def get_user_oposiciones(self, user_id: int) -> list[dict[str, Any]]:
-        """Get oposiciones enrolled by user."""
-        rows = self.conn.execute(
-            """
-            SELECT o.* FROM oposiciones o
-            JOIN user_oposicion_enrollment uoe ON o.id = uoe.oposicion_id
-            WHERE uoe.user_id = ?
-            ORDER BY o.administracion, o.code
-            """,
-            (user_id,),
-        ).fetchall()
-        return [dict(row) for row in rows]
-
-    def get_oposicion_topics(self, oposicion_id: int) -> list[dict[str, Any]]:
-        """Get topics for an oposición."""
-        rows = self.conn.execute(
-            """
-            SELECT t.* FROM topics t
-            WHERE t.oposicion_id = ?
-            ORDER BY t.topic_number
-            """,
-            (oposicion_id,),
-        ).fetchall()
-        return [dict(row) for row in rows]
-
-    def get_user_progress(
-        self,
-        user_id: int,
-        oposicion_id: int,
-    ) -> dict[str, Any]:
-        """Get user progress for an oposición."""
-        stats = self.conn.execute(
-            """
-            SELECT
-                COUNT(DISTINCT article_id) as articles_reviewed,
-                AVG(confidence) as avg_confidence,
-                COUNT(DISTINCT sr.id) as reviews_completed
-            FROM study_last_reviews sr
-            WHERE sr.user_id = ? AND sr.oposicion_id = ?
-            """,
-            (user_id, oposicion_id),
-        ).fetchone()
+        if not opo:
+            return None
 
         return {
-            "user_id": user_id,
-            "oposicion_id": oposicion_id,
-            "articles_reviewed": stats["articles_reviewed"] or 0,
-            "avg_confidence": stats["avg_confidence"] or 0.0,
-            "reviews_completed": stats["reviews_completed"] or 0,
+            "id": opo.id,
+            "code": opo.code,
+            "nombre": opo.nombre,
+            "administracion": opo.administracion,
+            "activa": opo.activa,
         }
+
+    def enroll_user(self, user_id: int, opo_id: int) -> bool:
+        """Enroll user in an oposición."""
+        try:
+            # Check if already enrolled
+            existing = (
+                self.db.query(UserOposicionEnrollment)
+                .filter_by(user_id=user_id, oposicion_id=opo_id)
+                .first()
+            )
+
+            if existing:
+                return False  # Already enrolled
+
+            enrollment = UserOposicionEnrollment(
+                user_id=user_id,
+                oposicion_id=opo_id,
+            )
+            self.db.add(enrollment)
+            self.db.commit()
+            return True
+
+        except Exception:
+            self.db.rollback()
+            return False
+
+    def unenroll_user(self, user_id: int, opo_id: int) -> bool:
+        """Unenroll user from oposición."""
+        try:
+            enrollment = (
+                self.db.query(UserOposicionEnrollment)
+                .filter_by(user_id=user_id, oposicion_id=opo_id)
+                .first()
+            )
+
+            if enrollment:
+                self.db.delete(enrollment)
+                self.db.commit()
+                return True
+
+            return False
+
+        except Exception:
+            self.db.rollback()
+            return False
+
+    def get_user_oposiciones(self, user_id: int) -> List[Dict[str, Any]]:
+        """Get oposiciones enrolled by user."""
+        enrollments = (
+            self.db.query(Oposicion)
+            .join(UserOposicionEnrollment)
+            .filter(UserOposicionEnrollment.user_id == user_id)
+            .order_by(Oposicion.administracion, Oposicion.code)
+            .all()
+        )
+
+        return [
+            {
+                "id": o.id,
+                "code": o.code,
+                "nombre": o.nombre,
+                "administracion": o.administracion,
+            }
+            for o in enrollments
+        ]
+
+    def get_oposicion_topics(self, opo_id: int) -> List[Dict[str, Any]]:
+        """Get topics for an oposición (all A1-01 topics for now)."""
+        # TODO: In future, associate topics with oposiciones
+        topics = (
+            self.db.query(Topic)
+            .order_by(Topic.topic_number)
+            .limit(75)
+            .all()
+        )
+
+        return [
+            {
+                "id": t.id,
+                "topic_number": t.topic_number,
+                "part": t.part,
+                "official_text": t.official_text[:100] if t.official_text else "",
+                "section": t.section,
+            }
+            for t in topics
+        ]
+
+    def is_user_enrolled(self, user_id: int, opo_id: int) -> bool:
+        """Check if user is enrolled in oposición."""
+        enrollment = (
+            self.db.query(UserOposicionEnrollment)
+            .filter_by(user_id=user_id, oposicion_id=opo_id)
+            .first()
+        )
+        return enrollment is not None
