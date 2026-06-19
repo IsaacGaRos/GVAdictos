@@ -11,7 +11,7 @@ from src.core.paths import DB_PATH, ensure_runtime_dirs
 def connect(db_path: Path = DB_PATH) -> sqlite3.Connection:
     ensure_runtime_dirs()
     conn = sqlite3.connect(db_path)
-    conn.row_factory = sqlite3.Row
+    conn.row_factory = lambda cur, row: dict(zip([col[0] for col in cur.description], row))
     conn.execute("PRAGMA foreign_keys = ON")
     return conn
 
