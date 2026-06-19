@@ -24,6 +24,7 @@ from src.studies.annotations import (
     update_annotation,
 )
 from src.tests.repository import create_question, delete_question, get_question, list_questions, update_question
+from src.ai.ui import render_ai_insights
 
 
 st.set_page_config(page_title="GVAdictos", layout="wide")
@@ -287,6 +288,10 @@ def render_article_card(article, topic_id: int) -> None:
                     "Las ampliaciones (doctrina, temario, Autentica) se anaden como "
                     "anotaciones y aparecen aqui, nunca mezcladas con el texto legal."
                 )
+
+        # AI insights (Ola D2)
+        article_title = article.get('title') or f"Art. {article['article_ref']}"
+        render_ai_insights(article['id'], article_title, display_text)
 
 
 def render_paginated_articles(articles: list, topic_id: int, key_prefix: str) -> None:
