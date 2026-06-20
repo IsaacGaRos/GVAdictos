@@ -85,6 +85,57 @@ def render_tts_button(
             st.components.v1.html(js_code, height=60, scrolling=False)
 
 
+def render_tts_law_player(law_name: str, law_articles: list) -> None:
+    """Render TTS player for an entire law (all its articles).
+
+    Args:
+        law_name: e.g., "Constitución Española 1978"
+        law_articles: list of dicts with 'article_ref', 'article_title', 'text'
+    """
+    if not law_articles:
+        return
+
+    combined_text = " ".join([
+        f"Artículo {a.get('article_ref', '')}. {a.get('text', '')}"
+        for a in law_articles
+    ])
+
+    with st.expander(f"🔊 Escuchar ley: {law_name}", expanded=False):
+        st.caption(f"Lee todos los artículos de {law_name} (sin coste)")
+
+        col1, col2 = st.columns([2, 1])
+        with col1:
+            speed = st.slider(
+                "Velocidad",
+                min_value=0.5,
+                max_value=2.0,
+                value=1.0,
+                step=0.1,
+                key=f"law_tts_speed_{law_name}",
+            )
+        with col2:
+            st.write("")
+
+        col_play, col_pause, col_stop = st.columns(3)
+        with col_play:
+            play_btn = st.button("▶ Play", key=f"law_tts_play_{law_name}", use_container_width=True)
+        with col_pause:
+            pause_btn = st.button("⏸ Pause", key=f"law_tts_pause_{law_name}", use_container_width=True)
+        with col_stop:
+            stop_btn = st.button("⏹ Stop", key=f"law_tts_stop_{law_name}", use_container_width=True)
+
+        if play_btn or pause_btn or stop_btn:
+            js_code = _generate_web_speech_js(
+                text=combined_text,
+                voice=None,
+                speed=speed,
+                article_title=law_name,
+                loop=False,
+                autostart=play_btn,
+            )
+            st.components.v1.html(js_code, height=60, scrolling=False)
+
+
 def render_tts_player(article_id: int, article_title: str, article_text: str) -> None:
     """Render TTS player for an article (Ola D4)."""
     service = get_tts_service()

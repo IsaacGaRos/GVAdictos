@@ -1188,6 +1188,8 @@ with tabs[7]:
 
                 with st.container(border=True):
                     st.markdown(f"##### {norma['name']}")
+                    # TODO: render_tts_law_player for full law playback
+
                     if has_fine and mapped:
                         st.caption(
                             f"{len(mapped)} articulo(s) delimitado(s) para este tema "
