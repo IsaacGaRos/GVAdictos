@@ -5,11 +5,14 @@ from dataclasses import dataclass
 from src.study.repository import StudyRepository
 
 
+import re as _re
+
 NOTE_MAX_CHARS = 20_000
 HIGHLIGHT_COLORS = {"yellow", "green", "blue", "pink", "purple", "red"}
 PROGRESS_STATUSES = {"not_started", "reading", "reviewing", "completed", "paused"}
 MARK_TYPES = {"doubt", "important", "bookmark"}
 REVIEW_RESULTS = {"unknown", "again", "hard", "good", "easy"}
+_HEX_COLOR_RE = _re.compile(r"^#[0-9A-Fa-f]{3}([0-9A-Fa-f]{3})?$")
 
 
 @dataclass(frozen=True)
@@ -221,7 +224,7 @@ class StudyService:
         start_offset: int | None,
         end_offset: int | None,
     ) -> None:
-        if color not in HIGHLIGHT_COLORS:
+        if color not in HIGHLIGHT_COLORS and not _HEX_COLOR_RE.match(color or ""):
             raise ValueError(f"Unsupported highlight color: {color}")
         if start_offset is not None and end_offset is not None and start_offset > end_offset:
             raise ValueError("start_offset cannot be greater than end_offset.")

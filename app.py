@@ -33,8 +33,10 @@ from src.studies.annotations import (
     update_annotation,
 )
 from src.tests.repository import create_question, delete_question, get_question, list_questions, update_question
+import json as _json
 from src.ai.ui import render_ai_insights, render_ai_question_generator
-from src.audio.ui import render_tts_button, render_tts_law_player, _generate_web_speech_js, _generate_sequential_speech_js
+from src.audio.ui import render_tts_button  # noqa: F401 — mantenido por compatibilidad
+from src.audio.global_player import inject_global_player, play_items_button
 from src.search.ui import render_related_articles
 from src.simulacros.ui import render_exam_creator, render_exam_execution, render_exam_history
 from src.accounts.schema import ensure_accounts_tables
@@ -105,6 +107,9 @@ def _ensure_extra_tables() -> None:
 init_db()
 ensure_runtime_dirs()
 _ensure_extra_tables()
+
+# Inyectar player TTS global (flotante en la parte inferior)
+inject_global_player()
 
 DEFAULT_ARTICLES_PAGE_SIZE = 30
 
@@ -649,76 +654,286 @@ def render_study_panel(article_id: int) -> None:
                 st.rerun()
 
 
+def render_study_panel_compact(article_id: int) -> None:
+    """Fila de acciones compacta: íconos en línea, se expanden al hacer click."""
+    svc = get_study_service()
+    if not svc:
+        return
+    try:
+        state = svc.get_article_state(article_id)
+    except Exception:
+        return
+
+    highlights = state.get("highlights", [])
+    notes = state.get("notes", [])
+    marks = state.get("marks", [])
+    active_marks = {m["mark_type"] for m in marks if not m.get("resolved")}
+    is_important = "important" in active_marks
+    is_doubt = "doubt" in active_marks
+    n_annotations = len(highlights) + len(notes)
+
+    st.markdown('<div style="height:4px"></div>', unsafe_allow_html=True)
+
+    # ── Fila de acciones ──────────────────────────────────────────────────────
+    col_imp, col_dud, col_notes, col_ai, col_rel, _sp = st.columns([1.2, 1.0, 1.0, 1.0, 2.0, 0.1])
+
+    with col_imp:
+        imp_lbl = "★ Imp." if is_important else "☆ Imp."
+        if st.button(imp_lbl, key=f"mark_imp_{article_id}", help="Marcar como importante",
+                     use_container_width=True):
+            study_mutate(lambda s: s.mark(
+                StudyTarget(article_id=article_id), mark_type="important", resolved=is_important,
+            ))
+            st.rerun()
+
+    with col_dud:
+        dud_lbl = "❤️ Duda" if is_doubt else "♡ Duda"
+        if st.button(dud_lbl, key=f"mark_dud_{article_id}", help="Marcar duda",
+                     use_container_width=True):
+            study_mutate(lambda s: s.mark(
+                StudyTarget(article_id=article_id), mark_type="doubt", resolved=is_doubt,
+            ))
+            st.rerun()
+
+    with col_notes:
+        notes_lbl = f"📝 {n_annotations}" if n_annotations else "📝"
+        notes_key = f"toggle_highlights_{article_id}"
+        if notes_key not in st.session_state:
+            st.session_state[notes_key] = False
+        def _toggle_notes(k=notes_key):
+            st.session_state[k] = not st.session_state[k]
+        st.button(notes_lbl, key=f"{notes_key}_btn2", on_click=_toggle_notes,
+                  help="Ver/editar subrayados y notas", use_container_width=True)
+
+    with col_ai:
+        ai_key = f"ai_insights_{article_id}"
+        if ai_key not in st.session_state:
+            st.session_state[ai_key] = False
+        def _toggle_ai(k=ai_key):
+            st.session_state[k] = not st.session_state[k]
+        st.button("🧠+", key=f"{ai_key}_btn2", on_click=_toggle_ai,
+                  help="Insights IA", use_container_width=True)
+
+    with col_rel:
+        rel_key = f"related_articles_{article_id}"
+        if rel_key not in st.session_state:
+            st.session_state[rel_key] = False
+        def _toggle_rel(k=rel_key):
+            st.session_state[k] = not st.session_state[k]
+        st.button("🔗 Art. Relacionados", key=f"{rel_key}_btn2", on_click=_toggle_rel,
+                  help="Artículos relacionados", use_container_width=True)
+
+    # ── Duda expandida ────────────────────────────────────────────────────────
+    if is_doubt:
+        conn = connect()
+        current_doubt = get_doubt(conn, article_id, current_user_id())
+        conn.close()
+        with st.container(border=True):
+            st.caption("✏️ Texto de tu duda")
+            doubt_text = st.text_area(
+                "duda",
+                value=current_doubt.get("doubt_text", "") if current_doubt else "",
+                height=70,
+                placeholder="¿Qué no entiendes? Escríbelo aquí...",
+                key=f"doubt_text_{article_id}",
+                label_visibility="collapsed",
+            )
+            col_s, col_d = st.columns(2)
+            with col_s:
+                if st.button("Guardar duda", key=f"save_doubt_{article_id}", use_container_width=True):
+                    if doubt_text.strip():
+                        conn2 = connect()
+                        save_doubt(conn2, article_id, doubt_text, user_id=current_user_id())
+                        conn2.close()
+                        st.success("Duda guardada")
+                    else:
+                        st.warning("Escribe tu duda primero")
+            with col_d:
+                if st.button("Eliminar duda", key=f"del_doubt_{article_id}", use_container_width=True):
+                    conn2 = connect()
+                    delete_doubt(conn2, article_id, user_id=current_user_id())
+                    conn2.close()
+                    st.info("Duda eliminada")
+                    st.rerun()
+
+    # ── Subrayados y notas expandidos ─────────────────────────────────────────
+    if st.session_state.get(f"toggle_highlights_{article_id}", False):
+        with st.container(border=True):
+            # Subrayados existentes
+            if highlights:
+                for h in highlights:
+                    col_h, col_hd = st.columns([6, 1])
+                    with col_h:
+                        clr = h.get("color", "#FFFF00")
+                        css_color = HIGHLIGHT_COLORS_CSS_MAP.get(clr, clr)
+                        st.markdown(
+                            f'<mark style="background:{css_color};padding:1px 4px;border-radius:2px;">'
+                            f'{h.get("selected_text","")}</mark>',
+                            unsafe_allow_html=True,
+                        )
+                        if h.get("note_text"):
+                            st.caption(f"Nota: {h['note_text']}")
+                    with col_hd:
+                        if st.button("🗑", key=f"del_hl_{h['id']}", help="Eliminar subrayado"):
+                            study_mutate(lambda s, hid=int(h["id"]): s.delete_highlight(hid))
+                            st.rerun()
+                st.divider()
+
+            # Nuevo subrayado
+            st.markdown("**Nuevo subrayado**")
+            hl_text = st.text_area(
+                "Fragmento exacto",
+                key=f"new_hl_text_{article_id}", height=60,
+                placeholder="Pega aquí el fragmento exacto del artículo",
+            )
+            col_color, col_custom = st.columns([1, 1])
+            with col_color:
+                hl_color = st.selectbox(
+                    "Color",
+                    list(HIGHLIGHT_COLOR_LABELS.keys()),
+                    format_func=lambda c: HIGHLIGHT_COLOR_LABELS[c],
+                    key=f"new_hl_color_{article_id}",
+                )
+            with col_custom:
+                hl_color_custom = st.color_picker(
+                    "O color personalizado",
+                    value="#FFFF00",
+                    key=f"new_hl_custom_{article_id}",
+                )
+                if hl_color_custom != "#FFFF00":
+                    hl_color = hl_color_custom
+
+            hl_note = st.text_input("Nota (opcional)", key=f"new_hl_note_{article_id}")
+            if st.button("Guardar subrayado", key=f"save_hl_{article_id}"):
+                if not hl_text.strip():
+                    st.error("Escribe el fragmento a subrayar.")
+                else:
+                    study_mutate(lambda s: s.add_highlight(
+                        article_id=article_id,
+                        selected_text=hl_text.strip(),
+                        color=hl_color,
+                        note_text=hl_note.strip() or None,
+                    ))
+                    st.success("Subrayado guardado.")
+                    st.rerun()
+
+            st.divider()
+
+            # Notas
+            if notes:
+                st.markdown("**Notas guardadas**")
+                for n in notes:
+                    col_n, col_nd = st.columns([6, 1])
+                    with col_n:
+                        st.markdown(n.get("note_text", ""))
+                        if n.get("selected_text"):
+                            st.caption(f"Sobre: {n['selected_text']}")
+                    with col_nd:
+                        if st.button("🗑", key=f"del_note_{n['id']}", help="Eliminar nota"):
+                            study_mutate(lambda s, nid=int(n["id"]): s.delete_article_note(nid))
+                            st.rerun()
+                st.divider()
+
+            st.markdown("**Nueva nota**")
+            note_text = st.text_area("Tu nota", key=f"new_note_text_{article_id}", height=70,
+                                      placeholder="Apunte personal, conexión con otro artículo...")
+            if st.button("Guardar nota", key=f"save_note_{article_id}"):
+                if not note_text.strip():
+                    st.error("Escribe el texto de la nota.")
+                else:
+                    study_mutate(lambda s: s.add_article_note(
+                        article_id=article_id, note_text=note_text.strip(),
+                    ))
+                    st.success("Nota guardada.")
+                    st.rerun()
+
+
+# Mapa de colores named → CSS para mostrar subrayados en la lista
+HIGHLIGHT_COLORS_CSS_MAP = {
+    "yellow": "#FFEB3B", "green": "#4CAF50", "blue": "#2196F3",
+    "pink": "#FF69B4", "purple": "#9C27B0", "red": "#F44336",
+}
+
+
+def _load_article_highlights(article_id: int) -> list:
+    svc = get_study_service()
+    if not svc:
+        return []
+    try:
+        return svc.get_article_state(article_id).get("highlights", [])
+    except Exception:
+        return []
+
+
 def render_article_card(article, topic_id: int) -> None:
     display_text = clean_article_text(article['text'] or '')
     if is_toc_stub(display_text):
         return
     article_id = article['id']
-    article_title = article.get('title') or f"Art. {article['article_ref']}"
-    with st.container(border=True):
-        # Cabecera: ref + titulo + altavoz
-        col_ref, col_title, col_audio = st.columns([1, 4, 1])
-        with col_ref:
-            st.markdown(f"**Art. {article['article_ref']}**")
-        with col_title:
-            st.markdown(f"**{article.get('title') or 'Sin titulo'}**")
-        with col_audio:
-            render_tts_button(
-                key=f"art_{topic_id}_{article_id}",
-                text=display_text,
-                prefix=f"Artículo {article['article_ref']}",
-                label="🔊",
-                help_text="Escuchar este artículo",
-            )
+    article_ref = article['article_ref']
+    article_title = article.get('title') or f"Art. {article_ref}"
 
-        # Capitulo / seccion
+    with st.container(border=True):
+        # ── Cabecera compacta: Art N | ▶ | Título ─────────────────────────────
+        col_ref, col_play, col_title, col_menu = st.columns([0.8, 0.4, 5, 0.4])
+        with col_ref:
+            st.markdown(f"**Art. {article_ref}**")
+        with col_play:
+            tts_label = f"Art. {article_ref}"
+            play_items_button(
+                items=[{"text": display_text, "label": tts_label}],
+                label="▶",
+                key=f"art_{topic_id}_{article_id}",
+            )
+        with col_title:
+            st.markdown(f"**{article_title}**")
+        with col_menu:
+            # Menú contextual (kebab)
+            with st.popover("⋮", use_container_width=False):
+                st.caption("**Acciones**")
+                if st.button("📝 Añadir nota", key=f"menu_note_{article_id}"):
+                    st.session_state[f"toggle_highlights_{article_id}"] = True
+                if st.button("🧠 Insight IA", key=f"menu_ai_{article_id}"):
+                    st.session_state[f"ai_insights_{article_id}"] = True
+                if st.button("🔗 Art. relacionados", key=f"menu_rel_{article_id}"):
+                    st.session_state[f"related_articles_{article_id}"] = True
+
+        # ── Capítulo / sección en color acento ─────────────────────────────────
         location = _article_location(article)
         if location:
-            st.caption(f"📍 {location}")
+            st.markdown(
+                f'<div style="color:#f38ba8;font-size:11px;font-weight:600;margin:-4px 0 4px;">'
+                f'{location}</div>',
+                unsafe_allow_html=True,
+            )
 
-        # Texto legal con highlights integrados
+        # ── Texto legal con highlights integrados ───────────────────────────────
         if display_text:
-            svc = get_study_service()
-            highlighted_text = display_text
-            if svc:
-                try:
-                    state = svc.get_article_state(article_id)
-                    highlights = state.get("highlights", [])
-                    if highlights:
-                        highlighted_text = render_text_with_highlights(display_text, highlights)
-                        st.markdown(highlighted_text, unsafe_allow_html=True)
-                    else:
-                        st.text_area(
-                            f"Texto art. {article['article_ref']}",
-                            value=display_text,
-                            height=200,
-                            disabled=True,
-                            key=f"art_{topic_id}_{article_id}",
-                            label_visibility="collapsed",
-                        )
-                except Exception:
-                    st.text_area(
-                        f"Texto art. {article['article_ref']}",
-                        value=display_text,
-                        height=200,
-                        disabled=True,
-                        key=f"art_{topic_id}_{article_id}",
-                        label_visibility="collapsed",
-                    )
+            highlights = _load_article_highlights(article_id)
+            if highlights:
+                html_text = render_text_with_highlights(display_text, highlights)
+                # Wrap in a styled div matching Streamlit dark theme
+                st.markdown(
+                    f'<div style="font-size:14px;line-height:1.7;color:#cdd6f4;'
+                    f'white-space:pre-wrap;padding:8px 0;">{html_text}</div>',
+                    unsafe_allow_html=True,
+                )
             else:
+                lines = display_text.count('\n') + 1
+                height = max(120, min(lines * 20 + 20, 400))
                 st.text_area(
-                    f"Texto art. {article['article_ref']}",
+                    "texto",
                     value=display_text,
-                    height=200,
+                    height=height,
                     disabled=True,
-                    key=f"art_{topic_id}_{article_id}",
+                    key=f"ta_{topic_id}_{article_id}",
                     label_visibility="collapsed",
                 )
 
-        # Panel de estudio (marcas, subrayado, notas) — backend src/study
-        render_study_panel(article_id)
+        # ── Fila de acciones compacta ────────────────────────────────────────────
+        render_study_panel_compact(article_id)
 
-        # IA y relaciones
+        # ── Secciones expandibles por icono (ocultas por defecto) ─────────────
         render_ai_insights(article_id, article_title, display_text)
         render_ai_question_generator(article_id, article_title, display_text)
         render_related_articles(article_id, article_title)
@@ -1256,16 +1471,30 @@ with tabs[7]:
 
         st.divider()
         part_name = "Parte general" if part_label == "general" else "Parte especifica"
+
+        # Cargamos normativa aquí para poder construir los items TTS del tema completo
+        normativa = load_topic_normativa(selected_topic['id'])
+
+        # Items TTS para reproducir todo el tema: título + todos los artículos de todas las leyes
+        _topic_tts_items: list = [
+            {"text": f"Tema {selected_topic['topic_number']}. {selected_topic['official_text']}", "label": f"Tema {selected_topic['topic_number']}"}
+        ]
+        for _norma in (normativa or []):
+            _law_arts = load_law_all_articles(_norma['id'])
+            _topic_tts_items.append({"text": _norma['name'], "label": f"Ley: {_norma['name']}"})
+            for _a in _law_arts:
+                _txt = clean_article_text(_a.get('text') or '')
+                if _txt:
+                    _topic_tts_items.append({"text": _txt, "label": f"Art. {_a['article_ref']}"})
+
         col_th, col_taudio = st.columns([5, 1])
         with col_th:
             st.markdown(f"### Tema {selected_topic['topic_number']} ({part_name})")
         with col_taudio:
-            render_tts_button(
-                key=f"topic_{selected_topic['id']}",
-                text=selected_topic['official_text'],
-                prefix=f"Tema {selected_topic['topic_number']}",
+            play_items_button(
+                items=_topic_tts_items,
                 label="🔊 Tema",
-                help_text="Escuchar el enunciado del tema",
+                key=f"topic_{selected_topic['id']}",
             )
         st.write(selected_topic['official_text'])
         if selected_topic['section']:
@@ -1274,7 +1503,6 @@ with tabs[7]:
         st.divider()
 
         articles_for_annotations: list = []
-        normativa = load_topic_normativa(selected_topic['id'])
         if not normativa:
             st.warning(
                 "Este tema aun no tiene normativa vinculada en la validacion. "
@@ -1297,10 +1525,15 @@ with tabs[7]:
                     with col_tts:
                         all_law_articles = load_law_all_articles(law_id)
                         if all_law_articles:
-                            render_tts_law_player(
-                                law_name=norma['name'],
-                                law_articles=all_law_articles,
-                                key_prefix=f"theme_{selected_topic['id']}_law_{law_id}",
+                            _law_items = [{"text": norma['name'], "label": f"Ley: {norma['name']}"}]
+                            for _la in all_law_articles:
+                                _lt = clean_article_text(_la.get('text') or '')
+                                if _lt:
+                                    _law_items.append({"text": _lt, "label": f"Art. {_la['article_ref']}"})
+                            play_items_button(
+                                items=_law_items,
+                                label="🔊",
+                                key=f"law_{law_id}",
                             )
 
                     if has_fine and mapped:
