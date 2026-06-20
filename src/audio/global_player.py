@@ -181,10 +181,12 @@ PLAYER_JS = """
 
 
 def inject_global_player() -> None:
-    """Inject the floating TTS player into the Streamlit page once per session."""
-    if st.session_state.get("_gva_player_injected"):
-        return
-    st.session_state["_gva_player_injected"] = True
+    """Inject the floating TTS player into the Streamlit page on every rerun.
+
+    Streamlit replaces the DOM on each rerun so the bar must be re-injected
+    every time. The JS guard (if window.gvaTTS return) prevents double-init of
+    the JS engine while allowing the HTML bar to re-appear after reruns.
+    """
     st.markdown(PLAYER_CSS + PLAYER_HTML + PLAYER_JS, unsafe_allow_html=True)
 
 
@@ -196,6 +198,9 @@ def play_items_button(
 ) -> None:
     """Render a small HTML button that loads items into the global player and plays.
 
+    Items are stored in a JS variable to avoid HTML-attribute escaping issues
+    (apostrophes in legal text would break onclick='...').
+
     Args:
         items: list of {"text": str, "label": str}
         label: button display label
@@ -203,14 +208,22 @@ def play_items_button(
         style: extra inline CSS
     """
     items_json = json.dumps(items, ensure_ascii=False)
+    safe_key = key.replace("-", "_").replace(".", "_")
     default_style = (
         "background:transparent;border:none;color:#89b4fa;cursor:pointer;"
         "font-size:16px;padding:2px 6px;border-radius:4px;"
     )
-    btn_html = (
-        f'<button id="play_{key}" '
-        f'style="{default_style}{style}" '
-        f'onclick=\'window.gvaTTS.load({items_json}); window.gvaTTS.play();\'>'
-        f"{label}</button>"
-    )
-    st.markdown(btn_html, unsafe_allow_html=True)
+    html = f"""
+<button id="playbtn_{safe_key}" style="{default_style}{style}"
+  onclick="gvaPlay_{safe_key}()">{label}</button>
+<script>
+(function() {{
+  var _items = {items_json};
+  window.gvaPlay_{safe_key} = function() {{
+    if (!window.gvaTTS) {{ alert('Reproductor TTS no iniciado. Recarga la página.'); return; }}
+    window.gvaTTS.load(_items);
+    window.gvaTTS.play();
+  }};
+}})();
+</script>"""
+    st.markdown(html, unsafe_allow_html=True)

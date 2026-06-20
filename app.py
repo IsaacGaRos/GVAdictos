@@ -58,9 +58,54 @@ st.set_page_config(page_title="GVAdictos", layout="wide")
 
 # ─── INICIALIZACIÓN ──────────────────────────────────────────────────────────
 
+def _migrate_highlights_color_constraint(conn) -> None:
+    """Elimina el CHECK constraint de color en study_highlights si todavía existe.
+
+    SQLite no soporta DROP CONSTRAINT, así que hay que recrear la tabla.
+    Se detecta comprobando si el CREATE TABLE en sqlite_master contiene la cláusula CHECK de color.
+    """
+    row = conn.execute(
+        "SELECT sql FROM sqlite_master WHERE type='table' AND name='study_highlights'"
+    ).fetchone()
+    if not row:
+        return  # tabla aún no existe
+    ddl = row[0] or ""
+    if "CHECK(color IN" not in ddl and "CHECK (color IN" not in ddl:
+        return  # ya migrada
+    conn.executescript("""
+        PRAGMA foreign_keys = OFF;
+
+        ALTER TABLE study_highlights RENAME TO _study_highlights_old;
+
+        CREATE TABLE study_highlights (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            article_id INTEGER REFERENCES articles(id) ON DELETE SET NULL,
+            law_id_snapshot INTEGER,
+            article_ref_snapshot TEXT,
+            anchor_key TEXT,
+            selected_text TEXT NOT NULL,
+            start_offset INTEGER,
+            end_offset INTEGER,
+            color TEXT NOT NULL DEFAULT 'yellow',
+            note_text TEXT,
+            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            archived_at TEXT,
+            CHECK(start_offset IS NULL OR end_offset IS NULL OR start_offset <= end_offset)
+        );
+
+        INSERT INTO study_highlights SELECT * FROM _study_highlights_old;
+
+        DROP TABLE _study_highlights_old;
+
+        PRAGMA foreign_keys = ON;
+    """)
+
+
 def _ensure_extra_tables() -> None:
     """Crea tablas de usuarios, oposiciones y suscripciones si no existen."""
     with connect() as conn:
+        _migrate_highlights_color_constraint(conn)
         ensure_accounts_tables(conn)
         ensure_doubts_table(conn)
         conn.executescript("""
@@ -675,7 +720,7 @@ def render_study_panel_compact(article_id: int) -> None:
     st.markdown('<div style="height:4px"></div>', unsafe_allow_html=True)
 
     # ── Fila de acciones ──────────────────────────────────────────────────────
-    col_imp, col_dud, col_notes, col_ai, col_rel, _sp = st.columns([1.2, 1.0, 1.0, 1.0, 2.0, 0.1])
+    col_imp, col_dud, col_notes, _sp = st.columns([1.2, 1.0, 1.0, 3.0])
 
     with col_imp:
         imp_lbl = "★ Imp." if is_important else "☆ Imp."
@@ -704,24 +749,6 @@ def render_study_panel_compact(article_id: int) -> None:
             st.session_state[k] = not st.session_state[k]
         st.button(notes_lbl, key=f"{notes_key}_btn2", on_click=_toggle_notes,
                   help="Ver/editar subrayados y notas", use_container_width=True)
-
-    with col_ai:
-        ai_key = f"ai_insights_{article_id}"
-        if ai_key not in st.session_state:
-            st.session_state[ai_key] = False
-        def _toggle_ai(k=ai_key):
-            st.session_state[k] = not st.session_state[k]
-        st.button("🧠+", key=f"{ai_key}_btn2", on_click=_toggle_ai,
-                  help="Insights IA", use_container_width=True)
-
-    with col_rel:
-        rel_key = f"related_articles_{article_id}"
-        if rel_key not in st.session_state:
-            st.session_state[rel_key] = False
-        def _toggle_rel(k=rel_key):
-            st.session_state[k] = not st.session_state[k]
-        st.button("🔗 Art. Relacionados", key=f"{rel_key}_btn2", on_click=_toggle_rel,
-                  help="Artículos relacionados", use_container_width=True)
 
     # ── Duda expandida ────────────────────────────────────────────────────────
     if is_doubt:
@@ -930,10 +957,9 @@ def render_article_card(article, topic_id: int) -> None:
                     label_visibility="collapsed",
                 )
 
-        # ── Fila de acciones compacta ────────────────────────────────────────────
+        # ── Fila de acciones: importante, duda, notas/subrayados
         render_study_panel_compact(article_id)
-
-        # ── Secciones expandibles por icono (ocultas por defecto) ─────────────
+        # ── Paneles expandibles: IA y artículos relacionados (tienen su propio botón)
         render_ai_insights(article_id, article_title, display_text)
         render_ai_question_generator(article_id, article_title, display_text)
         render_related_articles(article_id, article_title)

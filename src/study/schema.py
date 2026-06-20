@@ -48,8 +48,7 @@ CREATE TABLE IF NOT EXISTS study_highlights (
     selected_text TEXT NOT NULL,
     start_offset INTEGER,
     end_offset INTEGER,
-    color TEXT NOT NULL DEFAULT 'yellow'
-        CHECK(color IN ('yellow', 'green', 'blue', 'pink', 'purple', 'red')),
+    color TEXT NOT NULL DEFAULT 'yellow',
     note_text TEXT,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
