@@ -588,7 +588,8 @@ def render_article_card(article, topic_id: int) -> None:
         with col_audio:
             render_tts_button(
                 key=f"art_{topic_id}_{article_id}",
-                text=f"Artículo {article['article_ref']}. {article_title}. {display_text}",
+                text=display_text,
+                prefix=f"Artículo {article['article_ref']}",
                 label="🔊",
                 help_text="Escuchar este artículo",
             )
@@ -1158,7 +1159,8 @@ with tabs[7]:
         with col_taudio:
             render_tts_button(
                 key=f"topic_{selected_topic['id']}",
-                text=f"Tema {selected_topic['topic_number']}. {selected_topic['official_text']}",
+                text=selected_topic['official_text'],
+                prefix=f"Tema {selected_topic['topic_number']}",
                 label="🔊 Tema",
                 help_text="Escuchar el enunciado del tema",
             )
