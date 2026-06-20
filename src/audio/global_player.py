@@ -1,229 +1,109 @@
-"""Global floating TTS player injected once per page render.
+"""Global TTS player using Streamlit session_state + st.components.v1.html().
 
-Exposes a window-level JS API (`window.gvaTTS`) that all article play buttons call.
-Uses Web Speech API — zero cost, zero backend.
+Flow:
+  1. tts_button() renders a native Streamlit button.
+  2. On click, items are stored in session_state and the page reruns.
+  3. render_global_player() detects new items and renders an html component
+     that auto-plays via Web Speech API (zero cost, browser-native).
+  4. Speed slider is shared across all requests via session_state.
 """
 from __future__ import annotations
 
 import json
 import streamlit as st
 
-
-PLAYER_CSS = """
-<style>
-#gva-player {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: #181825;
-    border-top: 1px solid #313244;
-    padding: 10px 24px;
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    font-size: 13px;
-    color: #cdd6f4;
-    box-shadow: 0 -2px 12px rgba(0,0,0,.4);
-}
-#gva-player .gva-btn {
-    background: #313244;
-    border: 1px solid #45475a;
-    color: #cdd6f4;
-    padding: 5px 11px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background .15s;
-}
-#gva-player .gva-btn:hover { background: #45475a; }
-#gva-player .gva-btn.active { background: #89b4fa; color: #1e1e2e; }
-#gva-now-playing { flex: 1; min-width: 120px; color: #89b4fa; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-#gva-progress { color: #6c7086; font-size: 11px; min-width: 50px; }
-#gva-speed {
-    background: #313244;
-    border: 1px solid #45475a;
-    color: #cdd6f4;
-    padding: 4px 6px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 12px;
-}
-/* Push Streamlit content above the fixed bar */
-section[data-testid="stMain"] > div { padding-bottom: 70px !important; }
-</style>
-"""
-
-PLAYER_HTML = """
-<div id="gva-player">
-  <span id="gva-now-playing">— Sin reproducción —</span>
-  <span id="gva-progress"></span>
-  <button class="gva-btn" id="gva-btn-play"  onclick="gvaTTS.play()">▶</button>
-  <button class="gva-btn" id="gva-btn-pause" onclick="gvaTTS.pause()">⏸</button>
-  <button class="gva-btn" id="gva-btn-stop"  onclick="gvaTTS.stop()">⏹</button>
-  <label style="font-size:11px;color:#6c7086;">Vel.</label>
-  <select id="gva-speed" onchange="gvaTTS.onSpeedChange()">
-    <option value="0.75">0.75×</option>
-    <option value="1.0" selected>1.0×</option>
-    <option value="1.25">1.25×</option>
-    <option value="1.5">1.5×</option>
-    <option value="1.75">1.75×</option>
-    <option value="2.0">2.0×</option>
-  </select>
-</div>
-"""
-
-PLAYER_JS = """
-<script>
-(function() {
-  // Only define once
-  if (window.gvaTTS) return;
-
-  const synth = window.speechSynthesis;
-
-  window.gvaTTS = {
-    items: [],
-    index: 0,
-    stopped: false,
-    paused: false,
-
-    load: function(items) {
-      this.items = items;
-      this.index = 0;
-      this.stopped = false;
-    },
-
-    play: function() {
-      if (this.paused && synth.paused) {
-        synth.resume();
-        this.paused = false;
-        this._setLabel();
-        return;
-      }
-      this.stopped = false;
-      this.paused = false;
-      synth.cancel();
-      this._next();
-    },
-
-    pause: function() {
-      if (synth.speaking && !synth.paused) {
-        synth.pause();
-        this.paused = true;
-        document.getElementById('gva-now-playing').textContent = '⏸ ' + (this.items[this.index]?.label || '');
-      }
-    },
-
-    stop: function() {
-      this.stopped = true;
-      this.paused = false;
-      synth.cancel();
-      document.getElementById('gva-now-playing').textContent = '— Sin reproducción —';
-      document.getElementById('gva-progress').textContent = '';
-    },
-
-    onSpeedChange: function() {
-      // Speed is read dynamically in _next — nothing to do here.
-    },
-
-    _speed: function() {
-      return parseFloat(document.getElementById('gva-speed')?.value || '1.0');
-    },
-
-    _setLabel: function() {
-      const item = this.items[this.index];
-      if (!item) return;
-      const el = document.getElementById('gva-now-playing');
-      if (el) el.textContent = '▶ ' + item.label;
-      const prog = document.getElementById('gva-progress');
-      if (prog) prog.textContent = (this.index + 1) + '/' + this.items.length;
-    },
-
-    _next: function() {
-      if (this.stopped || this.index >= this.items.length) {
-        if (this.index >= this.items.length) {
-          const el = document.getElementById('gva-now-playing');
-          if (el) el.textContent = '✓ Finalizado';
-          const prog = document.getElementById('gva-progress');
-          if (prog) prog.textContent = '';
-        }
-        return;
-      }
-
-      const item = this.items[this.index];
-      this._setLabel();
-
-      const utt = new SpeechSynthesisUtterance(item.text);
-      utt.rate = this._speed();
-      utt.lang = 'es-ES';
-      const voices = synth.getVoices();
-      if (voices.length) utt.voice = voices[0];
-
-      const self = this;
-      utt.onend = function() {
-        if (!self.stopped && !self.paused) {
-          self.index++;
-          setTimeout(function() { self._next(); }, 300);
-        }
-      };
-      utt.onerror = function(e) {
-        const el = document.getElementById('gva-now-playing');
-        if (el) el.textContent = '⚠ Error: ' + e.error;
-      };
-
-      synth.speak(utt);
-    }
-  };
-})();
-</script>
-"""
+_SPEED_KEY = "_tts_speed"
+_ITEMS_KEY = "_tts_items"
+_AUTOPLAY_KEY = "_tts_autoplay"
 
 
-def inject_global_player() -> None:
-    """Inject the floating TTS player into the Streamlit page on every rerun.
-
-    Streamlit replaces the DOM on each rerun so the bar must be re-injected
-    every time. The JS guard (if window.gvaTTS return) prevents double-init of
-    the JS engine while allowing the HTML bar to re-appear after reruns.
-    """
-    st.markdown(PLAYER_CSS + PLAYER_HTML + PLAYER_JS, unsafe_allow_html=True)
-
-
-def play_items_button(
+def tts_button(
     items: list[dict],
     label: str = "▶",
     key: str = "",
-    style: str = "",
+    help_text: str = "Reproducir en voz alta",
+    use_container_width: bool = False,
 ) -> None:
-    """Render a small HTML button that loads items into the global player and plays.
+    """Render a Streamlit button that queues items for TTS playback on next rerun."""
+    if st.button(label, key=key, help=help_text, use_container_width=use_container_width):
+        st.session_state[_ITEMS_KEY] = items
+        st.session_state[_AUTOPLAY_KEY] = True
+        st.rerun()
 
-    Items are stored in a JS variable to avoid HTML-attribute escaping issues
-    (apostrophes in legal text would break onclick='...').
 
-    Args:
-        items: list of {"text": str, "label": str}
-        label: button display label
-        key: unique HTML id suffix
-        style: extra inline CSS
+def render_global_player() -> None:
+    """Render the shared TTS status bar. Call once per study section render.
+
+    Shows a speed slider (shared across all play requests) and current playback status.
+    When tts_button() queues items, auto-plays on the next render cycle.
     """
-    items_json = json.dumps(items, ensure_ascii=False)
-    safe_key = key.replace("-", "_").replace(".", "_")
-    default_style = (
-        "background:transparent;border:none;color:#89b4fa;cursor:pointer;"
-        "font-size:16px;padding:2px 6px;border-radius:4px;"
-    )
+    items = st.session_state.get(_ITEMS_KEY, [])
+    autoplay = bool(st.session_state.get(_AUTOPLAY_KEY, False))
+    if autoplay:
+        st.session_state[_AUTOPLAY_KEY] = False  # consume the flag
+
+    with st.container(border=False):
+        col_speed, col_status = st.columns([1, 3])
+        with col_speed:
+            st.slider(
+                "Velocidad TTS",
+                min_value=0.5,
+                max_value=2.0,
+                value=float(st.session_state.get(_SPEED_KEY, 1.0)),
+                step=0.25,
+                key=_SPEED_KEY,
+                format="%.2f×",
+                label_visibility="collapsed",
+            )
+        with col_status:
+            if items:
+                n = len(items)
+                lbl = items[0].get("label", "—")
+                extra = f" + {n - 1} fragmentos más" if n > 1 else ""
+                st.caption(f"🔊 Reproduciendo: **{lbl}**{extra}")
+            else:
+                st.caption("🔇 Sin reproducción activa")
+
+        if items:
+            speed = float(st.session_state.get(_SPEED_KEY, 1.0))
+            _render_speech_html(items, speed=speed, autoplay=autoplay)
+
+
+def _render_speech_html(items: list[dict], speed: float = 1.0, autoplay: bool = False) -> None:
+    """Render an iframe component that speaks items via Web Speech API."""
+    cfg = json.dumps({"items": items, "speed": speed, "autoplay": autoplay}, ensure_ascii=False)
     html = f"""
-<button id="playbtn_{safe_key}" style="{default_style}{style}"
-  onclick="gvaPlay_{safe_key}()">{label}</button>
+<script type="application/json" id="tts-cfg">{cfg}</script>
+<div id="tts-bar" style="padding:4px 10px;font-size:11px;color:#cdd6f4;
+     background:#1e1e2e;border-radius:4px;border:1px solid #313244;display:flex;align-items:center;gap:10px;">
+  <span id="tts-lbl">⏳ Listo</span>
+  <span id="tts-prg" style="color:#6c7086;font-size:10px;"></span>
+</div>
 <script>
-(function() {{
-  var _items = {items_json};
-  window.gvaPlay_{safe_key} = function() {{
-    if (!window.gvaTTS) {{ alert('Reproductor TTS no iniciado. Recarga la página.'); return; }}
-    window.gvaTTS.load(_items);
-    window.gvaTTS.play();
-  }};
+(function(){{
+  var cfg = JSON.parse(document.getElementById('tts-cfg').textContent);
+  var synth = window.speechSynthesis;
+  var idx = 0;
+  function speak() {{
+    if (idx >= cfg.items.length) {{
+      var lbl = document.getElementById('tts-lbl');
+      if (lbl) lbl.textContent = '✓ Finalizado';
+      var prg = document.getElementById('tts-prg');
+      if (prg) prg.textContent = '';
+      return;
+    }}
+    var item = cfg.items[idx];
+    var u = new SpeechSynthesisUtterance(item.text);
+    u.rate = cfg.speed; u.lang = 'es-ES';
+    var lbl = document.getElementById('tts-lbl');
+    var prg = document.getElementById('tts-prg');
+    if (lbl) lbl.textContent = '▶ ' + item.label;
+    if (prg) prg.textContent = (idx+1) + '/' + cfg.items.length;
+    u.onend = function() {{ idx++; setTimeout(speak, 250); }};
+    u.onerror = function(e) {{ if (lbl) lbl.textContent = '⚠ ' + e.error; }};
+    synth.speak(u);
+  }}
+  if (cfg.autoplay) {{ synth.cancel(); speak(); }}
 }})();
 </script>"""
-    st.markdown(html, unsafe_allow_html=True)
+    st.components.v1.html(html, height=36)

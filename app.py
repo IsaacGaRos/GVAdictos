@@ -35,8 +35,7 @@ from src.studies.annotations import (
 from src.tests.repository import create_question, delete_question, get_question, list_questions, update_question
 import json as _json
 from src.ai.ui import render_ai_insights, render_ai_question_generator
-from src.audio.ui import render_tts_button  # noqa: F401 — mantenido por compatibilidad
-from src.audio.global_player import inject_global_player, play_items_button
+from src.audio.global_player import tts_button, render_global_player
 from src.search.ui import render_related_articles
 from src.simulacros.ui import render_exam_creator, render_exam_execution, render_exam_history
 from src.accounts.schema import ensure_accounts_tables
@@ -133,6 +132,14 @@ def _ensure_extra_tables() -> None:
                 created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
             );
+
+            CREATE TABLE IF NOT EXISTS user_color_presets (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL DEFAULT 1,
+                hex_color TEXT NOT NULL,
+                label TEXT NOT NULL DEFAULT '',
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            );
         """)
         conn.commit()
         # Insertar oposiciones de muestra si no hay ninguna
@@ -152,9 +159,6 @@ def _ensure_extra_tables() -> None:
 init_db()
 ensure_runtime_dirs()
 _ensure_extra_tables()
-
-# Inyectar player TTS global (flotante en la parte inferior)
-inject_global_player()
 
 DEFAULT_ARTICLES_PAGE_SIZE = 30
 
@@ -249,6 +253,101 @@ HIGHLIGHT_COLOR_LABELS = {
     "purple": "🟣 Morado",
     "red": "🔴 Rojo",
 }
+
+# Colores predefinidos con sus valores CSS/hex
+PRESET_COLORS = [
+    ("yellow", "#FFEB3B", "🟡 Amarillo"),
+    ("green",  "#4CAF50", "🟢 Verde"),
+    ("blue",   "#2196F3", "🔵 Azul"),
+    ("pink",   "#FF69B4", "🩷 Rosa"),
+    ("purple", "#9C27B0", "🟣 Morado"),
+    ("red",    "#F44336", "🔴 Rojo"),
+    ("#FF9800", "#FF9800", "🟠 Naranja"),
+    ("#00BCD4", "#00BCD4", "🔵 Cyan"),
+]
+
+
+def load_color_presets(user_id: int = 1) -> list:
+    with connect() as conn:
+        rows = conn.execute(
+            "SELECT * FROM user_color_presets WHERE user_id=? ORDER BY id", (user_id,)
+        ).fetchall()
+        return [dict(r) if not isinstance(r, dict) else r for r in rows]
+
+
+def save_color_preset(hex_color: str, label: str, user_id: int = 1) -> None:
+    with connect() as conn:
+        conn.execute(
+            "INSERT INTO user_color_presets(user_id, hex_color, label) VALUES(?,?,?)",
+            (user_id, hex_color, label),
+        )
+        conn.commit()
+
+
+def delete_color_preset(preset_id: int) -> None:
+    with connect() as conn:
+        conn.execute("DELETE FROM user_color_presets WHERE id=?", (preset_id,))
+        conn.commit()
+
+
+def render_color_selector(key_prefix: str) -> str:
+    """Render a color picker with presets, custom, and saved colors.
+
+    Returns the selected color value (named or hex string).
+    """
+    mode = st.radio(
+        "Tipo de color",
+        ["Predefinido", "Personalizado", "Mis colores"],
+        horizontal=True,
+        key=f"{key_prefix}_color_mode",
+        label_visibility="collapsed",
+    )
+
+    if mode == "Predefinido":
+        options = {label: key for key, _css, label in PRESET_COLORS}
+        selected_label = st.radio(
+            "Color",
+            list(options.keys()),
+            horizontal=True,
+            key=f"{key_prefix}_preset_pick",
+            label_visibility="collapsed",
+        )
+        return options[selected_label]
+
+    if mode == "Personalizado":
+        col_pick, col_lbl, col_save = st.columns([1, 2, 1])
+        with col_pick:
+            hex_color = st.color_picker("Color", "#FFAA00", key=f"{key_prefix}_custom_hex")
+        with col_lbl:
+            lbl = st.text_input(
+                "Etiqueta (opcional)", key=f"{key_prefix}_custom_lbl",
+                placeholder="p.ej. Definición clave",
+            )
+        with col_save:
+            st.write("")
+            if st.button("💾 Guardar", key=f"{key_prefix}_save_color", help="Guardar en Mis colores"):
+                if lbl.strip():
+                    save_color_preset(hex_color, lbl.strip(), current_user_id())
+                    st.success("Color guardado")
+                else:
+                    st.warning("Escribe una etiqueta antes de guardar")
+        return hex_color
+
+    # mode == "Mis colores"
+    presets = load_color_presets(current_user_id())
+    if not presets:
+        st.info("No tienes colores guardados. Créalos en 'Personalizado'.")
+        return "yellow"
+    label_map = {f"{p['label']}  ({p['hex_color']})": p for p in presets}
+    chosen_lbl = st.selectbox(
+        "Mis colores", list(label_map.keys()), key=f"{key_prefix}_my_color",
+        label_visibility="collapsed",
+    )
+    chosen = label_map[chosen_lbl]
+    if st.button("🗑 Eliminar este color", key=f"{key_prefix}_del_color"):
+        delete_color_preset(chosen["id"])
+        st.rerun()
+    return chosen["hex_color"]
 
 
 # ─── FUNCIONES DE DATOS ──────────────────────────────────────────────────────
@@ -699,8 +798,22 @@ def render_study_panel(article_id: int) -> None:
                 st.rerun()
 
 
-def render_study_panel_compact(article_id: int) -> None:
-    """Fila de acciones compacta: íconos en línea, se expanden al hacer click."""
+def _make_toggle(key: str):
+    """Return an on_click callback that flips a boolean session_state key."""
+    def _toggle(k=key):
+        st.session_state[k] = not st.session_state.get(k, False)
+    return _toggle
+
+
+def render_study_panel_compact(
+    article_id: int,
+    article_title: str = "",
+    article_text: str = "",
+) -> None:
+    """Fila de acciones compacta con 5 botones + paneles expandibles.
+
+    ☆/★ Imp. | ❓/❗ Duda | 📝 Notas | 🧠 IA | 🔗 Rel.
+    """
     svc = get_study_service()
     if not svc:
         return
@@ -717,40 +830,54 @@ def render_study_panel_compact(article_id: int) -> None:
     is_doubt = "doubt" in active_marks
     n_annotations = len(highlights) + len(notes)
 
-    st.markdown('<div style="height:4px"></div>', unsafe_allow_html=True)
+    # ── Keys para los toggles ─────────────────────────────────────────────────
+    notes_key = f"toggle_highlights_{article_id}"
+    ai_key = f"ai_insights_{article_id}"
+    rel_key = f"related_articles_{article_id}"
+    for k in (notes_key, ai_key, rel_key):
+        if k not in st.session_state:
+            st.session_state[k] = False
 
-    # ── Fila de acciones ──────────────────────────────────────────────────────
-    col_imp, col_dud, col_notes, _sp = st.columns([1.2, 1.0, 1.0, 3.0])
+    st.markdown('<div style="height:2px"></div>', unsafe_allow_html=True)
+
+    # ── Fila de 5 botones ─────────────────────────────────────────────────────
+    col_imp, col_dud, col_notes, col_ai, col_rel = st.columns(5)
 
     with col_imp:
         imp_lbl = "★ Imp." if is_important else "☆ Imp."
-        if st.button(imp_lbl, key=f"mark_imp_{article_id}", help="Marcar como importante",
-                     use_container_width=True):
+        if st.button(imp_lbl, key=f"mark_imp_{article_id}",
+                     help="Marcar como importante", use_container_width=True):
             study_mutate(lambda s: s.mark(
                 StudyTarget(article_id=article_id), mark_type="important", resolved=is_important,
             ))
             st.rerun()
 
     with col_dud:
-        dud_lbl = "❤️ Duda" if is_doubt else "♡ Duda"
-        if st.button(dud_lbl, key=f"mark_dud_{article_id}", help="Marcar duda",
-                     use_container_width=True):
+        dud_lbl = "❗ Duda" if is_doubt else "❓ Duda"
+        if st.button(dud_lbl, key=f"mark_dud_{article_id}",
+                     help="Marcar duda sobre este artículo", use_container_width=True):
             study_mutate(lambda s: s.mark(
                 StudyTarget(article_id=article_id), mark_type="doubt", resolved=is_doubt,
             ))
             st.rerun()
 
     with col_notes:
-        notes_lbl = f"📝 {n_annotations}" if n_annotations else "📝"
-        notes_key = f"toggle_highlights_{article_id}"
-        if notes_key not in st.session_state:
-            st.session_state[notes_key] = False
-        def _toggle_notes(k=notes_key):
-            st.session_state[k] = not st.session_state[k]
-        st.button(notes_lbl, key=f"{notes_key}_btn2", on_click=_toggle_notes,
-                  help="Ver/editar subrayados y notas", use_container_width=True)
+        notes_lbl = f"📝 Notas ({n_annotations})" if n_annotations else "📝 Notas"
+        st.button(notes_lbl, key=f"{notes_key}_btn",
+                  on_click=_make_toggle(notes_key),
+                  help="Subrayados y notas", use_container_width=True)
 
-    # ── Duda expandida ────────────────────────────────────────────────────────
+    with col_ai:
+        st.button("🧠 IA", key=f"{ai_key}_btn",
+                  on_click=_make_toggle(ai_key),
+                  help="Insights de IA", use_container_width=True)
+
+    with col_rel:
+        st.button("🔗 Rel.", key=f"{rel_key}_btn",
+                  on_click=_make_toggle(rel_key),
+                  help="Artículos relacionados", use_container_width=True)
+
+    # ── Panel: Duda ───────────────────────────────────────────────────────────
     if is_doubt:
         conn = connect()
         current_doubt = get_doubt(conn, article_id, current_user_id())
@@ -783,11 +910,12 @@ def render_study_panel_compact(article_id: int) -> None:
                     st.info("Duda eliminada")
                     st.rerun()
 
-    # ── Subrayados y notas expandidos ─────────────────────────────────────────
-    if st.session_state.get(f"toggle_highlights_{article_id}", False):
+    # ── Panel: Notas y subrayados ─────────────────────────────────────────────
+    if st.session_state.get(notes_key, False):
         with st.container(border=True):
             # Subrayados existentes
             if highlights:
+                st.markdown("**Subrayados guardados**")
                 for h in highlights:
                     col_h, col_hd = st.columns([6, 1])
                     with col_h:
@@ -801,36 +929,20 @@ def render_study_panel_compact(article_id: int) -> None:
                         if h.get("note_text"):
                             st.caption(f"Nota: {h['note_text']}")
                     with col_hd:
-                        if st.button("🗑", key=f"del_hl_{h['id']}", help="Eliminar subrayado"):
+                        if st.button("🗑", key=f"del_hl_{h['id']}", help="Eliminar"):
                             study_mutate(lambda s, hid=int(h["id"]): s.delete_highlight(hid))
                             st.rerun()
                 st.divider()
 
             # Nuevo subrayado
-            st.markdown("**Nuevo subrayado**")
+            st.markdown("**Añadir subrayado**")
             hl_text = st.text_area(
                 "Fragmento exacto",
                 key=f"new_hl_text_{article_id}", height=60,
                 placeholder="Pega aquí el fragmento exacto del artículo",
             )
-            col_color, col_custom = st.columns([1, 1])
-            with col_color:
-                hl_color = st.selectbox(
-                    "Color",
-                    list(HIGHLIGHT_COLOR_LABELS.keys()),
-                    format_func=lambda c: HIGHLIGHT_COLOR_LABELS[c],
-                    key=f"new_hl_color_{article_id}",
-                )
-            with col_custom:
-                hl_color_custom = st.color_picker(
-                    "O color personalizado",
-                    value="#FFFF00",
-                    key=f"new_hl_custom_{article_id}",
-                )
-                if hl_color_custom != "#FFFF00":
-                    hl_color = hl_color_custom
-
-            hl_note = st.text_input("Nota (opcional)", key=f"new_hl_note_{article_id}")
+            hl_color = render_color_selector(f"hl_{article_id}")
+            hl_note = st.text_input("Nota sobre el subrayado (opcional)", key=f"new_hl_note_{article_id}")
             if st.button("Guardar subrayado", key=f"save_hl_{article_id}"):
                 if not hl_text.strip():
                     st.error("Escribe el fragmento a subrayar.")
@@ -846,7 +958,7 @@ def render_study_panel_compact(article_id: int) -> None:
 
             st.divider()
 
-            # Notas
+            # Notas existentes
             if notes:
                 st.markdown("**Notas guardadas**")
                 for n in notes:
@@ -861,9 +973,12 @@ def render_study_panel_compact(article_id: int) -> None:
                             st.rerun()
                 st.divider()
 
-            st.markdown("**Nueva nota**")
-            note_text = st.text_area("Tu nota", key=f"new_note_text_{article_id}", height=70,
-                                      placeholder="Apunte personal, conexión con otro artículo...")
+            # Nueva nota
+            st.markdown("**Añadir nota**")
+            note_text = st.text_area(
+                "Tu nota", key=f"new_note_text_{article_id}", height=70,
+                placeholder="Apunte personal, conexión con otro artículo...",
+            )
             if st.button("Guardar nota", key=f"save_note_{article_id}"):
                 if not note_text.strip():
                     st.error("Escribe el texto de la nota.")
@@ -873,6 +988,16 @@ def render_study_panel_compact(article_id: int) -> None:
                     ))
                     st.success("Nota guardada.")
                     st.rerun()
+
+    # ── Panel: Insights IA ────────────────────────────────────────────────────
+    if st.session_state.get(ai_key, False):
+        with st.container(border=True):
+            render_ai_insights(article_id, article_title, article_text, show_toggle_button=False)
+
+    # ── Panel: Artículos relacionados ─────────────────────────────────────────
+    if st.session_state.get(rel_key, False):
+        with st.container(border=True):
+            render_related_articles(article_id, article_title, show_toggle_button=False)
 
 
 # Mapa de colores named → CSS para mostrar subrayados en la lista
@@ -906,11 +1031,11 @@ def render_article_card(article, topic_id: int) -> None:
         with col_ref:
             st.markdown(f"**Art. {article_ref}**")
         with col_play:
-            tts_label = f"Art. {article_ref}"
-            play_items_button(
-                items=[{"text": display_text, "label": tts_label}],
+            tts_button(
+                items=[{"text": display_text, "label": f"Art. {article_ref}"}],
                 label="▶",
-                key=f"art_{topic_id}_{article_id}",
+                key=f"tts_art_{topic_id}_{article_id}",
+                help_text="Reproducir artículo",
             )
         with col_title:
             st.markdown(f"**{article_title}**")
@@ -957,12 +1082,8 @@ def render_article_card(article, topic_id: int) -> None:
                     label_visibility="collapsed",
                 )
 
-        # ── Fila de acciones: importante, duda, notas/subrayados
-        render_study_panel_compact(article_id)
-        # ── Paneles expandibles: IA y artículos relacionados (tienen su propio botón)
-        render_ai_insights(article_id, article_title, display_text)
-        render_ai_question_generator(article_id, article_title, display_text)
-        render_related_articles(article_id, article_title)
+        # ── Panel compacto: Imp | Duda | Notas | IA | Relacionados
+        render_study_panel_compact(article_id, article_title, display_text)
 
 
 def render_paginated_articles(articles: list, topic_id: int, key_prefix: str) -> None:
@@ -1477,6 +1598,10 @@ with tabs[6]:
 with tabs[7]:
     st.subheader("Estudiar por tema")
 
+    # Reproductor TTS compartido — muestra estado y control de velocidad
+    render_global_player()
+    st.divider()
+
     part_label = st.radio(
         "Parte del temario",
         ["general", "especial"],
@@ -1517,10 +1642,11 @@ with tabs[7]:
         with col_th:
             st.markdown(f"### Tema {selected_topic['topic_number']} ({part_name})")
         with col_taudio:
-            play_items_button(
+            tts_button(
                 items=_topic_tts_items,
                 label="🔊 Tema",
-                key=f"topic_{selected_topic['id']}",
+                key=f"tts_topic_{selected_topic['id']}",
+                help_text="Reproducir todo el tema",
             )
         st.write(selected_topic['official_text'])
         if selected_topic['section']:
@@ -1556,10 +1682,11 @@ with tabs[7]:
                                 _lt = clean_article_text(_la.get('text') or '')
                                 if _lt:
                                     _law_items.append({"text": _lt, "label": f"Art. {_la['article_ref']}"})
-                            play_items_button(
+                            tts_button(
                                 items=_law_items,
                                 label="🔊",
-                                key=f"law_{law_id}",
+                                key=f"tts_law_{law_id}",
+                                help_text="Reproducir toda la ley",
                             )
 
                     if has_fine and mapped:

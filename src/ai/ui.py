@@ -37,8 +37,17 @@ def get_ai_service() -> AIService | None:
         return None
 
 
-def render_ai_insights(article_id: int, article_title: str, article_text: str) -> None:
-    """Render AI insights expander for an article in the study interface."""
+def render_ai_insights(
+    article_id: int,
+    article_title: str,
+    article_text: str,
+    show_toggle_button: bool = True,
+) -> None:
+    """Render AI insights expander for an article in the study interface.
+
+    Args:
+        show_toggle_button: If False, skip the button row (caller handles toggling).
+    """
     service = get_ai_service()
 
     toggle_key = f"ai_insights_{article_id}"
@@ -48,11 +57,12 @@ def render_ai_insights(article_id: int, article_title: str, article_text: str) -
     def toggle_insights():
         st.session_state[toggle_key] = not st.session_state[toggle_key]
 
-    col1, col2 = st.columns([0.08, 0.92])
-    with col1:
-        st.button("🧠", key=f"{toggle_key}_btn", use_container_width=True, on_click=toggle_insights)
-    with col2:
-        st.caption("Insights IA (Ola D2)" if service else "Insights IA (no configurado)")
+    if show_toggle_button:
+        col1, col2 = st.columns([0.08, 0.92])
+        with col1:
+            st.button("🧠", key=f"{toggle_key}_btn", use_container_width=True, on_click=toggle_insights)
+        with col2:
+            st.caption("Insights IA (Ola D2)" if service else "Insights IA (no configurado)")
 
     if not st.session_state.get(toggle_key, False):
         return

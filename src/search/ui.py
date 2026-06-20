@@ -18,8 +18,16 @@ def get_search_service() -> SearchService | None:
         return None
 
 
-def render_related_articles(article_id: int, article_title: str) -> None:
-    """Render related articles section (Ola D5)."""
+def render_related_articles(
+    article_id: int,
+    article_title: str,
+    show_toggle_button: bool = True,
+) -> None:
+    """Render related articles section (Ola D5).
+
+    Args:
+        show_toggle_button: If False, skip the button row (caller handles toggling).
+    """
     service = get_search_service()
     if not service:
         return
@@ -31,11 +39,12 @@ def render_related_articles(article_id: int, article_title: str) -> None:
     def toggle_related():
         st.session_state[toggle_key] = not st.session_state[toggle_key]
 
-    col1, col2 = st.columns([0.08, 0.92])
-    with col1:
-        st.button("🔗", key=f"{toggle_key}_btn", use_container_width=True, on_click=toggle_related)
-    with col2:
-        st.caption("Artículos relacionados (Ola D5)")
+    if show_toggle_button:
+        col1, col2 = st.columns([0.08, 0.92])
+        with col1:
+            st.button("🔗", key=f"{toggle_key}_btn", use_container_width=True, on_click=toggle_related)
+        with col2:
+            st.caption("Artículos relacionados (Ola D5)")
 
     if not st.session_state.get(toggle_key, False):
         return
