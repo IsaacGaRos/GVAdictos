@@ -35,7 +35,9 @@ from src.studies.annotations import (
 from src.tests.repository import create_question, delete_question, get_question, list_questions, update_question
 import json as _json
 from src.ai.ui import render_ai_insights, render_ai_question_generator
-from src.audio.global_player import tts_button, render_global_player, render_article_tts
+from src.audio.global_player import (
+    tts_button, render_global_player, render_article_tts, render_tts_button_iframe,
+)
 from src.search.ui import render_related_articles
 from src.simulacros.ui import render_exam_creator, render_exam_execution, render_exam_history
 from src.accounts.schema import ensure_accounts_tables
@@ -457,8 +459,23 @@ def clean_article_text(text: str) -> str:
     if not text:
         return text
     lines = text.split('\n')
+    # Eliminar cabeceras BOE
     cleaned = [line for line in lines if not _BOE_HEADER_RE.match(line)]
-    return '\n'.join(cleaned).strip()
+    # Unir líneas que son continuación de párrafo (línea previa no termina en
+    # punto/dos puntos/punto y coma y la siguiente empieza en minúscula)
+    merged: list[str] = []
+    for line in cleaned:
+        stripped = line.strip()
+        if not stripped:
+            merged.append("")
+            continue
+        if (merged and merged[-1]
+                and not merged[-1].rstrip().endswith((".", ";", ":", "–", "—"))
+                and stripped and stripped[0].islower()):
+            merged[-1] = merged[-1].rstrip() + " " + stripped
+        else:
+            merged.append(line)
+    return '\n'.join(merged).strip()
 
 
 def is_toc_stub(text: str) -> bool:
@@ -509,6 +526,131 @@ def load_topic_mapped_articles(topic_id: int, law_id: int):
             (topic_id, law_id),
         ).fetchall()
         return [dict(r) if not isinstance(r, dict) else r for r in rows]
+
+
+def load_study_plan_today(date_str: str) -> list[dict]:
+    try:
+        with connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT sp.id, sp.topic_id, sp.goal_min, sp.done_min, sp.sessions_done,
+                       t.topic_number, t.official_text, t.part
+                FROM study_plan sp
+                JOIN topics t ON t.id = sp.topic_id
+                WHERE sp.date=?
+                ORDER BY t.topic_number
+                """,
+                (date_str,),
+            ).fetchall()
+            return [dict(r) if not isinstance(r, dict) else r for r in rows]
+    except Exception:
+        return []
+
+
+def upsert_study_plan(date_str: str, topic_id: int, goal_min: int) -> None:
+    with connect() as conn:
+        conn.execute(
+            """
+            INSERT INTO study_plan(date,topic_id,goal_min)
+            VALUES(?,?,?)
+            ON CONFLICT(date,topic_id) DO UPDATE SET goal_min=excluded.goal_min,
+                updated_at=CURRENT_TIMESTAMP
+            """,
+            (date_str, topic_id, goal_min),
+        )
+        conn.commit()
+
+
+def log_pomodoro_session(date_str: str, topic_id: int, work_min: int) -> None:
+    """Incrementa done_min y sessions_done para el plan del día."""
+    with connect() as conn:
+        conn.execute(
+            """
+            INSERT INTO study_plan(date,topic_id,goal_min,done_min,sessions_done)
+            VALUES(?,?,25,?,1)
+            ON CONFLICT(date,topic_id) DO UPDATE SET
+                done_min=done_min+?,
+                sessions_done=sessions_done+1,
+                updated_at=CURRENT_TIMESTAMP
+            """,
+            (date_str, topic_id, work_min, work_min),
+        )
+        conn.commit()
+
+
+def delete_study_plan_entry(plan_id: int) -> None:
+    with connect() as conn:
+        conn.execute("DELETE FROM study_plan WHERE id=?", (plan_id,))
+        conn.commit()
+
+
+def get_article_exam_freq(article_id: int) -> dict | None:
+    """Devuelve {total_count, exam_sources} de article_exam_frequency o None."""
+    try:
+        with connect() as conn:
+            row = conn.execute(
+                "SELECT total_count, exam_sources FROM article_exam_frequency WHERE article_id=?",
+                (article_id,),
+            ).fetchone()
+            if row:
+                r = dict(row) if not isinstance(row, dict) else row
+                import json as _json
+                return {
+                    "count": r["total_count"],
+                    "sources": _json.loads(r.get("exam_sources") or "[]"),
+                }
+    except Exception:
+        pass
+    return None
+
+
+def get_top_exam_articles(limit: int = 30) -> list[dict]:
+    """Top artículos por frecuencia de examen."""
+    try:
+        with connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT aef.article_ref, aef.total_count, aef.exam_sources,
+                       aef.law_name, l.name AS law_full, a.title
+                FROM article_exam_frequency aef
+                LEFT JOIN articles a ON a.id = aef.article_id
+                LEFT JOIN laws l ON l.id = aef.law_id
+                WHERE aef.article_id IS NOT NULL
+                ORDER BY aef.total_count DESC
+                LIMIT ?
+                """,
+                (limit,),
+            ).fetchall()
+            import json as _json
+            return [
+                {**dict(r), "sources": _json.loads(r["exam_sources"] or "[]")}
+                for r in rows
+            ]
+    except Exception:
+        return []
+
+
+def load_topic_cef_resource(topic_id: int) -> dict | None:
+    """Devuelve el recurso CEF de estudio para este tema (con content_text) si existe."""
+    try:
+        with connect() as conn:
+            row = conn.execute(
+                """
+                SELECT tsr.id, tsr.content_text, tsr.validation_status, tsr.notes,
+                       sd.title, sd.path
+                FROM topic_study_resources tsr
+                LEFT JOIN source_documents sd ON sd.id = tsr.source_document_id
+                WHERE tsr.topic_id=? AND tsr.resource_kind='temario_academia_cef'
+                  AND tsr.content_text IS NOT NULL
+                LIMIT 1
+                """,
+                (topic_id,),
+            ).fetchone()
+            if row:
+                return dict(row) if not isinstance(row, dict) else row
+    except Exception:
+        pass
+    return None
 
 
 def load_law_all_articles(law_id: int):
@@ -848,17 +990,8 @@ def render_study_panel_compact(
 
     st.markdown('<div style="height:2px"></div>', unsafe_allow_html=True)
 
-    # ── Fila de 6 botones ─────────────────────────────────────────────────────
-    col_imp, col_dud, col_hl, col_notes, col_ai, col_rel = st.columns(6)
-
-    with col_imp:
-        imp_lbl = "★ Imp." if is_important else "☆ Imp."
-        if st.button(imp_lbl, key=f"mark_imp_{article_id}",
-                     help="Marcar como importante", use_container_width=True):
-            study_mutate(lambda s: s.mark(
-                StudyTarget(article_id=article_id), mark_type="important", resolved=is_important,
-            ))
-            st.rerun()
+    # ── Fila de 5 botones (imp. se mueve a cabecera del artículo) ────────────
+    col_dud, col_hl, col_notes, col_ai, col_rel = st.columns(5)
 
     with col_dud:
         dud_lbl = "❗ Duda" if is_doubt else "❓ Duda"
@@ -1073,13 +1206,45 @@ def render_article_card(article, topic_id: int) -> None:
     article_ref = article['article_ref']
     article_title = article.get('title') or f"Art. {article_ref}"
 
+    # Cargamos estado para la estrella de importancia en la cabecera
+    _is_important = False
+    _svc = get_study_service()
+    if _svc:
+        try:
+            _state = _svc.get_article_state(article_id)
+            _marks = {m["mark_type"] for m in _state.get("marks", []) if not m.get("resolved")}
+            _is_important = "important" in _marks
+        except Exception:
+            pass
+
+    _exam_freq = get_article_exam_freq(article_id)
+
     with st.container(border=True):
-        # ── Cabecera: Art N | Título | 🔊 ─────────────────────────────────────
-        col_ref, col_title, col_tts = st.columns([0.9, 6, 0.7])
+        # ── Cabecera: ★ | Art N | Título | 🔥 | 🔊 ⏸ ⏹ ──────────────────────
+        col_star, col_ref, col_title, col_freq, col_tts = st.columns([0.35, 0.9, 5.5, 0.8, 1.6])
+        with col_star:
+            star_lbl = "★" if _is_important else "☆"
+            if st.button(star_lbl, key=f"mark_imp_{article_id}",
+                         help="Marcar como importante", use_container_width=True):
+                study_mutate(lambda s: s.mark(
+                    StudyTarget(article_id=article_id),
+                    mark_type="important",
+                    resolved=_is_important,
+                ))
+                st.rerun()
         with col_ref:
             st.markdown(f"**Art. {article_ref}**")
         with col_title:
             st.markdown(f"**{article_title}**")
+        with col_freq:
+            if _exam_freq and _exam_freq["count"] > 0:
+                _cnt = _exam_freq["count"]
+                _tip = f"Preguntado ~{_cnt}x en exámenes oficiales"
+                st.markdown(
+                    f'<span title="{_tip}" style="color:#f38ba8;font-size:12px;'
+                    f'font-weight:700;cursor:help;">🔥{_cnt}</span>',
+                    unsafe_allow_html=True,
+                )
         with col_tts:
             render_article_tts(
                 items=[{"text": display_text, "label": f"Art. {article_ref}"}],
@@ -1107,15 +1272,13 @@ def render_article_card(article, topic_id: int) -> None:
                     unsafe_allow_html=True,
                 )
             else:
-                lines = display_text.count('\n') + 1
-                height = max(120, min(lines * 20 + 20, 400))
-                st.text_area(
-                    "texto",
-                    value=display_text,
-                    height=height,
-                    disabled=True,
-                    key=f"ta_{topic_id}_{article_id}",
-                    label_visibility="collapsed",
+                import html as _html_mod
+                _escaped = _html_mod.escape(display_text)
+                st.markdown(
+                    f'<div style="font-size:14px;line-height:1.7;color:#cdd6f4;'
+                    f'white-space:pre-wrap;padding:8px 0;word-break:break-word;">'
+                    f'{_escaped}</div>',
+                    unsafe_allow_html=True,
                 )
 
         # ── Panel compacto: Imp | Duda | Notas | IA | Relacionados
@@ -1162,7 +1325,12 @@ def render_paginated_articles(articles: list, topic_id: int, key_prefix: str) ->
 
 def render_study_annotations(topic, articles: list) -> None:
     st.divider()
-    st.markdown("#### Anotaciones")
+    st.markdown("#### Anotaciones del tema (sistema legado)")
+    st.caption(
+        "Las anotaciones de aquí fueron creadas con el sistema antiguo de anotaciones "
+        "a nivel de tema. Los subrayados, notas y dudas nuevos se gestionan dentro de "
+        "cada artículo mediante el panel compacto ❓ 🖊 📝."
+    )
 
     target_options = annotation_target_options(articles)
     with st.expander("Nueva anotacion", expanded=False):
@@ -1634,8 +1802,219 @@ with tabs[6]:
 with tabs[7]:
     st.subheader("Estudiar por tema")
 
-    # Reproductor TTS compartido — muestra estado y control de velocidad
-    render_global_player()
+    # ── Reproductor TTS + Pomodoro ───────────────────────────────────────────
+    _col_tts_global, _col_pomo = st.columns([3, 2])
+    with _col_tts_global:
+        render_global_player()
+    with _col_pomo:
+        st.components.v1.html("""
+<style>
+body{margin:0;background:transparent;font-family:system-ui,sans-serif}
+#pm{display:flex;align-items:center;gap:6px;padding:4px 8px;
+    background:#1e1e2e;border:1px solid #313244;border-radius:6px;flex-wrap:wrap}
+#pmtimer{font-size:22px;font-weight:700;color:#cba6f7;min-width:52px;text-align:center}
+#pmlbl{font-size:10px;color:#6c7086;white-space:nowrap}
+#pmcfg{font-size:10px;color:#585b70;display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+#pmcfg label{color:#6c7086}
+.pb{background:#313244;border:1px solid #45475a;color:#cdd6f4;
+    padding:2px 7px;border-radius:4px;cursor:pointer;font-size:12px}
+.pb:hover{background:#45475a}
+.work{color:#a6e3a1!important}
+.rest{color:#89b4fa!important}
+#pmprog{width:100%;height:4px;background:#313244;border-radius:2px;margin-top:3px}
+#pmprogbar{height:100%;width:0%;border-radius:2px;transition:width 1s linear}
+#pmsession{font-size:10px;color:#585b70;white-space:nowrap}
+</style>
+<div id="pm">
+  <span id="pmtimer">25:00</span>
+  <span id="pmsession">🍅×0</span>
+  <span id="pmlbl" class="work">Trabajo</span>
+  <button class="pb" id="pmbtn" onclick="pmToggle()">▶</button>
+  <button class="pb" onclick="pmReset()" title="Reiniciar">↺</button>
+  <div id="pmcfg">
+    <label>⏱<input type="number" id="pmw" min="1" max="90" value="25"
+      style="width:36px;background:#181825;color:#cdd6f4;border:1px solid #45475a;border-radius:3px;padding:1px 3px;font-size:11px"
+      onchange="pmUpdW()" title="Minutos de trabajo">m</label>
+    <label>☕<input type="number" id="pmr" min="1" max="30" value="5"
+      style="width:28px;background:#181825;color:#cdd6f4;border:1px solid #45475a;border-radius:3px;padding:1px 3px;font-size:11px"
+      onchange="pmUpdR()" title="Minutos de descanso">m</label>
+    <label><input type="checkbox" id="pmauto" checked style="accent-color:#cba6f7"> auto</label>
+  </div>
+</div>
+<div id="pmprog"><div id="pmprogbar" style="background:#cba6f7"></div></div>
+<script>
+(function(){
+  var workMin=25, restMin=5, totalSec=1500, remSec=1500;
+  var isRunning=false, isWork=true, interval=null, sessCount=0;
+  var tmr=document.getElementById('pmtimer');
+  var lbl=document.getElementById('pmlbl');
+  var btn=document.getElementById('pmbtn');
+  var bar=document.getElementById('pmprogbar');
+  var sess=document.getElementById('pmsession');
+
+  function fmt(s){var m=Math.floor(s/60),ss=s%60;return ('0'+m).slice(-2)+':'+('0'+ss).slice(-2);}
+  function render(){
+    tmr.textContent=fmt(remSec);
+    var pct=Math.min(100,((totalSec-remSec)/totalSec)*100);
+    bar.style.width=pct+'%';
+    bar.style.background=isWork?'#cba6f7':'#89b4fa';
+    tmr.style.color=isWork?'#cba6f7':'#89b4fa';
+  }
+
+  function notify(msg){
+    if(Notification.permission==='granted') new Notification(msg,{icon:'data:,'});
+  }
+
+  function startPhase(work){
+    isWork=work;
+    workMin=parseInt(document.getElementById('pmw').value)||25;
+    restMin=parseInt(document.getElementById('pmr').value)||5;
+    totalSec=(work?workMin:restMin)*60;
+    remSec=totalSec;
+    lbl.textContent=work?'Trabajo':'Descanso';
+    lbl.className=work?'work':'rest';
+    render();
+    if(work){
+      notify('☕ ¡Descanso terminado! A estudiar 🍅');
+    } else {
+      sessCount++;
+      sess.textContent='🍅×'+sessCount;
+      notify('🍅 Pomodoro completado. ¡Descansa '+restMin+' min!');
+    }
+  }
+
+  function tick(){
+    if(remSec>0){ remSec--; render(); }
+    else {
+      clearInterval(interval); interval=null;
+      isRunning=false; btn.textContent='▶';
+      var wasWork=isWork;
+      startPhase(!isWork);
+      // Auto-start si checkbox marcado
+      if(document.getElementById('pmauto').checked){
+        interval=setInterval(tick,1000);
+        isRunning=true; btn.textContent='⏸';
+      }
+    }
+  }
+
+  window.pmToggle=function(){
+    if(isRunning){
+      clearInterval(interval); interval=null;
+      isRunning=false; btn.textContent='▶';
+    } else {
+      if(Notification.permission==='default') Notification.requestPermission();
+      interval=setInterval(tick,1000);
+      isRunning=true; btn.textContent='⏸';
+    }
+  };
+  window.pmReset=function(){
+    clearInterval(interval); interval=null;
+    isRunning=false; btn.textContent='▶';
+    isWork=true; sessCount=0; sess.textContent='🍅×0';
+    startPhase(true);
+  };
+  window.pmUpdW=function(){if(!isRunning&&isWork){totalSec=(parseInt(document.getElementById('pmw').value)||25)*60;remSec=totalSec;render();}};
+  window.pmUpdR=function(){if(!isRunning&&!isWork){totalSec=(parseInt(document.getElementById('pmr').value)||5)*60;remSec=totalSec;render();}};
+  render();
+})();
+</script>
+""", height=90)
+    st.divider()
+
+    # ── Plan del día (scheduler) ─────────────────────────────────────────────
+    import datetime as _dt
+    _today = _dt.date.today().isoformat()
+    _plan_key = f"study_plan_open_{_today}"
+
+    with st.expander("📅 Plan de estudio de hoy", expanded=st.session_state.get(_plan_key, False)):
+        st.session_state[_plan_key] = True
+        _plan = load_study_plan_today(_today)
+
+        # ── Añadir tema al plan ──
+        with st.form("add_plan_form", clear_on_submit=True):
+            _all_topics_for_plan = load_topics_by_part("general") + load_topics_by_part("especial")
+            _topic_opts = {
+                f"Tema {r['topic_number']:02d} - {r['official_text'][:50]}": r['id']
+                for r in _all_topics_for_plan
+            }
+            _existing_ids = {p['topic_id'] for p in _plan}
+            _available_opts = {k: v for k, v in _topic_opts.items() if v not in _existing_ids}
+            _fcols = st.columns([4, 1, 1])
+            with _fcols[0]:
+                _sel_topic_text = st.selectbox("Añadir tema", list(_available_opts.keys()) or ["—"], label_visibility="collapsed")
+            with _fcols[1]:
+                _goal = st.number_input("Min", min_value=5, max_value=480, value=50, step=25, label_visibility="collapsed")
+            with _fcols[2]:
+                _submitted = st.form_submit_button("➕ Añadir")
+            if _submitted and _available_opts:
+                upsert_study_plan(_today, _available_opts[_sel_topic_text], int(_goal))
+                st.rerun()
+
+        if not _plan:
+            st.info("No hay temas planificados para hoy. Añade uno arriba.")
+        else:
+            _total_goal = sum(p['goal_min'] for p in _plan)
+            _total_done = sum(p['done_min'] for p in _plan)
+            _pct_global = min(100, int(_total_done / _total_goal * 100)) if _total_goal else 0
+            st.progress(_pct_global / 100, text=f"Progreso global: {_total_done}/{_total_goal} min ({_pct_global}%)")
+
+            for _pe in _plan:
+                _pcols = st.columns([5, 1, 1, 1])
+                _pct = min(100, int(_pe['done_min'] / _pe['goal_min'] * 100)) if _pe['goal_min'] else 0
+                with _pcols[0]:
+                    st.markdown(
+                        f"**T{_pe['topic_number']:02d}** {_pe['official_text'][:55]}  \n"
+                        f"<small style='color:#6c7086'>{_pe['done_min']}/{_pe['goal_min']} min · "
+                        f"🍅×{_pe['sessions_done']} · {_pct}%</small>",
+                        unsafe_allow_html=True,
+                    )
+                    st.progress(_pct / 100)
+                with _pcols[1]:
+                    _wmin_key = f"wmin_{_pe['id']}"
+                    _wmin = st.number_input("min", 5, 90, 25, 5, key=_wmin_key, label_visibility="collapsed")
+                with _pcols[2]:
+                    if st.button("🍅", key=f"log_pm_{_pe['id']}", help="Registrar pomodoro completado"):
+                        log_pomodoro_session(_today, _pe['topic_id'], int(_wmin))
+                        st.rerun()
+                with _pcols[3]:
+                    if st.button("🗑", key=f"del_plan_{_pe['id']}", help="Eliminar del plan"):
+                        delete_study_plan_entry(_pe['id'])
+                        st.rerun()
+    st.divider()
+
+    # ── Ranking artículos más preguntados ────────────────────────────────────
+    with st.expander("🔥 Artículos más preguntados en exámenes oficiales", expanded=False):
+        _top_arts = get_top_exam_articles(limit=30)
+        if not _top_arts:
+            st.info("Sin datos de exámenes. Ejecuta: `python scripts/analyze_exam_frequency.py`")
+        else:
+            import json as _json_ui
+            _rows_ui = []
+            for _r in _top_arts:
+                _law = _r.get("law_full") or _r.get("law_name") or "—"
+                _srcs = _r.get("sources") or []
+                _src_str = ", ".join(
+                    s.replace("SIMULACRO ", "Sim.").replace(" con respuestas", "")
+                    for s in _srcs[:2]
+                )
+                _rows_ui.append({
+                    "Art.": _r["article_ref"],
+                    "Ley": _law[:45],
+                    "Título": (_r.get("title") or "")[:50],
+                    "Veces": _r["total_count"],
+                    "Fuentes": _src_str[:60],
+                })
+            import pandas as _pd
+            st.dataframe(
+                _pd.DataFrame(_rows_ui),
+                use_container_width=True,
+                hide_index=True,
+                column_config={
+                    "Veces": st.column_config.NumberColumn("🔥 Veces", width="small"),
+                    "Art.": st.column_config.TextColumn("Art.", width="small"),
+                },
+            )
     st.divider()
 
     part_label = st.radio(
@@ -1659,30 +2038,39 @@ with tabs[7]:
         st.divider()
         part_name = "Parte general" if part_label == "general" else "Parte especifica"
 
-        # Cargamos normativa aquí para poder construir los items TTS del tema completo
+        # Cargamos normativa y pre-cargamos artículos mapeados por ley
         normativa = load_topic_normativa(selected_topic['id'])
 
-        # Items TTS para reproducir todo el tema: título + todos los artículos de todas las leyes
+        # Pre-cargar mapped+has_fine por ley para no repetir queries
+        _law_data: dict = {}  # law_id -> {'mapped': [...], 'has_fine': bool}
+        for _norma in (normativa or []):
+            _lid = _norma['id']
+            _m = load_topic_mapped_articles(selected_topic['id'], _lid)
+            _hf = law_has_fine_mapping(selected_topic['id'], _lid)
+            _law_data[_lid] = {'mapped': _m, 'has_fine': _hf, 'name': _norma['name']}
+
+        # TTS de Tema: solo artículos mapeados específicamente al tema
         _topic_tts_items: list = [
             {"text": f"Tema {selected_topic['topic_number']}. {selected_topic['official_text']}", "label": f"Tema {selected_topic['topic_number']}"}
         ]
         for _norma in (normativa or []):
-            _law_arts = load_law_all_articles(_norma['id'])
-            _topic_tts_items.append({"text": _norma['name'], "label": f"Ley: {_norma['name']}"})
-            for _a in _law_arts:
-                _txt = clean_article_text(_a.get('text') or '')
-                if _txt:
-                    _topic_tts_items.append({"text": _txt, "label": f"Art. {_a['article_ref']}"})
+            _lid = _norma['id']
+            _ld = _law_data[_lid]
+            if _ld['has_fine'] and _ld['mapped']:
+                _topic_tts_items.append({"text": _norma['name'], "label": f"Ley: {_norma['name']}"})
+                for _a in _ld['mapped']:
+                    _txt = clean_article_text(_a.get('text') or '')
+                    if _txt:
+                        _topic_tts_items.append({"text": _txt, "label": f"Art. {_a['article_ref']}"})
 
         col_th, col_taudio = st.columns([5, 1])
         with col_th:
             st.markdown(f"### Tema {selected_topic['topic_number']} ({part_name})")
         with col_taudio:
-            tts_button(
+            render_tts_button_iframe(
                 items=_topic_tts_items,
                 label="🔊 Tema",
                 key=f"tts_topic_{selected_topic['id']}",
-                help_text="Reproducir todo el tema",
             )
         st.write(selected_topic['official_text'])
         if selected_topic['section']:
@@ -1701,23 +2089,23 @@ with tabs[7]:
             st.caption(f"{len(normativa)} norma(s) vinculada(s) especificamente a este tema.")
             for norma in normativa:
                 law_id = norma['id']
-                mapped = load_topic_mapped_articles(selected_topic['id'], law_id)
-                has_fine = law_has_fine_mapping(selected_topic['id'], law_id)
+                _ld = _law_data[law_id]
+                mapped = _ld['mapped']
+                has_fine = _ld['has_fine']
                 articles_for_annotations.extend(mapped)
 
                 with st.expander(f"📄 {norma['name']}", expanded=False):
-                    all_law_articles = load_law_all_articles(law_id)
-                    if all_law_articles:
+                    # TTS de Ley: solo artículos de esa ley mapeados a este tema
+                    if has_fine and mapped:
                         _law_items = [{"text": norma['name'], "label": f"Ley: {norma['name']}"}]
-                        for _la in all_law_articles:
+                        for _la in mapped:
                             _lt = clean_article_text(_la.get('text') or '')
                             if _lt:
                                 _law_items.append({"text": _lt, "label": f"Art. {_la['article_ref']}"})
-                        tts_button(
+                        render_tts_button_iframe(
                             items=_law_items,
                             label="🔊 Reproducir ley",
                             key=f"tts_law_{law_id}",
-                            help_text="Reproducir toda la ley",
                         )
 
                     if has_fine and mapped:
@@ -1758,7 +2146,37 @@ with tabs[7]:
                                 f"all_articles_{selected_topic['id']}_{law_id}",
                             )
 
-        render_study_annotations(selected_topic, articles_for_annotations)
+        # ── Temario CEF (para PE-51..60 y cualquier tema con recurso CEF) ───────
+        _cef_res = load_topic_cef_resource(selected_topic['id'])
+        if _cef_res and _cef_res.get("content_text"):
+            _cef_text = _cef_res["content_text"]
+            _cef_title = _cef_res.get("title") or "Temario CEF"
+            _cef_status = _cef_res.get("validation_status") or "pendiente_de_validacion"
+            _cef_preview = _cef_text[:300].replace("\n", " ") + "…"
+            with st.expander(
+                f"📚 Temario CEF — {_cef_title} "
+                f"({'✓ contrastado' if 'contrastado' in _cef_status else '⚠ pendiente validación'})",
+                expanded=False,
+            ):
+                st.caption(
+                    "Contenido extraído del temario CEF (academia). "
+                    "Material auxiliar de estudio — NO es fuente oficial. "
+                    f"Estado: `{_cef_status}`"
+                )
+                # Mostrar por secciones si el texto tiene cabeceras tipo "1." o "TEMA"
+                import html as _html_cef
+                _escaped_cef = _html_cef.escape(_cef_text)
+                st.markdown(
+                    f'<div style="font-size:13px;line-height:1.7;color:#cdd6f4;'
+                    f'white-space:pre-wrap;padding:8px 0;word-break:break-word;'
+                    f'max-height:600px;overflow-y:auto;'
+                    f'border:1px solid #313244;border-radius:4px;padding:12px;">'
+                    f'{_escaped_cef}</div>',
+                    unsafe_allow_html=True,
+                )
+
+        with st.expander("📁 Anotaciones antiguas (sistema legado)", expanded=False):
+            render_study_annotations(selected_topic, articles_for_annotations)
 
     # ── Mis dudas ──
     st.divider()
