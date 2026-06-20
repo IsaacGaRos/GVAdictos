@@ -42,10 +42,15 @@ def render_ai_insights(article_id: int, article_title: str, article_text: str) -
     service = get_ai_service()
 
     toggle_key = f"ai_insights_{article_id}"
+    if toggle_key not in st.session_state:
+        st.session_state[toggle_key] = False
+
+    def toggle_insights():
+        st.session_state[toggle_key] = not st.session_state[toggle_key]
+
     col1, col2 = st.columns([0.08, 0.92])
     with col1:
-        if st.button("🧠", key=toggle_key, use_container_width=True):
-            st.session_state[toggle_key] = not st.session_state.get(toggle_key, False)
+        st.button("🧠", key=f"{toggle_key}_btn", use_container_width=True, on_click=toggle_insights)
     with col2:
         st.caption("Insights IA (Ola D2)" if service else "Insights IA (no configurado)")
 
@@ -150,10 +155,15 @@ def render_ai_question_generator(article_id: int, article_title: str, article_te
         return
 
     toggle_key = f"ai_question_{article_id}"
+    if toggle_key not in st.session_state:
+        st.session_state[toggle_key] = False
+
+    def toggle_questions():
+        st.session_state[toggle_key] = not st.session_state[toggle_key]
+
     col1, col2 = st.columns([0.08, 0.92])
     with col1:
-        if st.button("❓", key=toggle_key, use_container_width=True):
-            st.session_state[toggle_key] = not st.session_state.get(toggle_key, False)
+        st.button("❓", key=f"{toggle_key}_btn", use_container_width=True, on_click=toggle_questions)
     with col2:
         st.caption("Generar pregunta IA (Ola D3)")
 

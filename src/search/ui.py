@@ -25,10 +25,15 @@ def render_related_articles(article_id: int, article_title: str) -> None:
         return
 
     toggle_key = f"related_articles_{article_id}"
+    if toggle_key not in st.session_state:
+        st.session_state[toggle_key] = False
+
+    def toggle_related():
+        st.session_state[toggle_key] = not st.session_state[toggle_key]
+
     col1, col2 = st.columns([0.08, 0.92])
     with col1:
-        if st.button("🔗", key=toggle_key, use_container_width=True):
-            st.session_state[toggle_key] = not st.session_state.get(toggle_key, False)
+        st.button("🔗", key=f"{toggle_key}_btn", use_container_width=True, on_click=toggle_related)
     with col2:
         st.caption("Artículos relacionados (Ola D5)")
 

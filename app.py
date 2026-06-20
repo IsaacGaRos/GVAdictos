@@ -174,10 +174,16 @@ def icon_toggle(icon: str, label: str, key: str, help_text: str = "") -> bool:
 
     Returns True if the section should be visible.
     """
+    # Initialize state if not present
+    if key not in st.session_state:
+        st.session_state[key] = False
+
+    def toggle_state():
+        st.session_state[key] = not st.session_state[key]
+
     col1, col2 = st.columns([0.08, 0.92])
     with col1:
-        if st.button(icon, key=key, help=help_text, use_container_width=True):
-            st.session_state[key] = not st.session_state.get(key, False)
+        st.button(icon, key=f"{key}_btn", help=help_text, use_container_width=True, on_click=toggle_state)
 
     with col2:
         st.caption(label)

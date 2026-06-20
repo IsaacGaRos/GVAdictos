@@ -97,10 +97,15 @@ def render_tts_law_player(law_name: str, law_articles: list, key_prefix: str = "
         return
 
     toggle_key = f"{key_prefix}_tts_toggle_{hash(law_name) % 1000000}"
+    if toggle_key not in st.session_state:
+        st.session_state[toggle_key] = False
+
+    def toggle_law_tts():
+        st.session_state[toggle_key] = not st.session_state[toggle_key]
+
     col1, col2 = st.columns([0.08, 0.92])
     with col1:
-        if st.button("🔊", key=toggle_key, use_container_width=True):
-            st.session_state[toggle_key] = not st.session_state.get(toggle_key, False)
+        st.button("🔊", key=f"{toggle_key}_btn", use_container_width=True, on_click=toggle_law_tts)
     with col2:
         st.caption(f"Escuchar: {law_name}")
 
