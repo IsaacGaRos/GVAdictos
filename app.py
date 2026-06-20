@@ -40,6 +40,7 @@ from src.accounts.schema import ensure_accounts_tables
 from src.accounts.service import AuthService, AuthError
 from src.study.repository import StudyRepository
 from src.study.service import StudyService, StudyTarget, HIGHLIGHT_COLORS
+from src.study.rendering import render_text_with_highlights
 
 
 st.set_page_config(page_title="GVAdictos", layout="wide")
@@ -631,18 +632,44 @@ def render_article_card(article, topic_id: int) -> None:
         if location:
             st.caption(f"📍 {location}")
 
-        # Texto legal
+        # Texto legal con highlights integrados
         if display_text:
-            lines = display_text.count('\n') + 1
-            height = max(120, min(lines * 22 + 40, 500))
-            st.text_area(
-                f"Texto art. {article['article_ref']}",
-                value=display_text,
-                height=height,
-                disabled=True,
-                key=f"art_{topic_id}_{article_id}",
-                label_visibility="collapsed",
-            )
+            svc = get_study_service()
+            highlighted_text = display_text
+            if svc:
+                try:
+                    state = svc.get_article_state(article_id)
+                    highlights = state.get("highlights", [])
+                    if highlights:
+                        highlighted_text = render_text_with_highlights(display_text, highlights)
+                        st.markdown(highlighted_text, unsafe_allow_html=True)
+                    else:
+                        st.text_area(
+                            f"Texto art. {article['article_ref']}",
+                            value=display_text,
+                            height=200,
+                            disabled=True,
+                            key=f"art_{topic_id}_{article_id}",
+                            label_visibility="collapsed",
+                        )
+                except Exception:
+                    st.text_area(
+                        f"Texto art. {article['article_ref']}",
+                        value=display_text,
+                        height=200,
+                        disabled=True,
+                        key=f"art_{topic_id}_{article_id}",
+                        label_visibility="collapsed",
+                    )
+            else:
+                st.text_area(
+                    f"Texto art. {article['article_ref']}",
+                    value=display_text,
+                    height=200,
+                    disabled=True,
+                    key=f"art_{topic_id}_{article_id}",
+                    label_visibility="collapsed",
+                )
 
         # Panel de estudio (marcas, subrayado, notas) — backend src/study
         render_study_panel(article_id)
