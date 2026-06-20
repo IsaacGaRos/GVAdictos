@@ -33,7 +33,7 @@ from src.studies.annotations import (
 )
 from src.tests.repository import create_question, delete_question, get_question, list_questions, update_question
 from src.ai.ui import render_ai_insights, render_ai_question_generator
-from src.audio.ui import render_tts_button
+from src.audio.ui import render_tts_button, _generate_web_speech_js
 from src.search.ui import render_related_articles
 from src.simulacros.ui import render_exam_creator, render_exam_execution, render_exam_history
 from src.accounts.schema import ensure_accounts_tables
@@ -1187,8 +1187,20 @@ with tabs[7]:
                 articles_for_annotations.extend(mapped)
 
                 with st.container(border=True):
-                    st.markdown(f"##### {norma['name']}")
-                    # TODO: render_tts_law_player for full law playback
+                    col_name, col_tts = st.columns([5, 1])
+                    with col_name:
+                        st.markdown(f"##### {norma['name']}")
+
+                    with col_tts:
+                        if st.button(f"🔊", key=f"law_tts_{law_id}", help="Reproducir ley completa"):
+                            all_law_articles = load_law_all_articles(law_id)
+                            if all_law_articles:
+                                law_text = " ".join([
+                                    f"Artículo {a.get('article_ref', '')}. {a.get('text', '')}"
+                                    for a in all_law_articles
+                                ])
+                                js = _generate_web_speech_js(law_text, voice=None, speed=1.0, article_title=norma['name'])
+                                st.components.v1.html(js, height=60)
 
                     if has_fine and mapped:
                         st.caption(
