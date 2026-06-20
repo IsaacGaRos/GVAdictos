@@ -622,11 +622,21 @@ def get_top_exam_articles(limit: int = 30) -> list[dict]:
                 (limit,),
             ).fetchall()
             import json as _json
-            return [
-                {**dict(r), "sources": _json.loads(r["exam_sources"] or "[]")}
-                for r in rows
-            ]
-    except Exception:
+            result = []
+            for r in rows:
+                row_dict = dict(r)
+                # Intentar parsear exam_sources como JSON, si falla usar como lista simple
+                sources_str = r["exam_sources"] or "[]"
+                try:
+                    sources = _json.loads(sources_str)
+                    if isinstance(sources, str):
+                        sources = [sources]
+                except:
+                    sources = [sources_str] if sources_str else []
+                row_dict["sources"] = sources
+                result.append(row_dict)
+            return result
+    except Exception as e:
         return []
 
 
