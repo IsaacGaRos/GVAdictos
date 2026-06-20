@@ -35,16 +35,54 @@ def render_tts_button(
     help_text: str = "Lee el texto en voz alta en el navegador (sin coste)",
     prefix: str = "",
 ) -> None:
-    """Render a compact speaker button that reads `text` aloud on click.
+    """Render expandable TTS player with play/pause/stop and loop controls.
 
-    Cost-free: uses the browser Web Speech API. Designed to sit inline next to
-    an article (read one article) or at the top of a topic (read everything).
+    Cost-free: uses the browser Web Speech API. Reads only `text`, ignoring `prefix`.
     """
     if not text or not text.strip():
         return
-    if st.button(label, key=f"tts_btn_{key}", help=help_text):
-        js_code = _generate_web_speech_js(text, voice=None, speed=speed, article_title=label, prefix=prefix)
-        st.components.v1.html(js_code, height=110, scrolling=False)
+
+    with st.expander(label, expanded=False):
+        st.caption(help_text)
+
+        col1, col2, col3 = st.columns([2, 2, 1])
+        with col1:
+            current_speed = st.slider(
+                "Velocidad",
+                min_value=0.5,
+                max_value=2.0,
+                value=speed,
+                step=0.1,
+                key=f"tts_speed_{key}",
+            )
+        with col2:
+            loop_enabled = st.checkbox(
+                "Repetir ♻️",
+                value=False,
+                key=f"tts_loop_{key}",
+                help="Repetir indefinidamente",
+            )
+        with col3:
+            st.write("")
+
+        col_play, col_pause, col_stop = st.columns(3)
+        with col_play:
+            play_btn = st.button("▶ Play", key=f"tts_play_{key}", use_container_width=True)
+        with col_pause:
+            pause_btn = st.button("⏸ Pause", key=f"tts_pause_{key}", use_container_width=True)
+        with col_stop:
+            stop_btn = st.button("⏹ Stop", key=f"tts_stop_{key}", use_container_width=True)
+
+        if play_btn or pause_btn or stop_btn:
+            js_code = _generate_web_speech_js(
+                text=text,
+                voice=None,
+                speed=current_speed,
+                article_title=label,
+                loop=loop_enabled,
+                autostart=play_btn,
+            )
+            st.components.v1.html(js_code, height=60, scrolling=False)
 
 
 def render_tts_player(article_id: int, article_title: str, article_text: str) -> None:
@@ -115,19 +153,22 @@ def _generate_web_speech_js(
     voice: str | None = None,
     speed: float = 1.0,
     article_title: str = "Article",
-    prefix: str = "",
-    autostart: bool = True,
+    loop: bool = False,
+    autostart: bool = False,
 ) -> str:
-    """Generate HTML/JS for Web Speech API player.
+    """Generate HTML/JS for Web Speech API player with loop support.
 
-    autostart=True hace que empiece a leer en cuanto se inyecta el componente,
-    de modo que pulsar el icono de altavoz reproduce directamente.
+    Args:
+        text: content to read (body text only)
+        voice: optional voice identifier
+        speed: playback speed (0.5-2.0)
+        article_title: label for display
+        loop: if True, repeats indefinitely
+        autostart: if True, begin playback immediately
     """
-    # Escape text for JavaScript
     safe_text = text.replace("\\", "\\\\").replace('"', '\\"').replace("\n", " ")
-    safe_prefix = prefix.replace("\\", "\\\\").replace('"', '\\"') if prefix else ""
-
     voice_selection = f"voices.find(v => v.lang.includes('{voice}')) || voices[0]" if voice else "voices[0]"
+    loop_check = "true" if loop else "false"
 
     autostart_js = (
         "if (synth.getVoices().length > 0) { startSpeech(); }"
@@ -136,37 +177,20 @@ def _generate_web_speech_js(
     )
 
     html = f"""
-    <div id="tts-player" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
-        <p><strong>Reproduciendo:</strong> {article_title}</p>
-        <div id="controls">
-            <button id="playBtn" onclick="startSpeech()" style="padding: 8px 16px; margin: 5px; cursor: pointer;">
-                ▶ Reproducir
-            </button>
-            <button id="pauseBtn" onclick="pauseSpeech()" style="padding: 8px 16px; margin: 5px; cursor: pointer;">
-                ⏸ Pausar
-            </button>
-            <button id="stopBtn" onclick="stopSpeech()" style="padding: 8px 16px; margin: 5px; cursor: pointer;">
-                ⏹ Detener
-            </button>
-        </div>
-        <p id="status" style="font-size: 12px; color: #666; margin-top: 10px;"></p>
+    <div id="tts-player" style="padding: 8px; font-size: 12px;">
+        <p id="status" style="color: #666; margin: 3px 0; font-size: 11px;">Listo</p>
     </div>
 
     <script>
     const synth = window.speechSynthesis;
     let utterance = null;
+    let loopEnabled = {loop_check};
+    let shouldStop = false;
 
-    function startSpeech() {{
-        if (synth.paused) {{
-            synth.resume();
-            return;
-        }}
+    function playText() {{
+        if (shouldStop) return;
 
-        // Cancel any ongoing speech
-        synth.cancel();
-
-        const fullText = "{safe_prefix}" ? "{safe_prefix}. {safe_text}" : "{safe_text}";
-        utterance = new SpeechSynthesisUtterance(fullText);
+        utterance = new SpeechSynthesisUtterance("{safe_text}");
         utterance.rate = {speed};
         utterance.lang = "es-ES";
 
@@ -180,7 +204,17 @@ def _generate_web_speech_js(
         }};
 
         utterance.onend = () => {{
-            document.getElementById('status').textContent = 'Reproducción finalizada';
+            if (shouldStop) {{
+                document.getElementById('status').textContent = 'Detenido';
+                return;
+            }}
+            if (loopEnabled) {{
+                setTimeout(() => {{
+                    playText();
+                }}, 500);
+            }} else {{
+                document.getElementById('status').textContent = 'Finalizado';
+            }}
         }};
 
         utterance.onerror = (event) => {{
@@ -190,19 +224,30 @@ def _generate_web_speech_js(
         synth.speak(utterance);
     }}
 
+    function startSpeech() {{
+        if (synth.paused) {{
+            synth.resume();
+            return;
+        }}
+        shouldStop = false;
+        synth.cancel();
+        playText();
+    }}
+
     function pauseSpeech() {{
         if (synth.speaking && !synth.paused) {{
             synth.pause();
-            document.getElementById('status').textContent = 'En pausa';
+            document.getElementById('status').textContent = 'Pausado';
         }}
     }}
 
     function stopSpeech() {{
+        shouldStop = true;
         synth.cancel();
         document.getElementById('status').textContent = 'Detenido';
     }}
 
-    // Auto-arranque al inyectar el componente (icono de altavoz)
+    // Auto-start if requested
     {autostart_js}
     </script>
     """
