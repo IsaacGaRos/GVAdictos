@@ -512,16 +512,31 @@ def render_study_panel(article_id: int) -> None:
             height=70,
             placeholder="Pega aqui el fragmento exacto del articulo",
         )
-        col_c, col_n = st.columns([1, 2])
-        with col_c:
+        tab_preset, tab_custom = st.tabs(["Color preestablecido", "Color personalizado"])
+
+        with tab_preset:
             hl_color = st.selectbox(
                 "Color",
                 list(HIGHLIGHT_COLOR_LABELS.keys()),
                 format_func=lambda c: HIGHLIGHT_COLOR_LABELS[c],
                 key=f"new_hl_color_{article_id}",
             )
-        with col_n:
-            hl_note = st.text_input("Nota (opcional)", key=f"new_hl_note_{article_id}")
+            use_custom = False
+        with tab_custom:
+            hl_color_custom = st.color_picker(
+                "Elige un color",
+                value="#FFFF00",
+                key=f"new_hl_custom_{article_id}",
+            )
+            hl_style = st.radio(
+                "Estilo",
+                ["Fondo", "Línea inferior"],
+                key=f"new_hl_style_{article_id}",
+            )
+            hl_color = hl_color_custom
+            use_custom = True
+
+        hl_note = st.text_input("Nota (opcional)", key=f"new_hl_note_{article_id}")
         if st.button("Guardar subrayado", key=f"save_hl_{article_id}"):
             if not hl_text.strip():
                 st.error("Escribe el fragmento a subrayar.")
