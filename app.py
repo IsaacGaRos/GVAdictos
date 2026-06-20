@@ -3,6 +3,7 @@ from __future__ import annotations
 import random
 import re
 import time
+from datetime import datetime
 from pathlib import Path
 
 # Carga variables de entorno desde .env (ANTHROPIC_API_KEY, STRIPE_API_KEY, etc.)
@@ -41,6 +42,14 @@ from src.accounts.service import AuthService, AuthError
 from src.study.repository import StudyRepository
 from src.study.service import StudyService, StudyTarget, HIGHLIGHT_COLORS
 from src.study.rendering import render_text_with_highlights
+from src.study.doubts import (
+    ensure_doubts_table,
+    save_doubt,
+    get_doubt,
+    delete_doubt,
+    list_doubts,
+    resolve_doubt,
+)
 
 
 st.set_page_config(page_title="GVAdictos", layout="wide")
@@ -51,6 +60,7 @@ def _ensure_extra_tables() -> None:
     """Crea tablas de usuarios, oposiciones y suscripciones si no existen."""
     with connect() as conn:
         ensure_accounts_tables(conn)
+        ensure_doubts_table(conn)
         conn.executescript("""
             CREATE TABLE IF NOT EXISTS oposiciones (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -499,6 +509,34 @@ def render_study_panel(article_id: int) -> None:
                 resolved=is_doubt,
             ))
             st.rerun()
+
+    # ── Guardar texto de duda ──
+    if is_doubt:
+        with st.container(border=True):
+            st.caption("📝 Escribe tu duda")
+            conn = connect()
+            current_doubt = get_doubt(conn, article_id, current_user_id())
+            doubt_text = st.text_area(
+                "Duda",
+                value=current_doubt.get("doubt_text", "") if current_doubt else "",
+                height=80,
+                placeholder="¿Qué no entiendes de este artículo? Escribe tu pregunta aquí...",
+                key=f"doubt_text_{article_id}",
+                label_visibility="collapsed",
+            )
+            col_save, col_del = st.columns([1, 1])
+            with col_save:
+                if st.button("Guardar duda", key=f"save_doubt_{article_id}", use_container_width=True):
+                    if doubt_text.strip():
+                        save_doubt(conn, article_id, doubt_text, user_id=current_user_id())
+                        st.success("Duda guardada")
+                    else:
+                        st.warning("Escribe tu duda primero")
+            with col_del:
+                if st.button("Eliminar duda", key=f"del_doubt_{article_id}", use_container_width=True):
+                    delete_doubt(conn, article_id, user_id=current_user_id())
+                    st.info("Duda eliminada")
+            conn.close()
 
     # ── Subrayado y notas ──
     if icon_toggle(
@@ -1298,6 +1336,73 @@ with tabs[7]:
                             )
 
         render_study_annotations(selected_topic, articles_for_annotations)
+
+    # ── Mis dudas ──
+    st.divider()
+    st.subheader("🤔 Mis dudas")
+
+    conn = connect()
+    doubts = list_doubts(conn, user_id=current_user_id())
+    conn.close()
+
+    if not doubts:
+        st.info("No tienes dudas registradas. Marca artículos con dudas para guardarlas aquí.")
+    else:
+        st.caption(f"{len(doubts)} duda(s) registrada(s)")
+
+        for doubt in doubts:
+            with st.container(border=True):
+                col_ref, col_resolve = st.columns([4, 1])
+                with col_ref:
+                    st.markdown(f"**Art. {doubt['article_ref']}** · {doubt['law_name']}")
+                    st.write(doubt['doubt_text'])
+                    st.caption(f"Guardada: {doubt['created_at'][:10]}")
+
+                with col_resolve:
+                    if st.button(
+                        "✓ Resuelto",
+                        key=f"resolve_doubt_{doubt['id']}",
+                        use_container_width=True,
+                    ):
+                        conn = connect()
+                        resolve_doubt(conn, doubt['article_id'], user_id=current_user_id())
+                        conn.close()
+                        st.success("Duda marcada como resuelta")
+                        st.rerun()
+
+        st.divider()
+        st.markdown("**Exportar mis dudas**")
+        col_csv, col_copy = st.columns(2)
+
+        with col_csv:
+            # Prepare CSV
+            csv_content = "Artículo,Ley,Duda,Fecha\n"
+            for doubt in doubts:
+                csv_content += f'"{doubt["article_ref"]}","{doubt["law_name"]}","{doubt["doubt_text"].replace(chr(34), chr(34)*2)}","{doubt["created_at"][:10]}"\n'
+
+            st.download_button(
+                label="📥 Descargar CSV",
+                data=csv_content,
+                file_name="mis_dudas.csv",
+                mime="text/csv",
+                use_container_width=True,
+            )
+
+        with col_copy:
+            # Plain text for copy
+            txt_content = "MIS DUDAS - " + datetime.now().strftime("%Y-%m-%d") + "\n" + "="*50 + "\n\n"
+            for doubt in doubts:
+                txt_content += f"Art. {doubt['article_ref']} ({doubt['law_name']})\n"
+                txt_content += f"Duda: {doubt['doubt_text']}\n"
+                txt_content += f"Fecha: {doubt['created_at'][:10]}\n\n"
+
+            st.text_area(
+                "Copiar texto",
+                value=txt_content,
+                height=150,
+                disabled=True,
+                label_visibility="collapsed",
+            )
 
 # ── Modo test ────────────────────────────────────────────────────────────────
 with tabs[8]:
