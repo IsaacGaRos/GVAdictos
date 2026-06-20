@@ -45,9 +45,8 @@ def render_related_articles(
             st.button("🔗", key=f"{toggle_key}_btn", use_container_width=True, on_click=toggle_related)
         with col2:
             st.caption("Artículos relacionados (Ola D5)")
-
-    if not st.session_state.get(toggle_key, False):
-        return
+        if not st.session_state.get(toggle_key, False):
+            return
 
     if True:
         st.markdown("**Mapa de relaciones**")

@@ -63,9 +63,8 @@ def render_ai_insights(
             st.button("🧠", key=f"{toggle_key}_btn", use_container_width=True, on_click=toggle_insights)
         with col2:
             st.caption("Insights IA (Ola D2)" if service else "Insights IA (no configurado)")
-
-    if not st.session_state.get(toggle_key, False):
-        return
+        if not st.session_state.get(toggle_key, False):
+            return
 
     if not service:
         st.info(

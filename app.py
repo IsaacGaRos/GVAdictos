@@ -35,7 +35,7 @@ from src.studies.annotations import (
 from src.tests.repository import create_question, delete_question, get_question, list_questions, update_question
 import json as _json
 from src.ai.ui import render_ai_insights, render_ai_question_generator
-from src.audio.global_player import tts_button, render_global_player
+from src.audio.global_player import tts_button, render_global_player, render_article_tts
 from src.search.ui import render_related_articles
 from src.simulacros.ui import render_exam_creator, render_exam_execution, render_exam_history
 from src.accounts.schema import ensure_accounts_tables
@@ -871,25 +871,35 @@ def render_study_panel_compact(
 
     with col_hl:
         hl_lbl = f"🖊 ({n_hl})" if n_hl else "🖊 Subray."
-        st.button(hl_lbl, key=f"btn_hl_{article_id}",
-                  on_click=_set_active_panel(accordion_key, "highlight"),
-                  help="Subrayados", use_container_width=True)
+        clicked_hl = st.button(hl_lbl, key=f"btn_hl_{article_id}",
+                               help="Subrayados", use_container_width=True)
 
     with col_notes:
         notes_lbl = f"📝 ({n_notes})" if n_notes else "📝 Notas"
-        st.button(notes_lbl, key=f"btn_notes_{article_id}",
-                  on_click=_set_active_panel(accordion_key, "notes"),
-                  help="Notas personales", use_container_width=True)
+        clicked_notes = st.button(notes_lbl, key=f"btn_notes_{article_id}",
+                                  help="Notas personales", use_container_width=True)
 
     with col_ai:
-        st.button("🧠 IA", key=f"btn_ai_{article_id}",
-                  on_click=_set_active_panel(accordion_key, "ai"),
-                  help="Insights de IA", use_container_width=True)
+        clicked_ai = st.button("🧠 IA", key=f"btn_ai_{article_id}",
+                               help="Insights de IA", use_container_width=True)
 
     with col_rel:
-        st.button("🔗 Rel.", key=f"btn_rel_{article_id}",
-                  on_click=_set_active_panel(accordion_key, "related"),
-                  help="Artículos relacionados", use_container_width=True)
+        clicked_rel = st.button("🔗 Rel.", key=f"btn_rel_{article_id}",
+                                help="Artículos relacionados", use_container_width=True)
+
+    # Procesar clics del acordeón después de renderizar todos los botones
+    _toggled = None
+    if clicked_hl:
+        _toggled = "highlight"
+    elif clicked_notes:
+        _toggled = "notes"
+    elif clicked_ai:
+        _toggled = "ai"
+    elif clicked_rel:
+        _toggled = "related"
+    if _toggled is not None:
+        st.session_state[accordion_key] = None if active_panel == _toggled else _toggled
+        active_panel = st.session_state[accordion_key]
 
     # ── Panel: Duda (se muestra cuando la marca está activa, sin ocupar slot acordeón) ──
     if is_doubt:
@@ -946,6 +956,40 @@ def render_study_panel_compact(
                             study_mutate(lambda s, hid=int(h["id"]): s.delete_highlight(hid))
                             st.rerun()
                 st.divider()
+            # Botón JS para capturar la selección actual del texto del artículo
+            _cap_key = f"cap_sel_{article_id}"
+            _cap_html = f"""
+<style>body{{margin:0;background:transparent}}</style>
+<button style="font-size:11px;padding:2px 8px;cursor:pointer;width:100%;
+               background:#45475a;border:1px solid #6c7086;color:#cdd6f4;border-radius:4px;"
+  onclick="captureSelection()">📋 Capturar texto seleccionado</button>
+<script>
+function captureSelection() {{
+  var sel = window.parent.getSelection();
+  var text = sel ? sel.toString().trim() : '';
+  if (!text) {{ return; }}
+  var ta = null;
+  var all = window.parent.document.querySelectorAll('textarea');
+  for (var i = 0; i < all.length; i++) {{
+    var ph = all[i].getAttribute('placeholder') || '';
+    if (ph.indexOf('Copia aquí') !== -1) {{ ta = all[i]; break; }}
+  }}
+  if (ta) {{
+    var nativeSetter = Object.getOwnPropertyDescriptor(
+      window.parent.HTMLTextAreaElement.prototype, 'value').set;
+    nativeSetter.call(ta, text);
+    ta.dispatchEvent(new window.parent.Event('input', {{bubbles:true}}));
+  }} else {{
+    window.parent.navigator.clipboard.writeText(text).then(function(){{
+      alert('Copiado al portapapeles. Pega con Ctrl+V en el campo de abajo.');
+    }}).catch(function() {{
+      alert('Selecciona el texto y cópialo manualmente (Ctrl+C).');
+    }});
+  }}
+}}
+</script>"""
+            st.components.v1.html(_cap_html, height=30)
+
             hl_text = st.text_area(
                 "Fragmento exacto a subrayar",
                 key=f"new_hl_text_{article_id}", height=60,
@@ -1037,11 +1081,9 @@ def render_article_card(article, topic_id: int) -> None:
         with col_title:
             st.markdown(f"**{article_title}**")
         with col_tts:
-            tts_button(
+            render_article_tts(
                 items=[{"text": display_text, "label": f"Art. {article_ref}"}],
-                label="🔊",
                 key=f"tts_art_{topic_id}_{article_id}",
-                help_text="Reproducir artículo",
             )
 
         # ── Capítulo / sección en color acento ─────────────────────────────────
@@ -1663,25 +1705,20 @@ with tabs[7]:
                 has_fine = law_has_fine_mapping(selected_topic['id'], law_id)
                 articles_for_annotations.extend(mapped)
 
-                with st.container(border=True):
-                    col_name, col_tts = st.columns([5, 1])
-                    with col_name:
-                        st.markdown(f"##### {norma['name']}")
-
-                    with col_tts:
-                        all_law_articles = load_law_all_articles(law_id)
-                        if all_law_articles:
-                            _law_items = [{"text": norma['name'], "label": f"Ley: {norma['name']}"}]
-                            for _la in all_law_articles:
-                                _lt = clean_article_text(_la.get('text') or '')
-                                if _lt:
-                                    _law_items.append({"text": _lt, "label": f"Art. {_la['article_ref']}"})
-                            tts_button(
-                                items=_law_items,
-                                label="🔊",
-                                key=f"tts_law_{law_id}",
-                                help_text="Reproducir toda la ley",
-                            )
+                with st.expander(f"📄 {norma['name']}", expanded=False):
+                    all_law_articles = load_law_all_articles(law_id)
+                    if all_law_articles:
+                        _law_items = [{"text": norma['name'], "label": f"Ley: {norma['name']}"}]
+                        for _la in all_law_articles:
+                            _lt = clean_article_text(_la.get('text') or '')
+                            if _lt:
+                                _law_items.append({"text": _lt, "label": f"Art. {_la['article_ref']}"})
+                        tts_button(
+                            items=_law_items,
+                            label="🔊 Reproducir ley",
+                            key=f"tts_law_{law_id}",
+                            help_text="Reproducir toda la ley",
+                        )
 
                     if has_fine and mapped:
                         st.caption(
