@@ -5,6 +5,7 @@ MVP: Uses browser Web Speech API for cost-free playback.
 
 from __future__ import annotations
 
+import json
 import sqlite3
 import base64
 import streamlit as st
@@ -320,13 +321,8 @@ def _generate_sequential_speech_js(
         speed: playback speed (0.5-2.0)
         autostart: if True, begin playback immediately
     """
-    # Build a JSON array of items for JavaScript
-    items_json = "["
-    for item in items:
-        safe_text = item["text"].replace("\\", "\\\\").replace('"', '\\"').replace("\n", " ")
-        safe_label = item.get("label", "").replace('"', '\\"')
-        items_json += f'{{"text":"{safe_text}","label":"{safe_label}"}},'
-    items_json += "]"
+    # Build a JSON array of items for JavaScript using json.dumps for safety
+    items_json = json.dumps(items, ensure_ascii=False)
 
     autostart_js = (
         "if (synth.getVoices().length > 0) { startSpeech(); }"
@@ -336,6 +332,11 @@ def _generate_sequential_speech_js(
 
     html = f"""
     <div id="tts-player" style="padding: 8px; font-size: 12px;">
+        <div style="margin-bottom: 8px;">
+            <button onclick="startSpeech()" style="padding: 6px 12px; margin-right: 4px; cursor: pointer;">▶ Play</button>
+            <button onclick="pauseSpeech()" style="padding: 6px 12px; margin-right: 4px; cursor: pointer;">⏸ Pause</button>
+            <button onclick="stopSpeech()" style="padding: 6px 12px; cursor: pointer;">⏹ Stop</button>
+        </div>
         <p id="status" style="color: #666; margin: 3px 0; font-size: 11px;">Listo</p>
         <p id="progress" style="color: #999; margin: 2px 0; font-size: 10px;"></p>
     </div>
