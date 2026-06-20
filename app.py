@@ -805,14 +805,23 @@ def _make_toggle(key: str):
     return _toggle
 
 
+def _set_active_panel(panel_key: str, panel_name: str):
+    """Callback: abre `panel_name` y cierra todos los demás (acordeón)."""
+    def _cb(pk=panel_key, pn=panel_name):
+        current = st.session_state.get(pk)
+        st.session_state[pk] = None if current == pn else pn
+    return _cb
+
+
 def render_study_panel_compact(
     article_id: int,
     article_title: str = "",
     article_text: str = "",
 ) -> None:
-    """Fila de acciones compacta con 5 botones + paneles expandibles.
+    """Fila de acciones compacta con 6 botones en acordeón.
 
-    ☆/★ Imp. | ❓/❗ Duda | 📝 Notas | 🧠 IA | 🔗 Rel.
+    ☆/★ Imp. | ❓/❗ Duda | 🖊 Subrayado | 📝 Notas | 🧠 IA | 🔗 Rel.
+    Solo un panel puede estar abierto a la vez.
     """
     svc = get_study_service()
     if not svc:
@@ -828,20 +837,19 @@ def render_study_panel_compact(
     active_marks = {m["mark_type"] for m in marks if not m.get("resolved")}
     is_important = "important" in active_marks
     is_doubt = "doubt" in active_marks
-    n_annotations = len(highlights) + len(notes)
+    n_hl = len(highlights)
+    n_notes = len(notes)
 
-    # ── Keys para los toggles ─────────────────────────────────────────────────
-    notes_key = f"toggle_highlights_{article_id}"
-    ai_key = f"ai_insights_{article_id}"
-    rel_key = f"related_articles_{article_id}"
-    for k in (notes_key, ai_key, rel_key):
-        if k not in st.session_state:
-            st.session_state[k] = False
+    # Un único key de acordeón por artículo — valor = nombre del panel activo o None
+    accordion_key = f"panel_{article_id}"
+    if accordion_key not in st.session_state:
+        st.session_state[accordion_key] = None
+    active_panel = st.session_state[accordion_key]
 
     st.markdown('<div style="height:2px"></div>', unsafe_allow_html=True)
 
-    # ── Fila de 5 botones ─────────────────────────────────────────────────────
-    col_imp, col_dud, col_notes, col_ai, col_rel = st.columns(5)
+    # ── Fila de 6 botones ─────────────────────────────────────────────────────
+    col_imp, col_dud, col_hl, col_notes, col_ai, col_rel = st.columns(6)
 
     with col_imp:
         imp_lbl = "★ Imp." if is_important else "☆ Imp."
@@ -855,29 +863,35 @@ def render_study_panel_compact(
     with col_dud:
         dud_lbl = "❗ Duda" if is_doubt else "❓ Duda"
         if st.button(dud_lbl, key=f"mark_dud_{article_id}",
-                     help="Marcar duda sobre este artículo", use_container_width=True):
+                     help="Marcar duda", use_container_width=True):
             study_mutate(lambda s: s.mark(
                 StudyTarget(article_id=article_id), mark_type="doubt", resolved=is_doubt,
             ))
             st.rerun()
 
+    with col_hl:
+        hl_lbl = f"🖊 ({n_hl})" if n_hl else "🖊 Subray."
+        st.button(hl_lbl, key=f"btn_hl_{article_id}",
+                  on_click=_set_active_panel(accordion_key, "highlight"),
+                  help="Subrayados", use_container_width=True)
+
     with col_notes:
-        notes_lbl = f"📝 Notas ({n_annotations})" if n_annotations else "📝 Notas"
-        st.button(notes_lbl, key=f"{notes_key}_btn",
-                  on_click=_make_toggle(notes_key),
-                  help="Subrayados y notas", use_container_width=True)
+        notes_lbl = f"📝 ({n_notes})" if n_notes else "📝 Notas"
+        st.button(notes_lbl, key=f"btn_notes_{article_id}",
+                  on_click=_set_active_panel(accordion_key, "notes"),
+                  help="Notas personales", use_container_width=True)
 
     with col_ai:
-        st.button("🧠 IA", key=f"{ai_key}_btn",
-                  on_click=_make_toggle(ai_key),
+        st.button("🧠 IA", key=f"btn_ai_{article_id}",
+                  on_click=_set_active_panel(accordion_key, "ai"),
                   help="Insights de IA", use_container_width=True)
 
     with col_rel:
-        st.button("🔗 Rel.", key=f"{rel_key}_btn",
-                  on_click=_make_toggle(rel_key),
+        st.button("🔗 Rel.", key=f"btn_rel_{article_id}",
+                  on_click=_set_active_panel(accordion_key, "related"),
                   help="Artículos relacionados", use_container_width=True)
 
-    # ── Panel: Duda ───────────────────────────────────────────────────────────
+    # ── Panel: Duda (se muestra cuando la marca está activa, sin ocupar slot acordeón) ──
     if is_doubt:
         conn = connect()
         current_doubt = get_doubt(conn, article_id, current_user_id())
@@ -910,12 +924,11 @@ def render_study_panel_compact(
                     st.info("Duda eliminada")
                     st.rerun()
 
-    # ── Panel: Notas y subrayados ─────────────────────────────────────────────
-    if st.session_state.get(notes_key, False):
+    # ── Panel acordeón ────────────────────────────────────────────────────────
+    if active_panel == "highlight":
         with st.container(border=True):
-            # Subrayados existentes
+            st.markdown("##### 🖊 Subrayados")
             if highlights:
-                st.markdown("**Subrayados guardados**")
                 for h in highlights:
                     col_h, col_hd = st.columns([6, 1])
                     with col_h:
@@ -933,13 +946,10 @@ def render_study_panel_compact(
                             study_mutate(lambda s, hid=int(h["id"]): s.delete_highlight(hid))
                             st.rerun()
                 st.divider()
-
-            # Nuevo subrayado
-            st.markdown("**Añadir subrayado**")
             hl_text = st.text_area(
-                "Fragmento exacto",
+                "Fragmento exacto a subrayar",
                 key=f"new_hl_text_{article_id}", height=60,
-                placeholder="Pega aquí el fragmento exacto del artículo",
+                placeholder="Copia aquí el texto exacto del artículo",
             )
             hl_color = render_color_selector(f"hl_{article_id}")
             hl_note = st.text_input("Nota sobre el subrayado (opcional)", key=f"new_hl_note_{article_id}")
@@ -956,11 +966,10 @@ def render_study_panel_compact(
                     st.success("Subrayado guardado.")
                     st.rerun()
 
-            st.divider()
-
-            # Notas existentes
+    elif active_panel == "notes":
+        with st.container(border=True):
+            st.markdown("##### 📝 Notas")
             if notes:
-                st.markdown("**Notas guardadas**")
                 for n in notes:
                     col_n, col_nd = st.columns([6, 1])
                     with col_n:
@@ -972,11 +981,8 @@ def render_study_panel_compact(
                             study_mutate(lambda s, nid=int(n["id"]): s.delete_article_note(nid))
                             st.rerun()
                 st.divider()
-
-            # Nueva nota
-            st.markdown("**Añadir nota**")
             note_text = st.text_area(
-                "Tu nota", key=f"new_note_text_{article_id}", height=70,
+                "Tu nota", key=f"new_note_text_{article_id}", height=80,
                 placeholder="Apunte personal, conexión con otro artículo...",
             )
             if st.button("Guardar nota", key=f"save_note_{article_id}"):
@@ -989,13 +995,11 @@ def render_study_panel_compact(
                     st.success("Nota guardada.")
                     st.rerun()
 
-    # ── Panel: Insights IA ────────────────────────────────────────────────────
-    if st.session_state.get(ai_key, False):
+    elif active_panel == "ai":
         with st.container(border=True):
             render_ai_insights(article_id, article_title, article_text, show_toggle_button=False)
 
-    # ── Panel: Artículos relacionados ─────────────────────────────────────────
-    if st.session_state.get(rel_key, False):
+    elif active_panel == "related":
         with st.container(border=True):
             render_related_articles(article_id, article_title, show_toggle_button=False)
 
@@ -1026,29 +1030,19 @@ def render_article_card(article, topic_id: int) -> None:
     article_title = article.get('title') or f"Art. {article_ref}"
 
     with st.container(border=True):
-        # ── Cabecera compacta: Art N | ▶ | Título ─────────────────────────────
-        col_ref, col_play, col_title, col_menu = st.columns([0.8, 0.4, 5, 0.4])
+        # ── Cabecera: Art N | Título | 🔊 ─────────────────────────────────────
+        col_ref, col_title, col_tts = st.columns([0.9, 6, 0.7])
         with col_ref:
             st.markdown(f"**Art. {article_ref}**")
-        with col_play:
+        with col_title:
+            st.markdown(f"**{article_title}**")
+        with col_tts:
             tts_button(
                 items=[{"text": display_text, "label": f"Art. {article_ref}"}],
-                label="▶",
+                label="🔊",
                 key=f"tts_art_{topic_id}_{article_id}",
                 help_text="Reproducir artículo",
             )
-        with col_title:
-            st.markdown(f"**{article_title}**")
-        with col_menu:
-            # Menú contextual (kebab)
-            with st.popover("⋮", use_container_width=False):
-                st.caption("**Acciones**")
-                if st.button("📝 Añadir nota", key=f"menu_note_{article_id}"):
-                    st.session_state[f"toggle_highlights_{article_id}"] = True
-                if st.button("🧠 Insight IA", key=f"menu_ai_{article_id}"):
-                    st.session_state[f"ai_insights_{article_id}"] = True
-                if st.button("🔗 Art. relacionados", key=f"menu_rel_{article_id}"):
-                    st.session_state[f"related_articles_{article_id}"] = True
 
         # ── Capítulo / sección en color acento ─────────────────────────────────
         location = _article_location(article)
