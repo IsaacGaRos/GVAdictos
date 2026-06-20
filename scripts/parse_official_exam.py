@@ -12,7 +12,8 @@ import re
 import pdfplumber
 
 OPT_RE = re.compile(r"^([A-D])\)\s+(.*)")
-Q_RE = re.compile(r"^(\d{1,3})\.\s+(.*)")
+# Acepta "1. ", "1.-Texto", "3.- Texto" (formatos 2023-2025)
+Q_RE = re.compile(r"^(\d{1,3})\s*\.\s*-?\s*(.+)")
 FOOTER_RE = re.compile(r"^\d+\s*/\s*\d+$")
 PAIR_RE = re.compile(r"(\d{1,3})\s+([A-D])\b")
 

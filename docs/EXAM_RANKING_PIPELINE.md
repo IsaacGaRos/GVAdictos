@@ -24,11 +24,27 @@ respuestas** en un solo PDF (o dos, una por parte del 1er ejercicio).
    `sede.gva.es/es/detall-ocupacio-publica?id_emp=XXXX&id_etapa=N`
 3. El PDF está en `sede.gva.es/descarregues/AAAA/MM/NNNNNN-Plantilla_de_respuestas_y_cuestionarios*.pdf`
 
-`id_emp` conocidos: A1-01 1/25 = 103841 (etapa 9), C1-01 64/25 = 104155 (etapa 9),
-A1-01 1/24 = 98131, A2-01 34/25 = 104139, C1-01 12/23 = 93056.
+**Método del `id_etapa`** (verificado): `id_etapa` = posición cronológica de la
+etapa contando "Bases y apertura de plazo" = 1. Enumerar el "Listado de etapas" en
+orden cronológico, localizar "Plantilla de respuestas del 1.er ejercicio" y usar su
+número de posición como `id_etapa`. Al abrir esa etapa, las URLs de los PDF aparecen
+como `sede.gva.es/descarregues/...`.
 
-> Nota: el `id_etapa` no es estable entre convocatorias; conviene enumerar el
-> "Listado de etapas" y localizar la de plantilla.
+`id_emp` / `id_etapa` (plantilla) verificados para A1-01:
+
+| Convocatoria | id_emp  | id_etapa | PDFs |
+|--------------|---------|----------|------|
+| 1/25 (TL)    | 103841  | 9        | 1ª parte + 2ª parte |
+| 2/25 (PI)    | 103842  | 9        | 1 PDF (40 preg.) |
+| 1/24 (TL)    | 98131   | 14       | MAÑANA (1ª, 160) + TARDE (2ª, 40) |
+| 1/23 (TL)    | 92921   | 10       | 1 PDF (1ª y 2ª parte) |
+| 120/21 (TL)  | 86906   | 12       | 1 PDF (120 preg.) |
+
+Otros: C1-01 64/25 = 104155 (etapa 9), A2-01 34/25 = 104139, C1-01 12/23 = 93056.
+
+> El parser acepta los formatos de enunciado `1. `, `1.-` y `3.- ` (2021-2025).
+> Algunos PDF antiguos (p.ej. `plantilla_3-4_22.pdf`) son SOLO plantilla de
+> respuestas sin cuestionario: no permiten extraer preguntas.
 
 ## Pipeline (scripts canónicos)
 
@@ -64,11 +80,13 @@ revisión humana. El ranking distingue **✓ explícito** de **≈ inferido**.
 
 ## Estado actual
 
-- Exámenes oficiales procesados: **2** (A1-01 1/25 — 2 partes; C1-01 64/25).
-- Preguntas: **310** (220 con ley identificada, 64 con artículo explícito).
-- Artículos en ranking: **195** (66 con ≥1 cita explícita).
-- Top leyes (ambos cuerpos): Constitución 28, Ley 1/2015 25, Ley 39/2015 25,
-  LCSP 20, Ley 4/2021 18, Ley 5/1983 12, Ley 40/2015 12.
+- Exámenes oficiales procesados: **6** en 2 cuerpos.
+  - A1-01: 1/25 (2 partes), 2/25 (PI), 1/24 (2 partes), 1/23, 120/21.
+  - C1-01: 64/25.
+- Preguntas: **803** (603 con ley identificada, 188 con artículo explícito).
+- Artículos en ranking: **452** (169 con ≥1 cita explícita).
+- Top leyes A1-01: Constitución 58, Ley 39/2015 57, Ley 1/2015 42, LCSP 40,
+  Ley 4/2021 36, Ley 40/2015 32, Ley 5/1983 29, Estatuto CV 27, TFUE 23.
 
 ## UI (pestaña Estudiar → "🔥 Lo más preguntado en exámenes oficiales GVA")
 
@@ -80,8 +98,10 @@ revisión humana. El ranking distingue **✓ explícito** de **≈ inferido**.
 
 ## Pendiente (enriquecimiento futuro)
 
-- Más convocatorias: A1-01 1/24, A2-01 34/25, C1-01 27/24, C2-01… (descargar
-  plantilla oficial vía el método de arriba y añadir a `OFFICIAL[]`).
-- 2ª parte (teórico-práctica) de C1: pendiente de localizar su plantilla.
+- A1-01 anteriores a 2021 (63/18, 64/18, 31/16, 32/16, 22/15): las plantillas
+  online suelen ser PDF escaneados (imagen) → requieren OCR para extraer preguntas.
+- Otros cuerpos: A2-01 34/25 (plantilla en etapa no resuelta), C1-01 27/24/65/25,
+  C2-01 (descargar vía el método de arriba y añadir a `OFFICIAL[]`).
+- 1/23: se extraen 133/160 preguntas (gap por saltos de numeración en el PDF).
 - Revisión humana de los artículos inferidos (≈) y de las leyes sectoriales no
   importadas (Ley 13/2010, 15/2018, Decreto Legislativo 1/2021, …).
