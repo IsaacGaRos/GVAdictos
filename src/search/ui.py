@@ -24,7 +24,18 @@ def render_related_articles(article_id: int, article_title: str) -> None:
     if not service:
         return
 
-    with st.expander("Artículos relacionados (Ola D5)", expanded=False):
+    toggle_key = f"related_articles_{article_id}"
+    col1, col2 = st.columns([0.08, 0.92])
+    with col1:
+        if st.button("🔗", key=toggle_key, use_container_width=True):
+            st.session_state[toggle_key] = not st.session_state.get(toggle_key, False)
+    with col2:
+        st.caption("Artículos relacionados (Ola D5)")
+
+    if not st.session_state.get(toggle_key, False):
+        return
+
+    if True:
         st.markdown("**Mapa de relaciones**")
 
         # Tabs for different relation types

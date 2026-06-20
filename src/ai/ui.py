@@ -40,15 +40,26 @@ def get_ai_service() -> AIService | None:
 def render_ai_insights(article_id: int, article_title: str, article_text: str) -> None:
     """Render AI insights expander for an article in the study interface."""
     service = get_ai_service()
-    if not service:
-        with st.expander("Insights IA (no configurado)", expanded=False):
-            st.info(
-                "Para usar insights de IA, configura ANTHROPIC_API_KEY. "
-                "[Ver instrucciones](https://console.anthropic.com/account/keys)"
-            )
+
+    toggle_key = f"ai_insights_{article_id}"
+    col1, col2 = st.columns([0.08, 0.92])
+    with col1:
+        if st.button("🧠", key=toggle_key, use_container_width=True):
+            st.session_state[toggle_key] = not st.session_state.get(toggle_key, False)
+    with col2:
+        st.caption("Insights IA (Ola D2)" if service else "Insights IA (no configurado)")
+
+    if not st.session_state.get(toggle_key, False):
         return
 
-    with st.expander("Insights IA (Ola D2)", expanded=False):
+    if not service:
+        st.info(
+            "Para usar insights de IA, configura ANTHROPIC_API_KEY. "
+            "[Ver instrucciones](https://console.anthropic.com/account/keys)"
+        )
+        return
+
+    if True:
         # Show existing insights
         existing = service.get_all_insights(article_id)
         if existing:
@@ -138,7 +149,18 @@ def render_ai_question_generator(article_id: int, article_title: str, article_te
     if not service:
         return
 
-    with st.expander("Generar pregunta IA (Ola D3)", expanded=False):
+    toggle_key = f"ai_question_{article_id}"
+    col1, col2 = st.columns([0.08, 0.92])
+    with col1:
+        if st.button("❓", key=toggle_key, use_container_width=True):
+            st.session_state[toggle_key] = not st.session_state.get(toggle_key, False)
+    with col2:
+        st.caption("Generar pregunta IA (Ola D3)")
+
+    if not st.session_state.get(toggle_key, False):
+        return
+
+    if True:
         st.markdown("**Generar pregunta tipo test**")
 
         col1, col2 = st.columns(2)

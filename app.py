@@ -158,6 +158,22 @@ def study_mutate(action):
         conn.close()
 
 
+def icon_toggle(icon: str, label: str, key: str, help_text: str = "") -> bool:
+    """Render an icon button that toggles section visibility.
+
+    Returns True if the section should be visible.
+    """
+    col1, col2 = st.columns([0.08, 0.92])
+    with col1:
+        if st.button(icon, key=key, help=help_text, use_container_width=True):
+            st.session_state[key] = not st.session_state.get(key, False)
+
+    with col2:
+        st.caption(label)
+
+    return st.session_state.get(key, False)
+
+
 HIGHLIGHT_COLOR_LABELS = {
     "yellow": "🟡 Amarillo",
     "green": "🟢 Verde",
@@ -484,9 +500,10 @@ def render_study_panel(article_id: int) -> None:
             st.rerun()
 
     # ── Subrayado y notas ──
-    with st.expander(
+    if icon_toggle(
+        "📝",
         f"Subrayado y notas ({len(highlights)} subrayados · {len(notes)} notas)",
-        expanded=False,
+        key=f"toggle_highlights_{article_id}",
     ):
         # Subrayados existentes
         if highlights:
