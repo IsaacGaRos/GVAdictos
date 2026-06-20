@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import html as html_module
 import re
 
 
@@ -28,7 +29,10 @@ def render_text_with_highlights(
     Returns:
         HTML string with highlights applied
     """
-    if not text or not highlights:
+    if not text:
+        return text
+
+    if not highlights:
         return text
 
     # Sort highlights by position in text (longest first to handle overlaps)
@@ -38,24 +42,27 @@ def render_text_with_highlights(
         reverse=True
     )
 
-    html_text = text
+    result = text
 
     for hl in sorted_highlights:
         fragment = hl.get("selected_text", "").strip()
-        if not fragment:
+        if not fragment or len(fragment) < 2:
             continue
 
         color_key = hl.get("color", "yellow")
         bg_color = HIGHLIGHT_COLORS_CSS.get(color_key, "#FFEB3B")
 
-        # Find and replace the fragment (case-insensitive, flexible whitespace)
-        pattern = re.escape(fragment)
-        # Replace any whitespace sequence with flexible matcher
-        pattern = re.sub(r'\\s+', r'\\s+', pattern)
+        # Simple string replacement: look for exact fragment
+        # First try exact case, then case-insensitive
+        safe_fragment = html_module.escape(fragment)
+        replacement = f'<mark style="background-color: {bg_color}; padding: 2px 4px; border-radius: 2px;">{safe_fragment}</mark>'
 
-        replacement = f'<mark style="background-color: {bg_color}; padding: 2px 0;">{fragment}</mark>'
+        if fragment in result:
+            # Exact match exists
+            result = result.replace(fragment, replacement, 1)
+        else:
+            # Try case-insensitive with regex
+            pattern = re.escape(fragment)
+            result = re.sub(pattern, replacement, result, count=1, flags=re.IGNORECASE)
 
-        # Try exact match first, then case-insensitive
-        html_text = re.sub(pattern, replacement, html_text, count=1, flags=re.IGNORECASE)
-
-    return html_text
+    return result
