@@ -29,6 +29,8 @@ OFFICIAL = [
      r"A1-01\2025\1-25_primera_parte_cuestionario_plantilla.pdf", 160),
     ("A1-01", "1/25", 2025, "1er ejercicio - 2a parte (teorico-practico)",
      r"A1-01\2025\1-25_segunda_parte_cuestionario_plantilla.pdf", 40),
+    ("C1-01", "64/25", 2025, "1er ejercicio (test teorico)",
+     r"C1-01\2025\64-25_TL_cuestionario_plantilla.pdf", 110),
 ]
 
 
