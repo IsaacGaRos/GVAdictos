@@ -85,55 +85,53 @@ def render_tts_button(
             st.components.v1.html(js_code, height=60, scrolling=False)
 
 
-def render_tts_law_player(law_name: str, law_articles: list) -> None:
-    """Render TTS player for an entire law (all its articles).
+def render_tts_law_player(law_name: str, law_articles: list, key_prefix: str = "law") -> None:
+    """Render TTS player for an entire law - reads law name then articles sequentially.
 
     Args:
         law_name: e.g., "Constitución Española 1978"
         law_articles: list of dicts with 'article_ref', 'article_title', 'text'
+        key_prefix: unique prefix for session keys
     """
     if not law_articles:
         return
 
-    combined_text = " ".join([
-        f"Artículo {a.get('article_ref', '')}. {a.get('text', '')}"
-        for a in law_articles
-    ])
+    toggle_key = f"{key_prefix}_tts_toggle_{hash(law_name) % 1000000}"
+    col1, col2 = st.columns([0.08, 0.92])
+    with col1:
+        if st.button("🔊", key=toggle_key, use_container_width=True):
+            st.session_state[toggle_key] = not st.session_state.get(toggle_key, False)
+    with col2:
+        st.caption(f"Escuchar: {law_name}")
 
-    with st.expander(f"🔊 Escuchar ley: {law_name}", expanded=False):
-        st.caption(f"Lee todos los artículos de {law_name} (sin coste)")
+    if not st.session_state.get(toggle_key, False):
+        return
 
-        col1, col2 = st.columns([2, 1])
-        with col1:
-            speed = st.slider(
-                "Velocidad",
-                min_value=0.5,
-                max_value=2.0,
-                value=1.0,
-                step=0.1,
-                key=f"law_tts_speed_{law_name}",
-            )
-        with col2:
-            st.write("")
+    speed_key = f"{key_prefix}_tts_speed_{hash(law_name) % 1000000}"
+    speed = st.slider("Velocidad", 0.5, 2.0, 1.0, 0.1, key=speed_key)
 
-        col_play, col_pause, col_stop = st.columns(3)
-        with col_play:
-            play_btn = st.button("▶ Play", key=f"law_tts_play_{law_name}", use_container_width=True)
-        with col_pause:
-            pause_btn = st.button("⏸ Pause", key=f"law_tts_pause_{law_name}", use_container_width=True)
-        with col_stop:
-            stop_btn = st.button("⏹ Stop", key=f"law_tts_stop_{law_name}", use_container_width=True)
+    col_play, col_pause, col_stop = st.columns(3)
+    play_btn = col_play.button("▶ Play", key=f"{key_prefix}_tts_play", use_container_width=True)
+    pause_btn = col_pause.button("⏸ Pause", key=f"{key_prefix}_tts_pause", use_container_width=True)
+    stop_btn = col_stop.button("⏹ Stop", key=f"{key_prefix}_tts_stop", use_container_width=True)
 
-        if play_btn or pause_btn or stop_btn:
-            js_code = _generate_web_speech_js(
-                text=combined_text,
-                voice=None,
-                speed=speed,
-                article_title=law_name,
-                loop=False,
-                autostart=play_btn,
-            )
-            st.components.v1.html(js_code, height=60, scrolling=False)
+    if play_btn or pause_btn or stop_btn:
+        # Build items: law name + articles
+        items = [{"text": law_name, "label": f"Ley: {law_name}"}]
+        for article in law_articles:
+            art_ref = article.get("article_ref", "?")
+            art_text = article.get("text", "")
+            items.append({
+                "text": art_text,
+                "label": f"Art. {art_ref}"
+            })
+
+        js_code = _generate_sequential_speech_js(
+            items=items,
+            speed=speed,
+            autostart=play_btn,
+        )
+        st.components.v1.html(js_code, height=100, scrolling=False)
 
 
 def render_tts_player(article_id: int, article_title: str, article_text: str) -> None:
@@ -296,6 +294,115 @@ def _generate_web_speech_js(
         shouldStop = true;
         synth.cancel();
         document.getElementById('status').textContent = 'Detenido';
+    }}
+
+    // Auto-start if requested
+    {autostart_js}
+    </script>
+    """
+    return html
+
+
+def _generate_sequential_speech_js(
+    items: list[dict],
+    speed: float = 1.0,
+    autostart: bool = False,
+) -> str:
+    """Generate JS for sequential speech of multiple items (topic, laws, articles).
+
+    Args:
+        items: list of {"text": str, "label": str} dicts
+        speed: playback speed (0.5-2.0)
+        autostart: if True, begin playback immediately
+    """
+    # Build a JSON array of items for JavaScript
+    items_json = "["
+    for item in items:
+        safe_text = item["text"].replace("\\", "\\\\").replace('"', '\\"').replace("\n", " ")
+        safe_label = item.get("label", "").replace('"', '\\"')
+        items_json += f'{{"text":"{safe_text}","label":"{safe_label}"}},'
+    items_json += "]"
+
+    autostart_js = (
+        "if (synth.getVoices().length > 0) { startSpeech(); }"
+        " else { synth.onvoiceschanged = () => { startSpeech(); }; }"
+        if autostart else ""
+    )
+
+    html = f"""
+    <div id="tts-player" style="padding: 8px; font-size: 12px;">
+        <p id="status" style="color: #666; margin: 3px 0; font-size: 11px;">Listo</p>
+        <p id="progress" style="color: #999; margin: 2px 0; font-size: 10px;"></p>
+    </div>
+
+    <script>
+    const synth = window.speechSynthesis;
+    const items = {items_json};
+    let currentIndex = 0;
+    let shouldStop = false;
+
+    function playNextItem() {{
+        if (shouldStop || currentIndex >= items.length) {{
+            if (currentIndex >= items.length) {{
+                document.getElementById('status').textContent = 'Finalizado';
+                document.getElementById('progress').textContent = '';
+            }}
+            return;
+        }}
+
+        const item = items[currentIndex];
+        const utterance = new SpeechSynthesisUtterance(item.text);
+        utterance.rate = {speed};
+        utterance.lang = "es-ES";
+
+        const voices = synth.getVoices();
+        if (voices.length > 0) {{
+            utterance.voice = voices[0];
+        }}
+
+        const itemNumber = currentIndex + 1;
+        utterance.onstart = () => {{
+            document.getElementById('status').textContent = 'Reproduciendo...';
+            document.getElementById('progress').textContent = item.label + ` (${{itemNumber}}/${{items.length}})`;
+        }};
+
+        utterance.onend = () => {{
+            if (!shouldStop) {{
+                currentIndex++;
+                setTimeout(() => {{ playNextItem(); }}, 300);
+            }}
+        }};
+
+        utterance.onerror = (event) => {{
+            document.getElementById('status').textContent = 'Error: ' + event.error;
+        }};
+
+        synth.speak(utterance);
+    }}
+
+    function startSpeech() {{
+        if (synth.paused) {{
+            synth.resume();
+            return;
+        }}
+        shouldStop = false;
+        currentIndex = 0;
+        synth.cancel();
+        playNextItem();
+    }}
+
+    function pauseSpeech() {{
+        if (synth.speaking && !synth.paused) {{
+            synth.pause();
+            document.getElementById('status').textContent = 'Pausado';
+        }}
+    }}
+
+    function stopSpeech() {{
+        shouldStop = true;
+        synth.cancel();
+        document.getElementById('status').textContent = 'Detenido';
+        currentIndex = 0;
     }}
 
     // Auto-start if requested
