@@ -604,40 +604,144 @@ def get_article_exam_freq(article_id: int) -> dict | None:
     return None
 
 
-def get_top_exam_articles(limit: int = 30) -> list[dict]:
-    """Top artículos por frecuencia de examen."""
+def get_exam_cuerpos() -> list[str]:
+    """Lista de cuerpos (oposiciones) con exámenes oficiales cargados."""
     try:
         with connect() as conn:
             rows = conn.execute(
+                "SELECT DISTINCT bloque FROM exam_papers "
+                "WHERE fuente_tipo='oficial_gva' AND bloque IS NOT NULL "
+                "ORDER BY bloque"
+            ).fetchall()
+            return [r["bloque"] for r in rows]
+    except Exception:
+        return []
+
+
+def get_top_exam_articles(limit: int = 40, cuerpo: str | None = None) -> list[dict]:
+    """Top artículos por frecuencia en exámenes OFICIALES.
+
+    Diferencia conteo explícito (la pregunta cita el artículo) de inferido
+    (deducido del texto de la respuesta correcta, requiere revisión).
+    Permite cribar por cuerpo/oposición.
+    """
+    import json as _json
+    try:
+        with connect() as conn:
+            if cuerpo and cuerpo != "Todos":
+                # Recalcular por cuerpo desde los links (article_exam_frequency es global)
+                rows = conn.execute(
+                    """
+                    SELECT eql.article_id,
+                           a.article_ref, a.title, a.law_id, l.name AS law_full,
+                           SUM(CASE WHEN eql.tipo_relacion='articulo_explicito' THEN 1 ELSE 0 END) AS explicit_count,
+                           SUM(CASE WHEN eql.tipo_relacion='articulo_inferido'  THEN 1 ELSE 0 END) AS inferred_count,
+                           COUNT(DISTINCT eql.exam_question_id) AS total_count
+                    FROM exam_question_links eql
+                    JOIN exam_questions eq ON eq.id = eql.exam_question_id
+                    JOIN exam_papers ep ON ep.id = eq.exam_paper_id
+                    JOIN articles a ON a.id = eql.article_id
+                    JOIN laws l ON l.id = a.law_id
+                    WHERE eql.article_id IS NOT NULL
+                      AND ep.fuente_tipo='oficial_gva' AND ep.bloque = ?
+                    GROUP BY eql.article_id
+                    ORDER BY explicit_count DESC, total_count DESC
+                    LIMIT ?
+                    """,
+                    (cuerpo, limit),
+                ).fetchall()
+                return [
+                    {
+                        "article_id": r["article_id"], "article_ref": r["article_ref"],
+                        "title": r["title"], "law_id": r["law_id"], "law_full": r["law_full"],
+                        "law_name": r["law_full"], "explicit_count": r["explicit_count"],
+                        "inferred_count": r["inferred_count"], "total_count": r["total_count"],
+                        "sources": [cuerpo],
+                    }
+                    for r in rows
+                ]
+            rows = conn.execute(
                 """
-                SELECT aef.article_ref, aef.total_count, aef.exam_sources,
+                SELECT aef.article_id, aef.article_ref, aef.total_count, aef.exam_sources,
+                       COALESCE(aef.explicit_count, 0) AS explicit_count,
+                       COALESCE(aef.inferred_count, 0) AS inferred_count,
                        aef.law_name, l.name AS law_full, a.title
                 FROM article_exam_frequency aef
                 LEFT JOIN articles a ON a.id = aef.article_id
                 LEFT JOIN laws l ON l.id = aef.law_id
                 WHERE aef.article_id IS NOT NULL
-                ORDER BY aef.total_count DESC
+                ORDER BY aef.explicit_count DESC, aef.total_count DESC
                 LIMIT ?
                 """,
                 (limit,),
             ).fetchall()
-            import json as _json
             result = []
             for r in rows:
                 row_dict = dict(r)
-                # Intentar parsear exam_sources como JSON, si falla usar como lista simple
-                sources_str = r["exam_sources"] or "[]"
                 try:
-                    sources = _json.loads(sources_str)
+                    sources = _json.loads(r["exam_sources"] or "[]")
                     if isinstance(sources, str):
                         sources = [sources]
-                except:
-                    sources = [sources_str] if sources_str else []
+                except Exception:
+                    sources = []
                 row_dict["sources"] = sources
                 result.append(row_dict)
             return result
-    except Exception as e:
+    except Exception:
         return []
+
+
+def get_top_exam_laws(limit: int = 25, cuerpo: str | None = None) -> list[dict]:
+    """Top LEYES por nº de preguntas en exámenes oficiales (cobertura alta y fiable)."""
+    try:
+        with connect() as conn:
+            q = """
+                SELECT l.id AS law_id, l.name AS law_full,
+                       COUNT(DISTINCT eql.exam_question_id) AS n_preguntas
+                FROM exam_question_links eql
+                JOIN exam_questions eq ON eq.id = eql.exam_question_id
+                JOIN exam_papers ep ON ep.id = eq.exam_paper_id
+                JOIN laws l ON l.id = eql.law_id
+                WHERE ep.fuente_tipo='oficial_gva'
+            """
+            params: list = []
+            if cuerpo and cuerpo != "Todos":
+                q += " AND ep.bloque = ?"
+                params.append(cuerpo)
+            q += " GROUP BY l.id ORDER BY n_preguntas DESC LIMIT ?"
+            params.append(limit)
+            rows = conn.execute(q, params).fetchall()
+            return [dict(r) for r in rows]
+    except Exception:
+        return []
+
+
+def get_article_study_payload(article_id: int) -> dict | None:
+    """Texto del artículo + preguntas oficiales que lo referencian (para estudiar)."""
+    try:
+        with connect() as conn:
+            a = conn.execute(
+                "SELECT a.id, a.article_ref, a.title, a.text, l.name AS law_full, l.id AS law_id "
+                "FROM articles a JOIN laws l ON l.id=a.law_id WHERE a.id=?",
+                (article_id,),
+            ).fetchone()
+            if not a:
+                return None
+            qs = conn.execute(
+                """
+                SELECT eq.enunciado, eq.respuesta_oficial, eql.tipo_relacion, eql.confianza,
+                       ep.bloque, ep.convocatoria, ep.parte
+                FROM exam_question_links eql
+                JOIN exam_questions eq ON eq.id = eql.exam_question_id
+                JOIN exam_papers ep ON ep.id = eq.exam_paper_id
+                WHERE eql.article_id = ? AND ep.fuente_tipo='oficial_gva'
+                ORDER BY eql.tipo_relacion
+                """,
+                (article_id,),
+            ).fetchall()
+            return {"article": dict(a), "questions": [dict(r) for r in qs]}
+    except Exception:
+        return None
 
 
 def load_topic_cef_resource(topic_id: int) -> dict | None:
@@ -1993,38 +2097,129 @@ body{margin:0;background:transparent;font-family:system-ui,sans-serif}
                         st.rerun()
     st.divider()
 
-    # ── Ranking artículos más preguntados ────────────────────────────────────
-    with st.expander("🔥 Artículos más preguntados en exámenes oficiales", expanded=False):
-        _top_arts = get_top_exam_articles(limit=30)
-        if not _top_arts:
-            st.info("Sin datos de exámenes. Ejecuta: `python scripts/analyze_exam_frequency.py`")
-        else:
-            import json as _json_ui
-            _rows_ui = []
-            for _r in _top_arts:
-                _law = _r.get("law_full") or _r.get("law_name") or "—"
-                _srcs = _r.get("sources") or []
-                _src_str = ", ".join(
-                    s.replace("SIMULACRO ", "Sim.").replace(" con respuestas", "")
-                    for s in _srcs[:2]
-                )
-                _rows_ui.append({
-                    "Art.": _r["article_ref"],
-                    "Ley": _law[:45],
-                    "Título": (_r.get("title") or "")[:50],
-                    "Veces": _r["total_count"],
-                    "Fuentes": _src_str[:60],
-                })
-            import pandas as _pd
-            st.dataframe(
-                _pd.DataFrame(_rows_ui),
-                use_container_width=True,
-                hide_index=True,
-                column_config={
-                    "Veces": st.column_config.NumberColumn("🔥 Veces", width="small"),
-                    "Art.": st.column_config.TextColumn("Art.", width="small"),
-                },
+    # ── Ranking de exámenes oficiales (leyes y artículos más preguntados) ────
+    with st.expander("🔥 Lo más preguntado en exámenes oficiales GVA", expanded=False):
+        import pandas as _pd
+        _cuerpos = get_exam_cuerpos()
+        if not _cuerpos:
+            st.info(
+                "Sin exámenes oficiales cargados. Ejecuta:\n"
+                "`python scripts/rebuild_official_exams.py` y "
+                "`python scripts/infer_and_link.py`"
             )
+        else:
+            st.caption(
+                "Fuente: cuestionarios + plantillas oficiales de la GVA "
+                "(NO simulacros de academia). El conteo **explícito** = la pregunta "
+                "cita el artículo; **≈ inferido** = deducido del texto de la respuesta "
+                "correcta (requiere revisión)."
+            )
+            _cf1, _cf2 = st.columns([2, 3])
+            with _cf1:
+                _cuerpo_sel = st.selectbox(
+                    "Oposición / cuerpo",
+                    ["Todos"] + _cuerpos,
+                    key="exam_rank_cuerpo",
+                )
+            _crit = None if _cuerpo_sel == "Todos" else _cuerpo_sel
+
+            _tab_art, _tab_ley = st.tabs(["📑 Artículos", "⚖️ Leyes"])
+
+            # ── Artículos más preguntados ──
+            with _tab_art:
+                _top_arts = get_top_exam_articles(limit=40, cuerpo=_crit)
+                if not _top_arts:
+                    st.info("Sin artículos vinculados para este filtro.")
+                else:
+                    _rows_ui = []
+                    for _r in _top_arts:
+                        _expl = _r.get("explicit_count") or 0
+                        _infe = _r.get("inferred_count") or 0
+                        _marca = "✓" if _expl else "≈"
+                        _rows_ui.append({
+                            "": _marca,
+                            "Art.": _r["article_ref"],
+                            "Ley": (_r.get("law_full") or _r.get("law_name") or "—")[:42],
+                            "Título": (_r.get("title") or "")[:46],
+                            "Explíc.": _expl,
+                            "≈Infer.": _infe,
+                            "Total": _r["total_count"],
+                        })
+                    st.dataframe(
+                        _pd.DataFrame(_rows_ui),
+                        use_container_width=True, hide_index=True,
+                        column_config={
+                            "": st.column_config.TextColumn("", width="small", help="✓ explícito · ≈ inferido"),
+                            "Total": st.column_config.NumberColumn("🔥 Total", width="small"),
+                            "Explíc.": st.column_config.NumberColumn("✓", width="small"),
+                            "≈Infer.": st.column_config.NumberColumn("≈", width="small"),
+                            "Art.": st.column_config.TextColumn("Art.", width="small"),
+                        },
+                    )
+                    st.markdown("**📖 Estudiar un artículo del ranking**")
+                    _opts = {
+                        "Art. %s — %s" % (
+                            _r["article_ref"],
+                            (_r.get("law_full") or _r.get("law_name") or "")[:40],
+                        ): _r.get("article_id")
+                        for _r in _top_arts if _r.get("article_id")
+                    }
+                    _sel = st.selectbox(
+                        "Selecciona", ["—"] + list(_opts.keys()),
+                        key="exam_rank_art_study",
+                    )
+                    if _sel != "—":
+                        _payload = get_article_study_payload(_opts[_sel])
+                        if _payload:
+                            _a = _payload["article"]
+                            st.markdown(
+                                "#### %s — Art. %s%s" % (
+                                    _a["law_full"], _a["article_ref"],
+                                    (" · " + _a["title"]) if _a.get("title") else "",
+                                )
+                            )
+                            st.text_area(
+                                "Texto del artículo",
+                                value=clean_article_text(_a["text"] or ""),
+                                height=240, disabled=True,
+                                key="exam_rank_art_text",
+                            )
+                            _expl_qs = [q for q in _payload["questions"]
+                                        if q["tipo_relacion"] == "articulo_explicito"]
+                            _infe_qs = [q for q in _payload["questions"]
+                                        if q["tipo_relacion"] == "articulo_inferido"]
+                            st.caption(
+                                "Aparece en %d pregunta(s) oficial(es): "
+                                "%d explícita(s), %d inferida(s)." % (
+                                    len(_payload["questions"]), len(_expl_qs), len(_infe_qs))
+                            )
+                            for _q in _payload["questions"]:
+                                _badge = "✓ explícita" if _q["tipo_relacion"] == "articulo_explicito" else "≈ inferida (revisar)"
+                                with st.expander(
+                                    "[%s %s] %s — %s" % (
+                                        _q["bloque"], _q["convocatoria"], _badge,
+                                        _q["enunciado"][:80]),
+                                    expanded=False,
+                                ):
+                                    st.write(_q["enunciado"])
+                                    st.caption("Respuesta oficial: **%s**" % (_q["respuesta_oficial"] or "—"))
+
+            # ── Leyes más preguntadas ──
+            with _tab_ley:
+                _top_laws = get_top_exam_laws(limit=25, cuerpo=_crit)
+                if not _top_laws:
+                    st.info("Sin datos para este filtro.")
+                else:
+                    st.dataframe(
+                        _pd.DataFrame([
+                            {"Ley": _l["law_full"][:60], "Preguntas": _l["n_preguntas"]}
+                            for _l in _top_laws
+                        ]),
+                        use_container_width=True, hide_index=True,
+                        column_config={
+                            "Preguntas": st.column_config.NumberColumn("🔥 Preguntas", width="small"),
+                        },
+                    )
     st.divider()
 
     part_label = st.radio(
