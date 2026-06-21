@@ -14,6 +14,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 STEPS = [
     ("Exámenes en texto", "rebuild_official_exams.py"),
     ("Exámenes OCR (escaneados)", "ocr_exam_loader.py"),
+    ("Multi-artículo (preguntas con >1 artículo explícito)", "enrich_multiarticle.py"),
     ("Inferencia de artículo por ley", "infer_and_link.py"),
     ("Barrida global (toda pregunta >=1 artículo)", "infer_global_fallback.py"),
 ]
