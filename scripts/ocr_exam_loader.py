@@ -29,6 +29,9 @@ OCR_EXAMS = [
     ("A1-01", "64/18", 2018, "1er ejercicio PI vertical (test, OCR)",
      r"A1-01\2018\64-18V_plantilla.txt", None,
      r"A1-01\2018\64-18V_ocr.txt", 72),
+    ("A1-01", "64/18", 2018, "1er ejercicio PI horizontal-mixta (test, OCR)",
+     r"A1-01\2018\64-18H_plantilla.txt", None,
+     r"A1-01\2018\64-18H_ocr.txt", 72),
 ]
 
 PLANT_PAREN = re.compile(r"(\d{1,3})\)\s*(ANULADA|[A-D])")

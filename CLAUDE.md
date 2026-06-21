@@ -53,7 +53,19 @@ El objetivo practico es:
 
 ## Foco actual de producto
 
-Prioridad inmediata: consolidar la seccion `Estudio` ya creada por Claude y avanzar al siguiente corte minimo sin auditoria juridica global ahora.
+> **AL EMPEZAR UN CHAT NUEVO, LEE PRIMERO `NEXT_CHAT_START_HERE.md`** (raiz del repo) y
+> `CURRENT_BASELINE.md`, `RULES_DO_NOT_BREAK.md`, `MEMORY_COMPACT_DUMP.md`. Son la fuente
+> de verdad del estado y del roadmap priorizado.
+
+**Prioridad desde 2026-06-22: GVAdictos como plataforma DIARIA de estudio**, alineada con la
+planificacion mensual de Academia Autentica (la enviara el usuario). No iniciar funcionalidades
+grandes nuevas mientras lo necesario para el ritmo diario no este cerrado.
+
+Hecho reciente: ranking de "lo mas preguntado" REHECHO solo con examenes oficiales GVA
+(13 papers, 9 convocatorias A1-01 + C1-01, 1185 preguntas, 0 sin articulo). Pestaña
+"🔥 Mas preguntado". Ver `docs/EXAM_RANKING_PIPELINE.md`.
+
+Prioridad historica (ya consolidada): seccion `Estudio` creada por Claude.
 
 Estado de `Estudio`:
 

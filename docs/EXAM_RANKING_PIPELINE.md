@@ -97,13 +97,13 @@ confianza recortada (≤0.7), por la menor fidelidad de la extracción.
 
 ## Estado actual
 
-- Exámenes oficiales procesados: **10** en 2 cuerpos.
+- Exámenes oficiales procesados: **13 papers** (9 convocatorias A1-01 + C1-01).
   - A1-01 (texto): 1/25 (2 partes), 2/25 (PI), 1/24 (2 partes), 1/23, 120/21.
-  - A1-01 (OCR escaneados): 31/16, 32/16, 63/18, 64/18 (PI vertical).
+  - A1-01 (OCR escaneados): 31/16, 32/16, 63/18, 64/18 (PI vertical + horizontal).
   - C1-01: 64/25.
-- Preguntas: **1114** (texto 803 + OCR 311).
-- **Invariante: 0 preguntas sin artículo** (763 artículos en el ranking).
-- Multi-artículo: 28 preguntas vinculadas a >1 artículo (citas explícitas múltiples).
+- Preguntas: **1185** (texto 803 + OCR 382).
+- **Invariante: 0 preguntas sin artículo** (772 artículos en el ranking, 1227 links).
+- Multi-artículo: 29 preguntas vinculadas a >1 artículo (citas explícitas múltiples).
 - Top leyes A1-01: Constitución 95, Ley 39/2015 95, Ley 4/2021 69, …
 - UI accesible:
   - Pestaña dedicada **"🔥 Mas preguntado"** con orden por **veces preguntado**
@@ -121,11 +121,10 @@ confianza recortada (≤0.7), por la menor fidelidad de la extracción.
 
 ## Pendiente (enriquecimiento futuro)
 
-- **A1-01 64/18 horizontal/mixta (2018)**: es un examen DISTINTO al vertical
-  (sólo 28/72 respuestas coinciden); su plantilla es la pág 3 del PDF combinado y su
-  cuestionario está más adelante (castellano ~pp tras el vertical). Mismo método.
 - **A1-01 22/15 (2015)**: confirmado que la sede (id_emp=64569) NO publica
-  cuestionario/plantilla; no disponible online.
+  cuestionario/plantilla; no disponible online. Único A1-01 que falta.
+- 2ª parte (teórico-práctica) de C1-01 64/25: no localizada (sólo el test teórico).
+- Otros cuerpos: A2-01 34/25, C1-01 65/25/27/24, C2-01 (mismo método).
 - OCR: 63/18 recupera 113/120 (alta calidad); 2016 ~71/120 y ~57/120 (peor escaneo).
   El resto se pierde por el desorden de columnas del OCR.
 - Otros cuerpos: A2-01 34/25, C1-01 27/24/65/25, C2-01.
