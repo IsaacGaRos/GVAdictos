@@ -31,18 +31,22 @@ def order_page(result, width):
     return "\n".join(t[3] for t in ordered)
 
 
-def ocr_pdf(path, out_txt, dpi=300):
+def ocr_pdf(path, out_txt, dpi=300, start=1, end=None):
+    """OCR de páginas [start, end] (1-based inclusive). end=None -> hasta el final."""
     ocr = RapidOCR()
     doc = fitz.open(path)
     mat = fitz.Matrix(dpi / 72, dpi / 72)
+    n = len(doc)
+    end = n if end is None else min(end, n)
     parts = []
     t0 = time.time()
-    for i, pg in enumerate(doc):
+    for i in range(start - 1, end):
+        pg = doc[i]
         pix = pg.get_pixmap(matrix=mat)
         result, _ = ocr(pix.tobytes("png"))
         parts.append("\n===== PAGINA %d =====\n" % (i + 1))
         parts.append(order_page(result, pix.width))
-        print("  pag %d/%d (%.0fs)" % (i + 1, len(doc), time.time() - t0))
+        print("  pag %d/%d (%.0fs)" % (i + 1, end, time.time() - t0))
     with io.open(out_txt, "w", encoding="utf-8") as f:
         f.write("\n".join(parts))
     print("OK -> %s (%.0fs)" % (out_txt, time.time() - t0))
@@ -51,4 +55,6 @@ def ocr_pdf(path, out_txt, dpi=300):
 if __name__ == "__main__":
     pdf = sys.argv[1]
     out = sys.argv[2] if len(sys.argv) > 2 else pdf.rsplit(".", 1)[0] + "_ocr.txt"
-    ocr_pdf(pdf, out)
+    start = int(sys.argv[3]) if len(sys.argv) > 3 else 1
+    end = int(sys.argv[4]) if len(sys.argv) > 4 else None
+    ocr_pdf(pdf, out, start=start, end=end)

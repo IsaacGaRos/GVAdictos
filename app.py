@@ -744,6 +744,36 @@ def get_article_study_payload(article_id: int) -> dict | None:
         return None
 
 
+def get_exam_articles_by_law(law_id: int, cuerpo: str | None = None,
+                             limit: int = 100) -> list[dict]:
+    """Artículos de UNA ley ordenados por frecuencia en exámenes oficiales."""
+    try:
+        with connect() as conn:
+            q = """
+                SELECT eql.article_id, a.article_ref, a.title, l.name AS law_full,
+                       SUM(CASE WHEN eql.tipo_relacion='articulo_explicito' THEN 1 ELSE 0 END) AS explicit_count,
+                       SUM(CASE WHEN eql.tipo_relacion LIKE 'articulo_inferido%' THEN 1 ELSE 0 END) AS inferred_count,
+                       COUNT(DISTINCT eql.exam_question_id) AS total_count
+                FROM exam_question_links eql
+                JOIN exam_questions eq ON eq.id = eql.exam_question_id
+                JOIN exam_papers ep ON ep.id = eq.exam_paper_id
+                JOIN articles a ON a.id = eql.article_id
+                JOIN laws l ON l.id = a.law_id
+                WHERE eql.article_id IS NOT NULL AND a.law_id = ?
+                  AND ep.fuente_tipo='oficial_gva'
+            """
+            params: list = [law_id]
+            if cuerpo and cuerpo != "Todos":
+                q += " AND ep.bloque = ?"
+                params.append(cuerpo)
+            q += (" GROUP BY eql.article_id "
+                  " ORDER BY total_count DESC, explicit_count DESC LIMIT ?")
+            params.append(limit)
+            return [dict(r) for r in conn.execute(q, params).fetchall()]
+    except Exception:
+        return []
+
+
 def load_topic_cef_resource(topic_id: int) -> dict | None:
     """Devuelve el recurso CEF de estudio para este tema (con content_text) si existe."""
     try:
@@ -1791,7 +1821,7 @@ TABS = [
     "Inicio", "Cuenta", "Oposiciones",
     "Fuentes", "Importar leyes", "Articulos", "Preguntas",
     "Estudiar", "Modo test", "Modo examen",
-    "Fallos", "Informes y CSV"
+    "Fallos", "Informes y CSV", "🔥 Mas preguntado"
 ]
 tabs = st.tabs(TABS)
 
@@ -2541,3 +2571,127 @@ with tabs[11]:
     if col3.button("Exportar Anki CSV"):
         path = export_anki_basic()
         st.success(f"Exportado: {path}")
+
+
+# ── 🔥 Mas preguntado (estudio del ranking de examenes oficiales) ─────────────
+def _render_article_study_block(article_id: int, key_prefix: str):
+    """Panel reutilizable: texto del articulo + preguntas oficiales que lo citan."""
+    payload = get_article_study_payload(article_id)
+    if not payload:
+        st.info("No se pudo cargar el articulo.")
+        return
+    a = payload["article"]
+    st.markdown(
+        "#### %s — Art. %s%s" % (
+            a["law_full"], a["article_ref"],
+            (" · " + a["title"]) if a.get("title") else "")
+    )
+    st.text_area("Texto del articulo", value=clean_article_text(a["text"] or ""),
+                 height=260, disabled=True, key=f"{key_prefix}_text")
+    expl_qs = [q for q in payload["questions"] if q["tipo_relacion"] == "articulo_explicito"]
+    st.caption("Aparece en %d pregunta(s) oficial(es) — %d explicita(s)." % (
+        len(payload["questions"]), len(expl_qs)))
+    for i, q in enumerate(payload["questions"]):
+        tipo = q["tipo_relacion"]
+        badge = {"articulo_explicito": "✓ explicita",
+                 "articulo_inferido": "≈ inferida",
+                 "articulo_inferido_global": "≈ inferida (global)"}.get(tipo, tipo)
+        with st.expander("[%s %s] %s — %s" % (
+                q["bloque"], q["convocatoria"], badge, (q["enunciado"] or "")[:80]),
+                expanded=False):
+            st.write(q["enunciado"])
+            st.caption("Respuesta oficial: **%s**" % (q["respuesta_oficial"] or "—"))
+
+
+with tabs[12]:
+    import pandas as _pd
+    st.subheader("🔥 Lo mas preguntado en examenes oficiales GVA")
+    _cuerpos_mp = get_exam_cuerpos()
+    if not _cuerpos_mp:
+        st.info(
+            "Sin examenes oficiales cargados. Ejecuta `python scripts/run_exam_pipeline.py` "
+            "o usa la opcion 4 del launcher."
+        )
+    else:
+        st.caption(
+            "Fuente: cuestionarios + plantillas oficiales de la GVA (no simulacros). "
+            "**✓ explicito** = la pregunta cita el articulo · **≈ inferido** = deducido "
+            "(requiere revision). Toda pregunta tiene al menos 1 articulo."
+        )
+        _c1, _c2, _c3 = st.columns([2, 2, 2])
+        with _c1:
+            _cuerpo_mp = st.selectbox("Oposicion / cuerpo", ["Todos"] + _cuerpos_mp,
+                                      key="mp_cuerpo")
+        with _c2:
+            _orden = st.radio("Ordenar por", ["Veces preguntado", "Materia (ley)"],
+                              key="mp_orden", horizontal=True)
+        with _c3:
+            _topn_mp = st.slider("Top N", 10, 100, 100, 10, key="mp_topn")
+        _crit_mp = None if _cuerpo_mp == "Todos" else _cuerpo_mp
+
+        if _orden == "Veces preguntado":
+            # ── Orden global por frecuencia ──
+            _arts = get_top_exam_articles(limit=_topn_mp, cuerpo=_crit_mp)
+            if not _arts:
+                st.info("Sin datos para este filtro.")
+            else:
+                _df = _pd.DataFrame([{
+                    "": ("✓" if (r.get("explicit_count") or 0) else "≈"),
+                    "Veces": r["total_count"],
+                    "Art.": r["article_ref"],
+                    "Ley": (r.get("law_full") or r.get("law_name") or "")[:48],
+                    "Titulo": (r.get("title") or "")[:48],
+                    "✓": r.get("explicit_count") or 0,
+                    "≈": r.get("inferred_count") or 0,
+                } for r in _arts])
+                st.dataframe(_df, use_container_width=True, hide_index=True,
+                             column_config={
+                                 "Veces": st.column_config.NumberColumn("🔥 Veces", width="small"),
+                                 "": st.column_config.TextColumn("", width="small"),
+                                 "✓": st.column_config.NumberColumn("✓", width="small"),
+                                 "≈": st.column_config.NumberColumn("≈", width="small"),
+                             })
+                _opts = {"Art. %s — %s (%d veces)" % (
+                    r["article_ref"], (r.get("law_full") or "")[:32], r["total_count"]
+                ): r.get("article_id") for r in _arts if r.get("article_id")}
+                _sel = st.selectbox("📖 Estudiar un articulo", ["—"] + list(_opts.keys()),
+                                    key="mp_sel_freq")
+                if _sel != "—":
+                    _render_article_study_block(_opts[_sel], "mp_freq")
+        else:
+            # ── Agrupado por materia (ley) ──
+            _laws = get_top_exam_laws(limit=200, cuerpo=_crit_mp)
+            if not _laws:
+                st.info("Sin datos para este filtro.")
+            else:
+                _law_opts = {"%s  (%d preguntas)" % (l["law_full"], l["n_preguntas"]): l["law_id"]
+                             for l in _laws}
+                _law_sel = st.selectbox("Materia / ley (ordenadas por nº de preguntas)",
+                                        list(_law_opts.keys()), key="mp_law_sel")
+                _law_id = _law_opts[_law_sel]
+                _law_arts = get_exam_articles_by_law(_law_id, cuerpo=_crit_mp, limit=_topn_mp)
+                if not _law_arts:
+                    st.info("Sin articulos para esta ley.")
+                else:
+                    _df = _pd.DataFrame([{
+                        "": ("✓" if (r.get("explicit_count") or 0) else "≈"),
+                        "Veces": r["total_count"],
+                        "Art.": r["article_ref"],
+                        "Titulo": (r.get("title") or "")[:60],
+                        "✓": r.get("explicit_count") or 0,
+                        "≈": r.get("inferred_count") or 0,
+                    } for r in _law_arts])
+                    st.dataframe(_df, use_container_width=True, hide_index=True,
+                                 column_config={
+                                     "Veces": st.column_config.NumberColumn("🔥 Veces", width="small"),
+                                     "": st.column_config.TextColumn("", width="small"),
+                                     "✓": st.column_config.NumberColumn("✓", width="small"),
+                                     "≈": st.column_config.NumberColumn("≈", width="small"),
+                                 })
+                    _opts = {"Art. %s — %s (%d veces)" % (
+                        r["article_ref"], (r.get("title") or "")[:30], r["total_count"]
+                    ): r["article_id"] for r in _law_arts if r.get("article_id")}
+                    _sel = st.selectbox("📖 Estudiar un articulo", ["—"] + list(_opts.keys()),
+                                        key="mp_sel_mat")
+                    if _sel != "—":
+                        _render_article_study_block(_opts[_sel], "mp_mat")

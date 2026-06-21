@@ -16,25 +16,37 @@ from exam_linker import build_law_index, link_question
 DB = r"C:\Users\isaac\Desktop\GVAdictos\db\gvadicto.sqlite"
 EXROOT = r"C:\Users\isaac\Desktop\GVAdictos\data\examenes_oficiales"
 
-# (cuerpo, conv, anio, parte, plantilla_txtpdf, ocr_txt, n_preg)
+# (cuerpo, conv, anio, parte, plantilla_pdf, plantilla_pages, ocr_txt, n_preg)
+# plantilla_pages = None (todo el PDF) o (inicio, fin) 1-based inclusive.
 OCR_EXAMS = [
     ("A1-01", "31/16", 2016, "1er ejercicio (test, OCR)",
-     r"A1-01\2016\31-16_plantilla.pdf", r"A1-01\2016\31-16_ocr.txt", 120),
+     r"A1-01\2016\31-16_plantilla.pdf", None, r"A1-01\2016\31-16_ocr.txt", 120),
     ("A1-01", "32/16", 2016, "1er ejercicio (test, OCR)",
-     r"A1-01\2016\32-16_plantilla.pdf", r"A1-01\2016\32-16_ocr.txt", 120),
+     r"A1-01\2016\32-16_plantilla.pdf", None, r"A1-01\2016\32-16_ocr.txt", 120),
+    ("A1-01", "63/18", 2018, "1er ejercicio (test, OCR)",
+     r"A1-01\2018\63-18_plantilla.txt", None,
+     r"A1-01\2018\63-18_TL_ocr.txt", 120),
 ]
 
 PLANT_PAREN = re.compile(r"(\d{1,3})\)\s*(ANULADA|[A-D])")
 PLANT_GRID = re.compile(r"(\d{1,3})\s+(ANULADA|[A-D])\b")
-QLINE = re.compile(r"^\s*(\d{1,3})\s*[\.\-]\s*([A-Za-zÁÉÍÓÚÑáéíóúñ¿].*)")
+# nº seguido de uno o más de . ) - (cubre "2.", "2.-", "2)") y luego texto
+QLINE = re.compile(r"^\s*(\d{1,3})\s*[\.\)\-]+\s*([A-Za-zÁÉÍÓÚÑáéíóúñ¿¡].*)")
 
 
-def parse_text_plantilla(pdf_path):
-    import pdfplumber
-    txt = ""
-    with pdfplumber.open(pdf_path) as pdf:
-        for p in pdf.pages:
-            txt += (p.extract_text() or "") + "\n"
+def parse_text_plantilla(path, pages=None):
+    if path.lower().endswith(".txt"):
+        with open(path, encoding="utf-8") as f:
+            txt = f.read()
+    else:
+        import pdfplumber
+        txt = ""
+        with pdfplumber.open(path) as pdf:
+            sel = pdf.pages
+            if pages:
+                sel = pdf.pages[pages[0] - 1:pages[1]]
+            for p in sel:
+                txt += (p.extract_text() or "") + "\n"
     key = {}
     pairs = PLANT_PAREN.findall(txt)
     if len(pairs) < 20:
@@ -65,7 +77,9 @@ def segment_ocr(txt_path, max_q):
         end = starts[k + 1][0] if k + 1 < len(starts) else len(lines)
         body = [first] + [lines[j].strip() for j in range(idx + 1, end)]
         text = " ".join(body).strip()
-        if n not in blocks:        # primera ocurrencia (castellano)
+        # quedarse con el bloque MÁS LARGO por número: descarta items de lista
+        # cortos (p.ej. "19. Decretos del President") frente al enunciado real.
+        if n not in blocks or len(text) > len(blocks[n]):
             blocks[n] = text
     return blocks
 
@@ -78,13 +92,13 @@ def main():
     now = datetime.now().isoformat()
 
     tot_q = tot_law = 0
-    for cuerpo, conv, anio, parte, plant_rel, ocr_rel, npreg in OCR_EXAMS:
+    for cuerpo, conv, anio, parte, plant_rel, plant_pages, ocr_rel, npreg in OCR_EXAMS:
         plant_path = os.path.join(EXROOT, plant_rel)
         ocr_path = os.path.join(EXROOT, ocr_rel)
         if not (os.path.exists(plant_path) and os.path.exists(ocr_path)):
             print("FALTA %s / %s" % (plant_rel, ocr_rel))
             continue
-        key = parse_text_plantilla(plant_path)
+        key = parse_text_plantilla(plant_path, plant_pages)
         blocks = segment_ocr(ocr_path, npreg)
 
         # upsert paper

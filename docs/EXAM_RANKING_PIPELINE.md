@@ -95,15 +95,18 @@ confianza recortada (≤0.7), por la menor fidelidad de la extracción.
 
 ## Estado actual
 
-- Exámenes oficiales procesados: **8** en 2 cuerpos.
+- Exámenes oficiales procesados: **9** en 2 cuerpos.
   - A1-01 (texto): 1/25 (2 partes), 2/25 (PI), 1/24 (2 partes), 1/23, 120/21.
-  - A1-01 (OCR, escaneados 2016): 31/16, 32/16.
+  - A1-01 (OCR escaneados): 31/16, 32/16, 63/18.
   - C1-01: 64/25.
-- Preguntas: **930** (modernas 803 + OCR 2016 ~127).
-- **Invariante: 0 preguntas sin artículo** (665 artículos en el ranking).
-- Top leyes A1-01: Constitución 87, Ley 39/2015 82, Ley 4/2021 59, Ley 1/2015 56,
-  Ley 40/2015 51, Ley 5/1983 49, LCSP 44, TFUE 43.
-- UI: ranking ajustable hasta **top 100** (slider), filtro por cuerpo.
+- Preguntas: **1044** (modernas 803 + OCR 241).
+- **Invariante: 0 preguntas sin artículo** (729 artículos en el ranking).
+- Top leyes A1-01: Constitución 95, Ley 39/2015 95, Ley 4/2021 69, …
+- UI accesible:
+  - Pestaña dedicada **"🔥 Mas preguntado"** con orden por **veces preguntado**
+    o por **materia (ley → artículos)**, filtro por cuerpo y slider hasta top 100.
+  - También como expander dentro de **Estudiar**.
+  - Cada artículo es estudiable (texto + preguntas oficiales que lo citan).
 
 ## UI (pestaña Estudiar → "🔥 Lo más preguntado en exámenes oficiales GVA")
 
@@ -115,12 +118,12 @@ confianza recortada (≤0.7), por la menor fidelidad de la extracción.
 
 ## Pendiente (enriquecimiento futuro)
 
-- **A1-01 63/18 y 64/18 (2018)**: el PDF oficial mezcla varias plantillas (texto)
-  con cuestionarios escaneados en 231 páginas. Requiere OCR dirigido a las páginas
-  del cuestionario de cada turno; pendiente por coste/segmentación.
+- **A1-01 64/18 (2018, promoción interna)**: está en el mismo PDF de 63/18
+  (páginas escaneadas posteriores). Mismo método: OCR del rango de páginas de su
+  cuestionario + plantilla (págs 2-3 del PDF combinado). Pendiente.
 - **A1-01 22/15 (2015)**: no localizada online.
-- OCR 2016: se recuperan ~70/120 (31/16) y ~57/120 (32/16) preguntas; el resto se
-  pierde por el desorden de columnas del OCR. Mejorable con mejor reconstrucción.
+- OCR: 63/18 recupera 113/120 (alta calidad); 2016 ~71/120 y ~57/120 (peor escaneo).
+  El resto se pierde por el desorden de columnas del OCR.
 - Otros cuerpos: A2-01 34/25, C1-01 27/24/65/25, C2-01.
 - Revisión humana de los artículos inferidos (≈) — especialmente los
   `articulo_inferido_global` (confianza ≤0.25) y las preguntas OCR.
