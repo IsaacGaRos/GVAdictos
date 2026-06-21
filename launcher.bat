@@ -13,16 +13,27 @@ echo.
 echo 1) Interfaz Streamlit (Estudio Local)
 echo 2) API REST FastAPI (Desarrollo/Testing)
 echo 3) Ambas (Streamlit + API en puertos diferentes)
-echo 4) Salir
+echo 4) Reconstruir ranking de examenes oficiales
+echo 5) Salir
 echo.
 
-set /p choice="Selecciona una opcion (1-4): "
+set /p choice="Selecciona una opcion (1-5): "
 
 if "%choice%"=="1" goto streamlit
 if "%choice%"=="2" goto api
 if "%choice%"=="3" goto both
-if "%choice%"=="4" goto exit
+if "%choice%"=="4" goto rebuild_exams
+if "%choice%"=="5" goto exit
 goto invalid
+
+:rebuild_exams
+cls
+echo.
+echo Reconstruyendo ranking de examenes oficiales...
+echo (parseo + OCR + inferencia + barrida global)
+echo.
+python scripts\run_exam_pipeline.py
+goto end
 
 :streamlit
 cls

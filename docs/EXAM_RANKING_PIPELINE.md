@@ -48,45 +48,62 @@ Otros: C1-01 64/25 = 104155 (etapa 9), A2-01 34/25 = 104139, C1-01 12/23 = 93056
 
 ## Pipeline (scripts canónicos)
 
-```powershell
-# 1. Parsea las plantillas oficiales del catálogo OFFICIAL[] y reconstruye
-#    exam_questions + exam_question_options + exam_question_links (ley/art explícito)
-python scripts/rebuild_official_exams.py
+Orquestador (también accesible desde `launcher.bat` opción 4):
 
-# 2. Infiere el artículo de las preguntas que citan ley pero no artículo,
-#    comparando el texto de la respuesta correcta con el articulado de esa ley.
-#    (confianza baja, validation_status='requiere_revision_humana')
+```powershell
+python scripts/run_exam_pipeline.py
+```
+
+Ejecuta en orden:
+
+```powershell
+# 1. Exámenes en TEXTO (catálogo OFFICIAL[]): parseo + ley/art explícito
+python scripts/rebuild_official_exams.py
+# 2. Exámenes ESCANEADOS (catálogo OCR_EXAMS[]): OCR + ley/art
+python scripts/ocr_exam_loader.py
+# 3. Inferencia de artículo por ley (respuesta correcta vs articulado de esa ley)
 python scripts/infer_and_link.py
+# 4. Barrida global: toda pregunta sin artículo -> inferencia contra TODO el
+#    articulado (garantiza >=1 artículo por pregunta)
+python scripts/infer_global_fallback.py
 ```
 
 Módulos de apoyo:
-- `scripts/parse_official_exam.py` — parser robusto (plantilla + preguntas + opciones).
+- `scripts/parse_official_exam.py` — parser de plantillas en texto (formatos `1.`, `1.-`, `3.- `).
 - `scripts/exam_linker.py` — cita→ley (núm/año y nombres especiales) y artículo explícito.
+- `scripts/ocr_extract.py` — OCR de PDF escaneado (PyMuPDF render + RapidOCR) → `.txt` cache.
 
-Para añadir una convocatoria nueva: descargar el/los PDF a
-`data/examenes_oficiales/<CUERPO>/<AÑO>/`, añadir la entrada a `OFFICIAL[]` en
-`rebuild_official_exams.py` y reejecutar los 2 pasos.
+Para añadir una convocatoria: descargar el/los PDF a
+`data/examenes_oficiales/<CUERPO>/<AÑO>/`, añadir la entrada a `OFFICIAL[]`
+(texto) o `OCR_EXAMS[]` (escaneado) y reejecutar el orquestador.
 
 ## Vinculación: niveles de confianza
 
-| tipo_relacion        | criterio                                              | confianza | estado |
-|----------------------|-------------------------------------------------------|-----------|--------|
-| `articulo_explicito` | la pregunta/respuesta cita "artículo N" + ley en BD   | 0.8–0.95  | pendiente_revision_humana |
-| `ley_explicita`      | cita la ley pero no el artículo (o art. no en BD)     | 0.8–0.95  | pendiente_revision_humana |
-| `articulo_inferido`  | deducido del texto de la respuesta correcta (TF-IDF)  | 0.30–0.60 | requiere_revision_humana |
+| tipo_relacion              | criterio                                                  | confianza | estado |
+|----------------------------|-----------------------------------------------------------|-----------|--------|
+| `articulo_explicito`       | la pregunta/respuesta cita "artículo N" + ley en BD       | 0.8–0.95  | pendiente_revision_humana |
+| `ley_explicita`            | cita la ley pero no el artículo (o art. no en BD)         | 0.8–0.95  | pendiente_revision_humana |
+| `articulo_inferido`        | deducido del texto de la respuesta correcta vs su ley     | 0.30–0.60 | requiere_revision_humana |
+| `articulo_inferido_global` | barrida global contra TODO el articulado (sin ley previa) | 0.10–0.25 | requiere_revision_humana |
 
 Cumple CLAUDE.md: nada jurídico se da por validado; todo queda marcado para
 revisión humana. El ranking distingue **✓ explícito** de **≈ inferido**.
+**Invariante garantizado: toda pregunta oficial tiene ≥1 artículo vinculado.**
+
+Las preguntas de exámenes OCR llevan además `notes='ocr'` en su `exam_paper` y
+confianza recortada (≤0.7), por la menor fidelidad de la extracción.
 
 ## Estado actual
 
-- Exámenes oficiales procesados: **6** en 2 cuerpos.
-  - A1-01: 1/25 (2 partes), 2/25 (PI), 1/24 (2 partes), 1/23, 120/21.
+- Exámenes oficiales procesados: **8** en 2 cuerpos.
+  - A1-01 (texto): 1/25 (2 partes), 2/25 (PI), 1/24 (2 partes), 1/23, 120/21.
+  - A1-01 (OCR, escaneados 2016): 31/16, 32/16.
   - C1-01: 64/25.
-- Preguntas: **803** (603 con ley identificada, 188 con artículo explícito).
-- Artículos en ranking: **452** (169 con ≥1 cita explícita).
-- Top leyes A1-01: Constitución 58, Ley 39/2015 57, Ley 1/2015 42, LCSP 40,
-  Ley 4/2021 36, Ley 40/2015 32, Ley 5/1983 29, Estatuto CV 27, TFUE 23.
+- Preguntas: **930** (modernas 803 + OCR 2016 ~127).
+- **Invariante: 0 preguntas sin artículo** (665 artículos en el ranking).
+- Top leyes A1-01: Constitución 87, Ley 39/2015 82, Ley 4/2021 59, Ley 1/2015 56,
+  Ley 40/2015 51, Ley 5/1983 49, LCSP 44, TFUE 43.
+- UI: ranking ajustable hasta **top 100** (slider), filtro por cuerpo.
 
 ## UI (pestaña Estudiar → "🔥 Lo más preguntado en exámenes oficiales GVA")
 
@@ -98,10 +115,12 @@ revisión humana. El ranking distingue **✓ explícito** de **≈ inferido**.
 
 ## Pendiente (enriquecimiento futuro)
 
-- A1-01 anteriores a 2021 (63/18, 64/18, 31/16, 32/16, 22/15): las plantillas
-  online suelen ser PDF escaneados (imagen) → requieren OCR para extraer preguntas.
-- Otros cuerpos: A2-01 34/25 (plantilla en etapa no resuelta), C1-01 27/24/65/25,
-  C2-01 (descargar vía el método de arriba y añadir a `OFFICIAL[]`).
-- 1/23: se extraen 133/160 preguntas (gap por saltos de numeración en el PDF).
-- Revisión humana de los artículos inferidos (≈) y de las leyes sectoriales no
-  importadas (Ley 13/2010, 15/2018, Decreto Legislativo 1/2021, …).
+- **A1-01 63/18 y 64/18 (2018)**: el PDF oficial mezcla varias plantillas (texto)
+  con cuestionarios escaneados en 231 páginas. Requiere OCR dirigido a las páginas
+  del cuestionario de cada turno; pendiente por coste/segmentación.
+- **A1-01 22/15 (2015)**: no localizada online.
+- OCR 2016: se recuperan ~70/120 (31/16) y ~57/120 (32/16) preguntas; el resto se
+  pierde por el desorden de columnas del OCR. Mejorable con mejor reconstrucción.
+- Otros cuerpos: A2-01 34/25, C1-01 27/24/65/25, C2-01.
+- Revisión humana de los artículos inferidos (≈) — especialmente los
+  `articulo_inferido_global` (confianza ≤0.25) y las preguntas OCR.

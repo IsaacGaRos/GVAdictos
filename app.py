@@ -2121,13 +2121,18 @@ body{margin:0;background:transparent;font-family:system-ui,sans-serif}
                     ["Todos"] + _cuerpos,
                     key="exam_rank_cuerpo",
                 )
+            with _cf2:
+                _top_n = st.slider(
+                    "Mostrar top N", min_value=10, max_value=100, value=100, step=10,
+                    key="exam_rank_topn",
+                )
             _crit = None if _cuerpo_sel == "Todos" else _cuerpo_sel
 
             _tab_art, _tab_ley = st.tabs(["📑 Artículos", "⚖️ Leyes"])
 
             # ── Artículos más preguntados ──
             with _tab_art:
-                _top_arts = get_top_exam_articles(limit=40, cuerpo=_crit)
+                _top_arts = get_top_exam_articles(limit=_top_n, cuerpo=_crit)
                 if not _top_arts:
                     st.info("Sin artículos vinculados para este filtro.")
                 else:
@@ -2206,7 +2211,7 @@ body{margin:0;background:transparent;font-family:system-ui,sans-serif}
 
             # ── Leyes más preguntadas ──
             with _tab_ley:
-                _top_laws = get_top_exam_laws(limit=25, cuerpo=_crit)
+                _top_laws = get_top_exam_laws(limit=_top_n, cuerpo=_crit)
                 if not _top_laws:
                     st.info("Sin datos para este filtro.")
                 else:
