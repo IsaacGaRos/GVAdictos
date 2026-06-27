@@ -584,21 +584,37 @@ def delete_study_plan_entry(plan_id: int) -> None:
         conn.commit()
 
 
-def get_article_exam_freq(article_id: int) -> dict | None:
-    """Devuelve {total_count, exam_sources} de article_exam_frequency o None."""
+def get_article_exam_freq(article_id: int, cuerpo: str = "A1-01") -> dict | None:
+    """Veces que un artículo fue preguntado en exámenes oficiales del cuerpo dado.
+
+    Por defecto cuenta solo **A1-01** (el cuerpo de estudio), no el agregado global,
+    para que el contador de la pestaña Estudiar sea fiel a "preguntado en A1-01".
+    Devuelve {count, explicit, inferred} o None si no aparece.
+    """
     try:
         with connect() as conn:
             row = conn.execute(
-                "SELECT total_count, exam_sources FROM article_exam_frequency WHERE article_id=?",
-                (article_id,),
+                """
+                SELECT COUNT(DISTINCT eql.exam_question_id) AS total_count,
+                       SUM(CASE WHEN eql.tipo_relacion='articulo_explicito' THEN 1 ELSE 0 END) AS explicit_count,
+                       SUM(CASE WHEN eql.tipo_relacion LIKE 'articulo_inferido%' THEN 1 ELSE 0 END) AS inferred_count
+                FROM exam_question_links eql
+                JOIN exam_questions eq ON eq.id = eql.exam_question_id
+                JOIN exam_papers ep ON ep.id = eq.exam_paper_id
+                WHERE eql.article_id = ?
+                  AND ep.fuente_tipo = 'oficial_gva' AND ep.bloque = ?
+                """,
+                (article_id, cuerpo),
             ).fetchone()
             if row:
                 r = dict(row) if not isinstance(row, dict) else row
-                import json as _json
-                return {
-                    "count": r["total_count"],
-                    "sources": _json.loads(r.get("exam_sources") or "[]"),
-                }
+                cnt = r["total_count"] or 0
+                if cnt > 0:
+                    return {
+                        "count": cnt,
+                        "explicit": r["explicit_count"] or 0,
+                        "inferred": r["inferred_count"] or 0,
+                    }
     except Exception:
         pass
     return None
@@ -1383,7 +1399,11 @@ def render_article_card(article, topic_id: int) -> None:
         with col_freq:
             if _exam_freq and _exam_freq["count"] > 0:
                 _cnt = _exam_freq["count"]
-                _tip = f"Preguntado ~{_cnt}x en exámenes oficiales"
+                _tip = (
+                    f"Preguntado {_cnt}x en exámenes oficiales A1-01 "
+                    f"({_exam_freq.get('explicit', 0)} explícitas · "
+                    f"{_exam_freq.get('inferred', 0)} inferidas, requieren revisión)"
+                )
                 st.markdown(
                     f'<span title="{_tip}" style="color:#f38ba8;font-size:12px;'
                     f'font-weight:700;cursor:help;">🔥{_cnt}</span>',
@@ -2125,136 +2145,6 @@ body{margin:0;background:transparent;font-family:system-ui,sans-serif}
                     if st.button("🗑", key=f"del_plan_{_pe['id']}", help="Eliminar del plan"):
                         delete_study_plan_entry(_pe['id'])
                         st.rerun()
-    st.divider()
-
-    # ── Ranking de exámenes oficiales (leyes y artículos más preguntados) ────
-    with st.expander("🔥 Lo más preguntado en exámenes oficiales GVA", expanded=False):
-        import pandas as _pd
-        _cuerpos = get_exam_cuerpos()
-        if not _cuerpos:
-            st.info(
-                "Sin exámenes oficiales cargados. Ejecuta:\n"
-                "`python scripts/rebuild_official_exams.py` y "
-                "`python scripts/infer_and_link.py`"
-            )
-        else:
-            st.caption(
-                "Fuente: cuestionarios + plantillas oficiales de la GVA "
-                "(NO simulacros de academia). El conteo **explícito** = la pregunta "
-                "cita el artículo; **≈ inferido** = deducido del texto de la respuesta "
-                "correcta (requiere revisión)."
-            )
-            _cf1, _cf2 = st.columns([2, 3])
-            with _cf1:
-                _cuerpo_sel = st.selectbox(
-                    "Oposición / cuerpo",
-                    ["Todos"] + _cuerpos,
-                    key="exam_rank_cuerpo",
-                )
-            with _cf2:
-                _top_n = st.slider(
-                    "Mostrar top N", min_value=10, max_value=100, value=100, step=10,
-                    key="exam_rank_topn",
-                )
-            _crit = None if _cuerpo_sel == "Todos" else _cuerpo_sel
-
-            _tab_art, _tab_ley = st.tabs(["📑 Artículos", "⚖️ Leyes"])
-
-            # ── Artículos más preguntados ──
-            with _tab_art:
-                _top_arts = get_top_exam_articles(limit=_top_n, cuerpo=_crit)
-                if not _top_arts:
-                    st.info("Sin artículos vinculados para este filtro.")
-                else:
-                    _rows_ui = []
-                    for _r in _top_arts:
-                        _expl = _r.get("explicit_count") or 0
-                        _infe = _r.get("inferred_count") or 0
-                        _marca = "✓" if _expl else "≈"
-                        _rows_ui.append({
-                            "": _marca,
-                            "Art.": _r["article_ref"],
-                            "Ley": (_r.get("law_full") or _r.get("law_name") or "—")[:42],
-                            "Título": (_r.get("title") or "")[:46],
-                            "Explíc.": _expl,
-                            "≈Infer.": _infe,
-                            "Total": _r["total_count"],
-                        })
-                    st.dataframe(
-                        _pd.DataFrame(_rows_ui),
-                        use_container_width=True, hide_index=True,
-                        column_config={
-                            "": st.column_config.TextColumn("", width="small", help="✓ explícito · ≈ inferido"),
-                            "Total": st.column_config.NumberColumn("🔥 Total", width="small"),
-                            "Explíc.": st.column_config.NumberColumn("✓", width="small"),
-                            "≈Infer.": st.column_config.NumberColumn("≈", width="small"),
-                            "Art.": st.column_config.TextColumn("Art.", width="small"),
-                        },
-                    )
-                    st.markdown("**📖 Estudiar un artículo del ranking**")
-                    _opts = {
-                        "Art. %s — %s" % (
-                            _r["article_ref"],
-                            (_r.get("law_full") or _r.get("law_name") or "")[:40],
-                        ): _r.get("article_id")
-                        for _r in _top_arts if _r.get("article_id")
-                    }
-                    _sel = st.selectbox(
-                        "Selecciona", ["—"] + list(_opts.keys()),
-                        key="exam_rank_art_study",
-                    )
-                    if _sel != "—":
-                        _payload = get_article_study_payload(_opts[_sel])
-                        if _payload:
-                            _a = _payload["article"]
-                            st.markdown(
-                                "#### %s — Art. %s%s" % (
-                                    _a["law_full"], _a["article_ref"],
-                                    (" · " + _a["title"]) if _a.get("title") else "",
-                                )
-                            )
-                            st.text_area(
-                                "Texto del artículo",
-                                value=clean_article_text(_a["text"] or ""),
-                                height=240, disabled=True,
-                                key="exam_rank_art_text",
-                            )
-                            _expl_qs = [q for q in _payload["questions"]
-                                        if q["tipo_relacion"] == "articulo_explicito"]
-                            _infe_qs = [q for q in _payload["questions"]
-                                        if q["tipo_relacion"] == "articulo_inferido"]
-                            st.caption(
-                                "Aparece en %d pregunta(s) oficial(es): "
-                                "%d explícita(s), %d inferida(s)." % (
-                                    len(_payload["questions"]), len(_expl_qs), len(_infe_qs))
-                            )
-                            for _q in _payload["questions"]:
-                                _badge = "✓ explícita" if _q["tipo_relacion"] == "articulo_explicito" else "≈ inferida (revisar)"
-                                with st.expander(
-                                    "[%s %s] %s — %s" % (
-                                        _q["bloque"], _q["convocatoria"], _badge,
-                                        _q["enunciado"][:80]),
-                                    expanded=False,
-                                ):
-                                    st.write(_q["enunciado"])
-                                    st.caption("Respuesta oficial: **%s**" % (_q["respuesta_oficial"] or "—"))
-
-            # ── Leyes más preguntadas ──
-            with _tab_ley:
-                _top_laws = get_top_exam_laws(limit=_top_n, cuerpo=_crit)
-                if not _top_laws:
-                    st.info("Sin datos para este filtro.")
-                else:
-                    st.dataframe(
-                        _pd.DataFrame([
-                            {"Ley": _l["law_full"][:60], "Preguntas": _l["n_preguntas"]}
-                            for _l in _top_laws
-                        ]),
-                        use_container_width=True, hide_index=True,
-                        column_config={
-                            "Preguntas": st.column_config.NumberColumn("🔥 Preguntas", width="small"),
-                        },
-                    )
     st.divider()
 
     part_label = st.radio(
